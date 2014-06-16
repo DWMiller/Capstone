@@ -1,0 +1,1 @@
+DELETE FROM active_sessions WHERE expires < NOW();
