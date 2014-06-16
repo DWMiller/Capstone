@@ -40,7 +40,9 @@ class Database {
 						'traceDetails' 	=> $e->getTrace());
 		 
 		$this->errorLog($TPL);
-		include DATABASEERROR_VIEW; 
+	    echo '<pre>';
+	    echo print_r($TPL,true);
+	    echo '</pre>';
 		exit();
 	}
 

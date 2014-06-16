@@ -44,7 +44,7 @@ class Userauth_m extends Model {
 
 	public function loggedIn() {
 
-		$this->user = $this->validSessionExists($_REQUEST['session']);
+		$this->user = $this->validSessionExists();
 		
 		if (!$this->user) {return false;}
 
@@ -93,9 +93,13 @@ class Userauth_m extends Model {
 		}
 	}
 
-	public function validSessionExists($session)
+	public function validSessionExists()
 	{
-		return $this->users->getUserByField($session,'session');
+		if(isset($_REQUEST['session'])) {
+			return $this->users->getUserByField($_REQUEST['session'],'session');
+		} else {
+			return false;
+		}
 	}
 
 }

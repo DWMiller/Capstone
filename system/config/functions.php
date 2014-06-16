@@ -8,7 +8,9 @@ function errorHandler($errno, $errstr, $errfile, $errline)
                 'errorFileName'     => $errfile,
                 'time'              => date("F j, Y, g:i a"));
                 
-    include ERRORHANDLER_VIEW;   
+    echo '<pre>';
+    echo print_r($TPL,true);
+    echo '</pre>';
     exit;
 }
 
