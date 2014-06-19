@@ -17,13 +17,12 @@ class Users_m extends Model {
 			$salt = $this->getSalt();
 			$password = hash('sha384',$salt.$password);  	
 
-			$sql = 'INSERT INTO users (username,email,salt,password) values (?,?,?,?)';
+			$sql = 'INSERT INTO users (username,status,email,salt,password) values (?,?,?,?,?)';
 			$stmt = $this->dbh->prepare($sql);
 
-			$this->dbo->execute($stmt,array($username,$email,$salt,$password));
+			$this->dbo->execute($stmt,array($username,1,$email,$salt,$password));
 
 			return $stmt->rowCount() == 1;
-
 		}
 
 		public function getUserByField($val,$field = 'id') {
@@ -57,6 +56,14 @@ class Users_m extends Model {
 
 			return $session;
 		}
+
+		public function joinQueue($userID) {
+			$sql = "UPDATE users SET status = ? WHERE id = ?";
+			$stmt = $this->dbh->prepare($sql);
+        
+        	$this->dbo->execute($stmt,array(USER_QUEUED,$userID));
+		}
+
 
 		public function clearSession($session) {
 			$sql = "DELETE FROM active_sessions WHERE session = ?";

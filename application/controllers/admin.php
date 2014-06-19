@@ -16,4 +16,14 @@ class Admin extends Controller {
 	public function clear() {
 		$this->admin->clearExpiredSessions();
 	}
+
+	public function new_game() {
+		$this->admin->createNewGame();
+	}
+
+	public function end_game() {
+		$this->admin->deleteCurrentGame();
+	}
+
+
 }

@@ -5,21 +5,16 @@
  */
  class Register extends Controller
  {
+ 	private $users;
+
 	 function __construct() {
 		  parent::__construct();
+		  $this->users = new Users_m;
 	}
 
 	function index () {
-		$users = new Users_m;
-
-
-		$result = $users->createUser($_REQUEST['email'],$_REQUEST['password']);
-
-		if($result) {
-
-		} else {
-			
-		}
+		
+		$result =  $this->users->createUser($_REQUEST['email'],$_REQUEST['password']);
 
 		$this->TPL['result'] = $result;
 		
