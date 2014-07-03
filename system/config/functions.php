@@ -19,13 +19,12 @@ function myAutoLoader ($className)
 
     $classFile = strtolower($className) . '.php';
     
-    $locations = array(
+    $dir = array(
         	'/system/classes/',
           '/application/controllers/',
           '/application/models/');
         
-        foreach($locations as $location)
-        {
+        foreach($dir as $location) {
             $file = ROOT . $location.$classFile;
             if(file_exists($file)){
                 require_once($file);

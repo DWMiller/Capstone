@@ -29,6 +29,14 @@ class Game extends Controller {
 		$this->users->joinQueue($this->TPL['user']['id']);
 	}
 
+	/**
+	 * Remove used from queue for next game
+	 * @return [type] [description]
+	 */
+	function leave_queue() { 
+		$this->users->leaveQueue($this->TPL['user']['id']);
+	}
+
 }
 
 

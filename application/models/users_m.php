@@ -64,6 +64,13 @@ class Users_m extends Model {
         	$this->dbo->execute($stmt,array(USER_QUEUED,$userID));
 		}
 
+		public function leaveQueue($userID) {
+			$sql = "UPDATE users SET status = ? WHERE id = ?";
+			$stmt = $this->dbh->prepare($sql);
+        
+        	$this->dbo->execute($stmt,array(USER_IDLE,$userID));
+		}
+
 
 		public function clearSession($session) {
 			$sql = "DELETE FROM active_sessions WHERE session = ?";

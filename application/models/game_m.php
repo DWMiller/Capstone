@@ -22,7 +22,7 @@ class Game_m extends Model {
 
 
 	 public function getCurrentGame() {
-	 	$sql = 'SELECT * FROM game_settings WHERE ';
+	 	$sql = 'SELECT * FROM game_settings';
 		$stmt = $this->dbh->prepare($sql);
 		$this->dbo->execute($stmt,array());	
 

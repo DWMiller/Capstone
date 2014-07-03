@@ -9,19 +9,30 @@ class Admin_m extends Model {
 	   
 		 $this->dbo = Database::getInstance();
 		 $this->dbh = $this->dbo->getPDOConnection();
-	 } 
+	} 
 
 
-	 public function clearExpiredSessions() {
+	public function clearExpiredSessions() {
 	 	$sql = file_get_contents('system/scripts/sessions.sql');
 		$stmt = $this->dbh->prepare($sql);
 		$this->dbo->execute($stmt,array());
-	 }
+	}
 
 	public function deleteCurrentGame() {
 		$sql = 'TRUNCATE TABLE game_settings;';
 		$this->dbh->query($sql);
 	}
+
+	public function clearActivePlayers() {
+		$sql = 'UPDATE users SET status = 1 WHERE status = 3';
+		$this->dbh->query($sql);
+	}
+
+	public function activateQueuedPlayers() {
+		$sql = 'UPDATE users SET status = 3 WHERE status = 2';
+		$this->dbh->query($sql);
+	}
+
 
 	public function createNewGame() {
 		$sql = 'INSERT INTO game_settings (time_started,resource_pool,max_players) values (?,?,?);';

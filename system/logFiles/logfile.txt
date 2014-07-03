@@ -1,0 +1,306 @@
+
+---------------- July 2, 2014, 10:52 am ------------------------------------------
+Array
+(
+    [time] => July 2, 2014, 10:52 am
+    [message] => Unable to insert system
+    [exceptionMsg] => SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'type' cannot be null
+    [esceptionCode] => 23000
+    [traceDetails] => Array
+        (
+            [0] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\classes\map\system.php
+                    [line] => 45
+                    [function] => execute
+                    [class] => PDOStatement
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [0] => 1
+                                    [1] => 76
+                                    [2] => 8
+                                    [3] => 68.34375
+                                    [4] => 
+                                )
+
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\classes\map\sector.php
+                    [line] => 34
+                    [function] => save
+                    [class] => System
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => 1
+                        )
+
+                )
+
+            [2] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\classes\map\sector.php
+                    [line] => 29
+                    [function] => saveChildren
+                    [class] => Sector
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [3] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\models\admin_map_m.php
+                    [line] => 24
+                    [function] => save
+                    [class] => Sector
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [4] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\controllers\admin.php
+                    [line] => 35
+                    [function] => createMap
+                    [class] => Admin_map_m
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => 100
+                            [1] => 600
+                        )
+
+                )
+
+            [5] => Array
+                (
+                    [function] => generate
+                    [class] => Admin
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [6] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                    [line] => 50
+                    [function] => call_user_func
+                    [args] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [0] => Admin Object
+                                        (
+                                            [admin:Admin:private] => Admin_m Object
+                                                (
+                                                    [dbo:Admin_m:private] => Database Object
+                                                        (
+                                                        )
+
+                                                    [dbh:Admin_m:private] => PDO Object
+                                                        (
+                                                        )
+
+                                                )
+
+                                            [output] => Output Object
+                                                (
+                                                )
+
+                                            [TPL:protected] => Array
+                                                (
+                                                )
+
+                                        )
+
+                                    [1] => generate
+                                )
+
+                        )
+
+                )
+
+            [7] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\main.php
+                    [line] => 3
+                    [args] => Array
+                        (
+                            [0] => E:\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                        )
+
+                    [function] => require_once
+                )
+
+        )
+
+)
+
+---------------- July 2, 2014, 10:55 am ------------------------------------------
+Array
+(
+    [time] => July 2, 2014, 10:55 am
+    [message] => Unable to insert system
+    [exceptionMsg] => SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'type' cannot be null
+    [esceptionCode] => 23000
+    [traceDetails] => Array
+        (
+            [0] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\classes\map\system.php
+                    [line] => 45
+                    [function] => execute
+                    [class] => PDOStatement
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [0] => 1
+                                    [1] => 40
+                                    [2] => 73
+                                    [3] => 102.515625
+                                    [4] => 
+                                )
+
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\classes\map\sector.php
+                    [line] => 34
+                    [function] => save
+                    [class] => System
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => 1
+                        )
+
+                )
+
+            [2] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\classes\map\sector.php
+                    [line] => 29
+                    [function] => saveChildren
+                    [class] => Sector
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [3] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\models\admin_map_m.php
+                    [line] => 24
+                    [function] => save
+                    [class] => Sector
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [4] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\application\controllers\admin.php
+                    [line] => 35
+                    [function] => createMap
+                    [class] => Admin_map_m
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => 100
+                            [1] => 600
+                        )
+
+                )
+
+            [5] => Array
+                (
+                    [function] => generate
+                    [class] => Admin
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [6] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                    [line] => 50
+                    [function] => call_user_func
+                    [args] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [0] => Admin Object
+                                        (
+                                            [admin:Admin:private] => Admin_m Object
+                                                (
+                                                    [dbo:Admin_m:private] => Database Object
+                                                        (
+                                                        )
+
+                                                    [dbh:Admin_m:private] => PDO Object
+                                                        (
+                                                        )
+
+                                                )
+
+                                            [output] => Output Object
+                                                (
+                                                )
+
+                                            [TPL:protected] => Array
+                                                (
+                                                )
+
+                                        )
+
+                                    [1] => generate
+                                )
+
+                        )
+
+                )
+
+            [7] => Array
+                (
+                    [file] => E:\USBWebserver v8.6\root\Capstone_Server\main.php
+                    [line] => 3
+                    [args] => Array
+                        (
+                            [0] => E:\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                        )
+
+                    [function] => require_once
+                )
+
+        )
+
+)

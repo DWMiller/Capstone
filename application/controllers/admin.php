@@ -18,12 +18,19 @@ class Admin extends Controller {
 	}
 
 	public function new_game() {
+		$this->admin->activateQueuedPlayers();
 		$this->admin->createNewGame();
 	}
 
 	public function end_game() {
 		$this->admin->deleteCurrentGame();
+		$this->admin->clearActivePlayers();
 	}
 
+
+	public function generate() {
+
+		// $map->createMap($_POST['scale'],$_POST['seed']);
+	}
 
 }
