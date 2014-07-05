@@ -5,7 +5,12 @@
 	<title>Document</title>
 </head>
 <body>
-	
+	<ol>
+		<li>End Current Game</li>
+		<li>Generate New Map</li>
+		<li>Start New Game</li>
+	</ol>
+
 	<form action="main.php?/admin/clear" method="POST">
 		<fieldset>
 			<input type="submit" value="Clear Expired Sessions">
@@ -19,6 +24,7 @@
 			<input type="submit" value="End Current Game">
 		</fieldset>
 	</form>
+
 	<hr>
 
 	<form action="main.php?/admin/new_game"  method="POST">
@@ -34,17 +40,19 @@
 	<hr>
 
 	<form action="../Capstone_MapGenerator/main.php?/generate/generate" method="POST">
-		<label for="scale">Scale: 
-			<input type="number" value="100" name="scale"></input>
-		</label>
+		<fieldset>
+			<label for="scale">Scale: 
+				<input type="number" value="100" name="scale"></input>
+			</label>
 
-		<label for="seed">Seed Value: 
-			<input type="number" name="seed" id="seed" value="600">
-		</label>	
+			<label for="seed">Seed Value: 
+				<input type="number" name="seed" id="seed" value="600">
+			</label>	
 
-		<br>
-		<input type="submit" value="Generate">	
+			<input type="submit" value="Generate">	
+		</fieldset>
 	</form>
+
 
 </body>
 </html>

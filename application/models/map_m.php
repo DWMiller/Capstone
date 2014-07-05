@@ -19,18 +19,18 @@ class Map_m extends Model {
 	 	return false; //not implemented
 	 }
 
-	 public function getSystems($field = 'sector_id', $sectorID) {
+	 public function getSystems($val,$field = 'sector_id') {
 			$sql = "SELECT * FROM systems WHERE $field = ?";
 			$stmt = $this->dbh->prepare($sql);
-			$this->dbo->execute($stmt,array($sectorID));
+			$this->dbo->execute($stmt,array($val));
 
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	 }
 
-	 public function getLocations($field = 'system_id',$systemID) {
+	 public function getLocations($val,$field = 'system_id') {
 			$sql = "SELECT * FROM locations WHERE $field = ?";
 			$stmt = $this->dbh->prepare($sql);
-			$this->dbo->execute($stmt,array($systemID));
+			$this->dbo->execute($stmt,array($val));
 
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	 }
