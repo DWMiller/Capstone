@@ -33,12 +33,29 @@ class Admin_m extends Model {
 		$this->dbh->query($sql);
 	}
 
-
 	public function createNewGame() {
 		$sql = 'INSERT INTO game_settings (time_started,resource_pool,max_players) values (?,?,?);';
 		$stmt = $this->dbh->prepare($sql);
 		$data = array($expires = date('Y-m-d H:i:s',time()),0,$_REQUEST['player_count']);
 		$this->dbo->execute($stmt,$data);		
+	}
+
+	/**
+	 * Select starting location for each players. 
+	 * Set locations to default state and grant ownership to player.
+	 * @return [type] [description]
+	 */
+	public function placePlayers() {
+		$users = new Users_m;
+		$map = new Map_m;
+
+		$players = $users->getUsersByField(USER_PLAYING,'status');
+
+		foreach ($players as $player) {
+			$location = $map->findStartingLocation();
+			$map->setLocationAsHomeworld($location,$user['id']);
+		}
+
 	}
 
 

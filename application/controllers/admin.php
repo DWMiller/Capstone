@@ -20,6 +20,7 @@ class Admin extends Controller {
 	public function new_game() {
 		$this->admin->activateQueuedPlayers();
 		$this->admin->createNewGame();
+		$this->admin->placePlayers();
 	}
 
 	public function end_game() {

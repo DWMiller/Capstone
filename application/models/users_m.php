@@ -25,9 +25,8 @@ class Users_m extends Model {
 			return $stmt->rowCount() == 1;
 		}
 
-		public function getUserByField($val,$field = 'id') {
-			
 
+		public function getActiveUsersByField($val,$field = 'id') {		
 			$sql = "SELECT * FROM users
 			LEFT JOIN active_sessions ON user_id = id
 			WHERE $field = ?";
@@ -39,7 +38,22 @@ class Users_m extends Model {
 			if ($stmt->rowCount() >= 1)
 			{	
 				$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				return $result[0];
+				return $result;
+			} else {
+				return false;
+			}	
+		}
+
+		public function getUsersByField($val,$field = 'id') {		
+			$sql = "SELECT * FROM users WHERE $field = ?";
+			$stmt = $this->dbh->prepare($sql);
+        
+        	$this->dbo->execute($stmt,array($val));
+
+			if ($stmt->rowCount() >= 1)
+			{	
+				$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				return $result;
 			} else {
 				return false;
 			}	

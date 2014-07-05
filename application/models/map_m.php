@@ -19,19 +19,30 @@ class Map_m extends Model {
 	 	return false; //not implemented
 	 }
 
-	 public function getSystems($sectorID) {
-			$sql = 'SELECT * FROM systems WHERE sector_id = ?';
+	 public function getSystems($field = 'sector_id', $sectorID) {
+			$sql = "SELECT * FROM systems WHERE $field = ?";
 			$stmt = $this->dbh->prepare($sql);
 			$this->dbo->execute($stmt,array($sectorID));
 
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	 }
 
-	 public function getLocations($systemID) {
-			$sql = 'SELECT * FROM locations WHERE system_id = ?';
+	 public function getLocations($field = 'system_id',$systemID) {
+			$sql = "SELECT * FROM locations WHERE $field = ?";
 			$stmt = $this->dbh->prepare($sql);
 			$this->dbo->execute($stmt,array($systemID));
 
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	 }
+
+/***************************************************************************/
+
+ 	public function findStartingLocation() {
+
+ 	}
+
+ 	public function setLocationAsHomeworld($location,$userID) { 
+
+ 	}
+	 
 }

@@ -38,7 +38,4 @@ class Game_m extends Model {
 	 public function getNextGame() {
 	 	return true;
 	 }
-
-
-
 }

@@ -25,7 +25,7 @@ class Userauth_m extends Model {
 	               
 	     //check if user account exists
 		
-		$this->user = $this->users->getUserByField($this->email,'email');
+		$this->user = $this->users->getUsersByField($this->email,'email')[0];
 
 		if(!$this->user) {return false;}
 
@@ -96,7 +96,7 @@ class Userauth_m extends Model {
 	public function validSessionExists()
 	{
 		if(isset($_REQUEST['session'])) {
-			return $this->users->getUserByField($_REQUEST['session'],'session');
+			return $this->users->getActiveUsersByField($_REQUEST['session'],'session')[0];
 		} else {
 			return false;
 		}
