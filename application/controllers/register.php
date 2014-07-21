@@ -13,11 +13,16 @@
 	}
 
 	function index () {
-		
-		$result =  $this->users->createUser($_REQUEST['email'],$_REQUEST['password']);
+		$args = func_get_args()[0];
 
-		$this->TPL['result'] = $result;
-		
+		$result =  $this->users->createUser($args['email'],$args['password']);
+
+		if($result) {
+			$this->TPL['register-success'] = true;
+		} else {
+			$this->TPL['register-failure'] = true;
+		}
+
 		$this->output->json_response($this->TPL);
 	}
 

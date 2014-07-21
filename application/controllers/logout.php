@@ -17,7 +17,6 @@
 		$this->Auth->logout();
 		$this->output->json_response($this->TPL);
 	}
-
  } 
 
 
