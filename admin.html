@@ -1,58 +1,115 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Document</title>
+    <meta charset="UTF-8">
+    <title>Document</title>
 </head>
+
 <body>
-	<ol>
-		<li>End Current Game</li>
-		<li>Generate New Map</li>
-		<li>Start New Game</li>
-	</ol>
+    <ol>
+        <li>End Current Game</li>
+        <li>Generate New Map</li>
+        <li>Start New Game</li>
+    </ol>
 
-	<form action="main.php?/admin/clear" method="POST">
-		<fieldset>
-			<input type="submit" value="Clear Expired Sessions">
-		</fieldset>
-	</form>
+    <form action="main.php?/admin/clear" method="POST">
+        <fieldset>
+            <input type="submit" value="Clear Expired Sessions">
+        </fieldset>
+    </form>
 
-	<hr>
+    <hr>
 
-	<form action="main.php?/admin/end_game"  method="POST">
-		<fieldset>
-			<input type="submit" value="End Current Game">
-		</fieldset>
-	</form>
+    <form id="game-end" action="main.php?/admin/end_game" method="POST">
+        <fieldset>
+            <input type="submit" value="End Current Game">
+        </fieldset>
+    </form>
 
-	<hr>
+    <hr>
 
-	<form action="main.php?/admin/new_game"  method="POST">
-		<fieldset>
-			<label for="player_count">Player Count: 
-				<input type="number" value="10" name="player_count"></input>
-			</label>
+    <form id="game-start" action="main.php?/admin/new_game" method="POST">
+        <fieldset>
+            <label for="player_count">Player Count:
+                <input type="number" value="10" name="player_count"></input>
+            </label>
 
-			<input type="submit" value="Start New Game">
-		</fieldset>
-	</form>
+            <input type="submit" value="Start New Game">
+        </fieldset>
+    </form>
 
-	<hr>
+    <hr>
 
-	<form action="../Capstone_MapGenerator/main.php?/generate/generate" method="POST">
-		<fieldset>
-			<label for="scale">Scale: 
-				<input type="number" value="100" name="scale"></input>
-			</label>
+    <form id="map-generate" action="../Capstone_MapGenerator/main.php?/generate/generate" method="POST">
+        <fieldset>
+            <label for="scale">Scale:
+                <input type="number" value="100" name="scale"></input>
+            </label>
 
-			<label for="seed">Seed Value: 
-				<input type="number" name="seed" id="seed" value="600">
-			</label>	
+            <label for="seed">Seed Value:
+                <input type="number" name="seed" id="seed" value="600">
+            </label>
 
-			<input type="submit" value="Generate">	
-		</fieldset>
-	</form>
+            <input type="submit" value="Generate">
+        </fieldset>
+    </form>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <script>
+    function end() {
+        post({
+            game: {
+                admin: {
+                    end_game: {
+                    	placeholder: true
+                    }
+                }
+            }
+        })
+    }
+
+    function start() {
+        post({
+            game: {
+                admin: {                	
+                    new_game: {
+                    	player_count: 10
+                    }
+                }
+            }
+        })
+    }
+
+    function post(data) {
+        return $.ajax({
+                url: '../../Capstone_server/main.php',
+                data: data,
+                type: 'POST',
+                dataType: 'json',
+            })
+            .done(function(result) {
+                for (var obj in result) {
+                    console.log('RESULT: ', result);
+                    scope.notify({
+                        type: obj,
+                        data: result[obj]
+                    });
+                }
+            })
+            .fail(function() {
+                //console.log("error");
+            })
+            .always(function(result) {
+                // console.log("complete");
+            });
+    }
 
 
+
+
+    </script>
 </body>
+
 </html>
