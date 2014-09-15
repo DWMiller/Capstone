@@ -37,6 +37,19 @@ class Map_m extends Model {
 
 /***************************************************************************/
 
+	 public function eraseMap() {
+ 		$sql = 'DELETE from locations; DELETE from systems; ';
+ 		$this->dbh->query($sql);
+	 }
+
+	public function createMap($scale,$seed) {
+		$sector = new Sector(new Point(0,0),$seed); 
+		$sector->populate($scale);
+		$sector->save();
+	}
+
+/***************************************************************************/
+
  	public function findStartingLocation() {
 
  	}

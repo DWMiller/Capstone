@@ -3,10 +3,12 @@
 class Admin extends Controller {
 	
 	private $admin;
+	private $map;
 
-	 function __construct() {
+	function __construct() {
 		  parent::__construct();
 		  $this->admin = new Admin_m;
+		  $this->map = new Map_m;
 	}
 	
 	function index () {
@@ -28,10 +30,10 @@ class Admin extends Controller {
 		$this->admin->clearActivePlayers();
 	}
 
-
 	public function generate() {
+		$args = func_get_args()[0];
 
-		// $map->createMap($_POST['scale'],$_POST['seed']);
+		$this->map->eraseMap();
+		$this->map->createMap($args['scale'],$args['seed']);
 	}
-
 }

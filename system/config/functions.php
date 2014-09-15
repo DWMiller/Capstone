@@ -22,7 +22,9 @@ function myAutoLoader ($className)
     $dir = array(
         	'/system/classes/',
           '/application/controllers/',
-          '/application/models/');
+          '/application/models/',
+          '/application/classes/geometry/',
+          '/application/classes/map/');
         
         foreach($dir as $location) {
             $file = ROOT . $location.$classFile;
@@ -32,7 +34,7 @@ function myAutoLoader ($className)
             }            
         }
 
- 		trigger_error("Controller file $classFile.php could not be lazy loaded");
+ 		trigger_error("Controller file $classFile could not be lazy loaded");
  }
 
 function parsePrettyPath()

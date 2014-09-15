@@ -304,3 +304,215 @@ Array
         )
 
 )
+
+---------------- September 15, 2014, 12:09 am ------------------------------------------
+Array
+(
+    [time] => September 15, 2014, 12:09 am
+    [message] => Connection to database failed. 
+    [exceptionMsg] => SQLSTATE[HY000] [1049] Unknown database 'capstone'
+    [esceptionCode] => 1049
+    [traceDetails] => Array
+        (
+            [0] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\system\classes\database.php
+                    [line] => 10
+                    [function] => __construct
+                    [class] => PDO
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => mysql:host=localhost;port=3307;dbname=capstone
+                            [1] => root
+                            [2] => usbw
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\system\classes\database.php
+                    [line] => 21
+                    [function] => __construct
+                    [class] => Database
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [2] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\application\models\users_m.php
+                    [line] => 10
+                    [function] => getInstance
+                    [class] => Database
+                    [type] => ::
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [3] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\application\models\userauth_m.php
+                    [line] => 14
+                    [function] => __construct
+                    [class] => Users_m
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [4] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\application\controllers\login.php
+                    [line] => 12
+                    [function] => __construct
+                    [class] => Userauth_m
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [5] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                    [line] => 47
+                    [function] => __construct
+                    [class] => Login
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [6] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\main.php
+                    [line] => 3
+                    [args] => Array
+                        (
+                            [0] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                        )
+
+                    [function] => require_once
+                )
+
+        )
+
+)
+
+---------------- September 15, 2014, 12:09 am ------------------------------------------
+Array
+(
+    [time] => September 15, 2014, 12:09 am
+    [message] => Connection to database failed. 
+    [exceptionMsg] => SQLSTATE[HY000] [1049] Unknown database 'capstone'
+    [esceptionCode] => 1049
+    [traceDetails] => Array
+        (
+            [0] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\system\classes\database.php
+                    [line] => 10
+                    [function] => __construct
+                    [class] => PDO
+                    [type] => ->
+                    [args] => Array
+                        (
+                            [0] => mysql:host=localhost;port=3307;dbname=capstone
+                            [1] => root
+                            [2] => usbw
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\system\classes\database.php
+                    [line] => 21
+                    [function] => __construct
+                    [class] => Database
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [2] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\application\models\users_m.php
+                    [line] => 10
+                    [function] => getInstance
+                    [class] => Database
+                    [type] => ::
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [3] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\application\models\userauth_m.php
+                    [line] => 14
+                    [function] => __construct
+                    [class] => Users_m
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [4] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\application\controllers\login.php
+                    [line] => 12
+                    [function] => __construct
+                    [class] => Userauth_m
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [5] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                    [line] => 47
+                    [function] => __construct
+                    [class] => Login
+                    [type] => ->
+                    [args] => Array
+                        (
+                        )
+
+                )
+
+            [6] => Array
+                (
+                    [file] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\main.php
+                    [line] => 3
+                    [args] => Array
+                        (
+                            [0] => C:\Users\David\Desktop\USBWebserver v8.6\root\Capstone_Server\public\main.php
+                        )
+
+                    [function] => require_once
+                )
+
+        )
+
+)
