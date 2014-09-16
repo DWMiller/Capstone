@@ -23,9 +23,14 @@
 			$this->TPL['login-failure'] = true;
 		}
 
-
 		$this->output->json_response($this->TPL);
 	}
+
+	function logout () {	
+		$this->Auth->logout();
+		$this->output->json_response($this->TPL);
+	}
+
 
  } 
 

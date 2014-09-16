@@ -89,7 +89,7 @@ class Userauth_m extends Model {
 		if(isset($_REQUEST['session'])) {
 			$this->users->clearSession($_REQUEST['session']);
 			$_SESSION = array();
-			session_destroy();			
+			// session_destroy();			
 		}
 	}
 
