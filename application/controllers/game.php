@@ -18,6 +18,9 @@ class Game extends Controller {
 	}
 	
 	function index () {
+		$game = $this->game->getCurrentGame();
+		$this->TPL['game-update']['game'] = $game;
+
 		$this->output->json_response($this->TPL);
 	}
 
@@ -38,13 +41,3 @@ class Game extends Controller {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-

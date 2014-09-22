@@ -2,13 +2,21 @@
 
 class Admin extends Controller {
 	
+	private $Auth;
 	private $admin;
 	private $map;
 
 	function __construct() {
-		  parent::__construct();
-		  $this->admin = new Admin_m;
-		  $this->map = new Map_m;
+		parent::__construct();
+		$this->admin = new Admin_m;
+		$this->Auth = new userauth_m(); 
+
+		$this->map = new Map_m;
+
+		$this->TPL['user'] = $this->Auth->loggedIn();		
+		if(!$this->TPL['user']) {
+			exit;
+		}		  
 	}
 	
 	function index () {
@@ -20,9 +28,11 @@ class Admin extends Controller {
 	}
 
 	public function new_game() {
+		$args = func_get_args()[0];
+
 		$this->admin->activateQueuedPlayers();
-		$this->admin->createNewGame();
-		$this->admin->placePlayers();
+		$this->admin->createNewGame($args['player_count']);
+		// $this->admin->placePlayers();
 	}
 
 	public function end_game() {

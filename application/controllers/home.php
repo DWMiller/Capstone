@@ -1,25 +1,25 @@
  <?php 	
 
 class Home extends Controller {
-	private $game;
+	// private $game;
 
-	 function __construct() {
-		  parent::__construct();
-		  $this->game = new Game_m;
-	}
+	//  function __construct() {
+	// 	  parent::__construct();
+	// 	  $this->game = new Game_m;
+	// }
 	
-	function index () {
+	// function index () {
 
-		$this->TPL['game'] = $this->game->getCurrentGame();
+	// 	$this->TPL['game'] = $this->game->getCurrentGame();
 		
-		if($this->TPL['game']) {
+	// 	if($this->TPL['game']) {
 
-		} else {
+	// 	} else {
 
-		}
+	// 	}
 
-		$this->output->json_response($this->TPL);
-	}
+	// 	$this->output->json_response($this->TPL);
+	// }
 
 
 }

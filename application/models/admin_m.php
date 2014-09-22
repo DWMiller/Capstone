@@ -33,10 +33,10 @@ class Admin_m extends Model {
 		$this->dbh->query($sql);
 	}
 
-	public function createNewGame() {
+	public function createNewGame($players = 12) {
 		$sql = 'INSERT INTO game_settings (time_started,resource_pool,max_players) values (?,?,?);';
 		$stmt = $this->dbh->prepare($sql);
-		$data = array($expires = date('Y-m-d H:i:s',time()),0,$_REQUEST['player_count']);
+		$data = array($expires = date('Y-m-d H:i:s',time()),0,$players);
 		$this->dbo->execute($stmt,$data);		
 	}
 
