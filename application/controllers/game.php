@@ -5,14 +5,16 @@ class Game extends Controller {
 	private $Auth;
 	private $users;
 
+	private $user;
+
 	function __construct() {
 		parent::__construct();
 		$this->game = new Game_m;
 		$this->Auth = new userauth_m(); 
 		$this->users = new Users_m;	
 
-		$this->TPL['user'] = $this->Auth->loggedIn();		
-		if(!$this->TPL['user']) {
+		$this->user = $this->Auth->loggedIn();
+		if(!$this->user) {
 			exit;
 		}
 	}
@@ -29,7 +31,12 @@ class Game extends Controller {
 	 * @return [type] [description]
 	 */
 	function join_queue() { 
-		$this->users->joinQueue($this->TPL['user']['id']);
+		if($this->user['status'] == USER_IDLE) {
+			$this->users->joinQueue($this->user);
+		}
+
+		$this->TPL['queue-update']['user-status'] = $this->user['status'];
+		$this->output->json_response($this->TPL);
 	}
 
 	/**
@@ -37,7 +44,13 @@ class Game extends Controller {
 	 * @return [type] [description]
 	 */
 	function leave_queue() { 
-		$this->users->leaveQueue($this->TPL['user']['id']);
+
+		if($this->user['status'] == USER_QUEUED) {
+			$this->users->leaveQueue($this->user);
+		}
+
+		$this->TPL['queue-update']['user-status'] = $this->user['status'];
+		$this->output->json_response($this->TPL);
 	}
 
 }

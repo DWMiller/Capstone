@@ -13,10 +13,9 @@ class Admin extends Controller {
 
 		$this->map = new Map_m;
 
-		$this->TPL['user'] = $this->Auth->loggedIn();		
-		if(!$this->TPL['user']) {
+		if(!$this->Auth->loggedIn()) {
 			exit;
-		}		  
+		}  
 	}
 	
 	function index () {
