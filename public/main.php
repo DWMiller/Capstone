@@ -1,7 +1,7 @@
 <?php	
 
 // echo '<pre>';
-// echo print_r($_REQUEST['game'],true);
+// echo print_r($_POST,true);
 // echo '</pre>';
 
 date_default_timezone_set('America/Toronto');
@@ -35,11 +35,11 @@ set_error_handler('errorHandler',E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED));
 // Set function for use as autoloader - defined in config/functions.php
 spl_autoload_register('myAutoLoader');
 
-parsePrettyPath(); // Converts path into control parameters - defined in config/functions.php
+$requestStr = json_decode(file_get_contents('php://input'),true);
 
 //default conditions
 
-foreach ($_REQUEST['game'] as $controller => $methods) {
+foreach ($requestStr['api'] as $controller => $methods) {
 
 	$controllerName = ($controller == 'default' ? DEFAULT_CONTROLLER : $controller);	
 
