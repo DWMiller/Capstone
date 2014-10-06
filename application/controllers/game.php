@@ -53,4 +53,12 @@ class Game extends Controller {
 		$this->output->json_response($this->TPL);
 	}
 
+	/**
+	 * Checks for any game updates of relevance to the player
+	 * @return [type] [description]
+	 */
+	function update() {
+
+	}
+
 }

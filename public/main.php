@@ -37,6 +37,11 @@ spl_autoload_register('myAutoLoader');
 
 $requestStr = json_decode(file_get_contents('php://input'),true);
 
+if(isset($requestStr['session'])) {
+	$_REQUEST['session'] = $requestStr['session'];
+}
+
+
 //default conditions
 
 foreach ($requestStr['api'] as $controller => $methods) {

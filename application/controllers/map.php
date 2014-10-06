@@ -16,21 +16,32 @@ class Map extends Controller {
 	}
 
 	function universe () {
+		$args = func_get_args()[0];
+		// $args['password']);
+
 		$this->output->json_response($this->TPL);
 	}
 
 	function galaxy () {
+		$args = func_get_args()[0];
+		// $args['password']);
+
 		$this->output->json_response($this->TPL);
 	}
 
-	function sector () {		
-		$this->TPL['systems'] = $this->map->getSystems($_REQUEST['sector']);
+	function sector () {	
+		$args = func_get_args()[0];
+		// $args['password']);
+
+		$this->TPL['map-update']['systems'] = $this->map->getSystems($args['id']);
 		$this->output->json_response($this->TPL);
 	}
 
 	function system () {
-		$systemID = $_REQUEST['system'];
-		$this->TPL['locations'] = $this->map->getLocations($systemID);
+		$args = func_get_args()[0];
+		// $args['password']);
+
+		$this->TPL['map-update']['locations'] = $this->map->getLocations($args['id']);
 		$this->output->json_response($this->TPL);
 	}			
 
