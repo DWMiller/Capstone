@@ -35,6 +35,13 @@ class Map_m extends Model {
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	 }
 
+	 public function getUnclaimedLocations() {
+			$sql = "SELECT * FROM locations WHERE owner_id IS NULL";
+			$stmt = $this->dbh->prepare($sql);
+			$this->dbo->execute($stmt,array());
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	 }	 
+
 /***************************************************************************/
 
 	 public function eraseMap() {
@@ -50,12 +57,33 @@ class Map_m extends Model {
 
 /***************************************************************************/
 
- 	public function findStartingLocation() {
+	/**
+	 * [findStartingLocations description]
+	 * @param  [type] $quantity [description]
+	 * @return int[] Array of location ids
+	 */
+ 	public function findStartingLocations($quantity) {
+ 		$locations = $this->getUnclaimedLocations();
+ 		$selectedLocations = array();
 
+ 		for ($i=0; $i < $quantity; $i++) { 
+ 			$randIndex = array_rand($locations);
+ 			$selectedLocations[] = $locations[$randIndex]['id'];
+ 		}
+
+ 		return $selectedLocations;
  	}
 
- 	public function setLocationAsHomeworld($location,$userID) { 
-
+ 	public function setLocationOwner($locationID,$userID) { 
+			$sql = "UPDATE locations SET owner_id = ? WHERE id = ?";
+			$stmt = $this->dbh->prepare($sql);
+			return $this->dbo->execute($stmt,array($userID,$locationID));
  	}
 	 
+ 	public function setLocationAsHomeworld($locationID) { 
+			$sql = "UPDATE locations SET mines = ?, shipyards = ?, labs = ? WHERE id = ?";
+			$stmt = $this->dbh->prepare($sql);
+			return $this->dbo->execute($stmt,array(1,1,1,$locationID));
+ 	}
+
 }

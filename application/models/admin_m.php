@@ -5,12 +5,10 @@ class Admin_m extends Model {
 	private   $dbh;
 	 
 	public function __construct(){ 
-		 parent::__construct();
-	   
+		 parent::__construct(); 
 		 $this->dbo = Database::getInstance();
 		 $this->dbh = $this->dbo->getPDOConnection();
 	} 
-
 
 	public function clearExpiredSessions() {
 	 	$sql = file_get_contents('system/scripts/sessions.sql');
@@ -51,9 +49,12 @@ class Admin_m extends Model {
 
 		$players = $users->getUsersByField(USER_PLAYING,'status');
 
+		$locations = $map->findStartingLocations(count($players));
+
 		foreach ($players as $player) {
-			$location = $map->findStartingLocation();
-			$map->setLocationAsHomeworld($location,$user['id']);
+			$locationID = array_pop($locations);
+			$map->setLocationOwner($locationID,$player['id']);
+			$result = $map->setLocationAsHomeworld($locationID);
 		}
 
 	}

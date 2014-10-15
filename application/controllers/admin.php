@@ -11,11 +11,11 @@ class Admin extends Controller {
 		$this->admin = new Admin_m;
 		$this->Auth = new userauth_m(); 
 
-		$this->map = new Map_m;
-
 		if(!$this->Auth->loggedIn()) {
 			exit;
 		}  
+
+		$this->map = new Map_m;
 	}
 	
 	function index () {
@@ -31,7 +31,8 @@ class Admin extends Controller {
 
 		$this->admin->activateQueuedPlayers();
 		$this->admin->createNewGame($args['player_count']);
-		// $this->admin->placePlayers();
+		$this->generate(array('scale'=> 1000, 'seed'=>200));
+		$this->admin->placePlayers();
 	}
 
 	public function end_game() {
