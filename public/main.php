@@ -1,7 +1,14 @@
 <?php	
-
+    
 date_default_timezone_set('America/Toronto');
 
+function myErrorHandler($errno, $errstr, $errfile, $errline) {
+  $TPL['server-error'] = [$errstr,$errfile,'Line: '.$errline];
+  echo json_encode($TPL);
+  exit;
+}
+
+set_error_handler("myErrorHandler");
 
 //error reporting
 // ini_set('error_reporting',E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED));
@@ -17,38 +24,21 @@ define('ROOT', dirname(dirname(__FILE__)));
 define ('DEFAULT_CONTROLLER','home');
 define ('DEFAULT_METHOD','index');
 
-function myAutoLoader ($className) {
-
-    $classFile = strtolower($className) . '.php';
-    
-    $locations = array(
-        	'/system/classes/',
-          '/application/controllers/',
-          '/application/models/');
-        
-        foreach($locations as $location)
-        {
-            $file = ROOT . $location.$classFile;
-            if(file_exists($file)){
-                require_once($file);
-                return;
-            }            
-        }
-
- 		trigger_error("Controller file $classFile.php could not be lazy loaded");
- }
-
-// Set function for use as autoloader
-spl_autoload_register('myAutoLoader');
-
 //Eager load all configuration files
  foreach (glob(ROOT.'/application/config/*.php') as $filename) {
      require_once $filename;
  }
 
+// Set function for use as autoloader
+spl_autoload_register('myAutoLoader');
+
 $GLOBALS['config'] =& $config;
 
 $requestStr = json_decode(file_get_contents('php://input'),true);
+
+if(isset($requestStr['session'])) {
+  $_REQUEST['session'] = $requestStr['session'];
+}
 
 foreach ($requestStr['api'] as $controller => $methods) {
 

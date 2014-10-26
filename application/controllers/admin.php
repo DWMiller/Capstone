@@ -30,7 +30,7 @@ class Admin extends Controller {
 		$args = func_get_args()[0];
 
 		$this->admin->activateQueuedPlayers();
-		$this->admin->createNewGame($args['player_count']);
+		$this->admin->createNewGame();//$args['player_count']
 		$this->generate(array('scale'=> 1000, 'seed'=>200));
 		$this->admin->placePlayers();
 	}

@@ -32,9 +32,10 @@ class Cron extends Controller {
 
 			$this->Cron->addResources($playerID, $income);
 		}
+	}
+	function generateShips() {
 
 	}
-
 
 	
 }
