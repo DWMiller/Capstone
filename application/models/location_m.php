@@ -49,8 +49,8 @@ class Location_m extends Model {
 	}
 
 	public static function getPlayerLocations($userID) {
-		 $dbo = Database::getInstance();
-		 $dbh = $dbo->getPDOConnection();
+		$dbo = Database::getInstance();
+		$dbh = $dbo->getPDOConnection();
 
 		$sql = "SELECT * FROM locations WHERE owner_id = ?";
 		$stmt = $dbh->prepare($sql);

@@ -34,7 +34,8 @@ class Cron extends Controller {
 		}
 	}
 	function generateShips() {
-
+		$this->Cron->createMissingFleets();
+		$this->Cron->addShips();
 	}
 
 	
