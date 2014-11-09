@@ -29,7 +29,11 @@ class Admin extends Controller {
 	public function new_game() {
 		$args = func_get_args()[0];
 
+		//Comment out when live
+		$this->admin->queueAllPlayers();
+		
 		$this->admin->activateQueuedPlayers();
+
 		$this->admin->createNewGame();//$args['player_count']
 		$this->generate(array('scale'=> 1000, 'seed'=>200));
 		$this->admin->placePlayers();
@@ -37,13 +41,13 @@ class Admin extends Controller {
 
 	public function end_game() {
 		$this->admin->deleteCurrentGame();
+		$this->admin->eraseFleets();
+		$this->admin->eraseMap();
 		$this->admin->clearActivePlayers();
 	}
 
 	public function generate() {
 		$args = func_get_args()[0];
-
-		$this->map->eraseMap();
-		$this->map->createMap($args['scale'],$args['seed']);
+		$this->admin->createMap($args['scale'],$args['seed']);
 	}
 }

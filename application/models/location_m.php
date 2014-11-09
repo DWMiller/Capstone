@@ -1,9 +1,7 @@
 <?php
 
 class Location_m extends Model {
-	private   $dbo;
-	private   $dbh;
-	 
+
 	//db reference vars
 	public $data = [
 		'id' => NULL,
@@ -21,8 +19,6 @@ class Location_m extends Model {
 
 	public function __construct($locationID, $data = NULL){ 
 		 parent::__construct(); 
-		 $this->dbo = Database::getInstance();
-		 $this->dbh = $this->dbo->getPDOConnection();
 
 		 if($data === NULL) {
 		 	$data = $this->getLocationData($locationID);

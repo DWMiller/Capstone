@@ -42,6 +42,8 @@ class Map extends Controller {
 		// $args['password']);
 
 		$this->TPL['map-update']['locations'] = $this->map->getLocations($args['id']);
+		$this->TPL['map-update']['fleets'] = Fleet_m::getSystemFleets($args['id']);
+
 		$this->output->json_response($this->TPL);
 	}			
 

@@ -1,13 +1,8 @@
 <?php
 
 class Admin_m extends Model {
-	private   $dbo;
-	private   $dbh;
-	 
 	public function __construct(){ 
 		 parent::__construct(); 
-		 $this->dbo = Database::getInstance();
-		 $this->dbh = $this->dbo->getPDOConnection();
 	} 
 
 	public function clearExpiredSessions() {
@@ -26,6 +21,11 @@ class Admin_m extends Model {
 		$this->dbh->query($sql);
 	}
 
+	public function queueAllPlayers() {
+		$sql = 'UPDATE users SET status = 2';
+		$this->dbh->query($sql);
+	}
+
 	public function activateQueuedPlayers() {
 		$sql = 'UPDATE users SET status = 3 WHERE status = 2';
 		$this->dbh->query($sql);
@@ -36,6 +36,22 @@ class Admin_m extends Model {
 		$stmt = $this->dbh->prepare($sql);
 		$data = array($expires = date('Y-m-d H:i:s',time()),0,$players);
 		$this->dbo->execute($stmt,$data);		
+	}
+
+	public function eraseMap() {
+ 		$sql = 'DELETE FROM locations; DELETE FROM systems; ';
+ 		$this->dbh->query($sql);
+	}
+
+	public function eraseFleets() {
+ 		$sql = 'DELETE FROM fleets;';
+ 		$this->dbh->query($sql);
+	}
+
+	public function createMap($scale,$seed) {
+		$sector = new Sector(new Point(0,0),$seed); 
+		$sector->populate($scale);
+		$sector->save();
 	}
 
 	/**
