@@ -12,11 +12,28 @@ class Cron_m extends Model {
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
  	}
 
- 	public function addResources($playerID, $amount) {
-		$sql = "UPDATE users SET resources = resources + ? WHERE id = ?";
+ 	// public function addResources($playerID, $amount) {
+		// $sql = "UPDATE users SET resources = resources + ? WHERE id = ?";
+		// $stmt = $this->dbh->prepare($sql);
+		// $this->dbo->execute($stmt,array($amount,$playerID));	
+ 	// }
+
+ 	public function addResources() {
+		$sql = "UPDATE users u,
+					(SELECT owner_id, sum(resources)  as rsum
+					FROM locations 
+					WHERE owner_id IS NOT NULL
+					GROUP BY owner_id) as s
+				SET u.resources = u.resources + s.rsum
+				WHERE u.id = s.owner_id";
 		$stmt = $this->dbh->prepare($sql);
-		$this->dbo->execute($stmt,array($amount,$playerID));	
+		$stmt->execute(array());	
  	}
+
+
+
+
+
 
 
  	/**

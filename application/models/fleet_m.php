@@ -52,7 +52,7 @@ class Fleet_m extends Model {
 
     	// If more than one match, database is messed up
     	// If no matches, invalid request is being made
-		if ($stmt->rowCount() == 1){	
+		if ($stmt->rowCount() > 0){	
 			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			return $result;
 		} else {

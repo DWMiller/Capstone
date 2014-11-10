@@ -38,11 +38,16 @@ class System extends MapNode {
 
 	public function save($sectorID) {
 		//save self to db
-		$sql = 'INSERT into systems (sector_id,position_x,position_y,size,type) values (?,?,?,?,?)';
+		$sql = 'INSERT into systems (sector_id,position_x,position_y,name,size,type) values (?,?,?,?,?,?)';
 		$stmt = $this->dbh->prepare($sql);
 
 		try {
-		    $stmt->execute(array($sectorID,$this->location->coords[0],$this->location->coords[1],$this->size,$this->type));
+		    $stmt->execute(array(
+		    	$sectorID,
+		    	$this->location->coords[0],
+		    	$this->location->coords[1],
+		    	$this->nameGenerator->generate(),
+		    	$this->size,$this->type));
 		} catch(PDOException $e) {
 		    $this->dbo->showErrorPage("Unable to insert system",$e );	
 		}  

@@ -12,10 +12,14 @@ class MapNode {
 	
 	protected $size;
 	
+	protected $nameGenerator;
+
 	public function __construct($coords,$seed){ 
 		$this->dbo = Database::getInstance();
 		$this->dbh = $this->dbo->getPDOConnection();
 
+		$this->nameGenerator = new NameGenerator();
+		
 		$this->location = $coords;
 		$this->seed = $seed;
 	} 	

@@ -17,21 +17,21 @@ class Cron extends Controller {
 	}
 	
 	function index () {
-		generateResources();
 		$this->output->json_response($this->TPL);
 	}
 
 	function generateResources() {
-		$mines = $this->Cron->getMineData();
+		// $mines = $this->Cron->getMineData();
 
-		foreach ($mines as $row) {
-			$playerID = $row['owner_id'];
-			$mineCount = $row['mine_count'];
+		// foreach ($mines as $row) {
+		// 	$playerID = $row['owner_id'];
+		// 	$mineCount = $row['mine_count'];
 
-			$income = $mineCount * $this->mineRate;
+		// 	$income = $mineCount * $this->mineRate;
 
-			$this->Cron->addResources($playerID, $income);
-		}
+		// 	$this->Cron->addResources($playerID, $income);
+		// }
+			$this->Cron->addResources(); 
 	}
 	function generateShips() {
 		$this->Cron->createMissingFleets();
