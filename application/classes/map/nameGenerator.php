@@ -2,10 +2,43 @@
 
 class NameGenerator {
     private $minSyallables = 2;
-    private $maxSyllables = 5;
+    private $maxSyllables = 6;
 
-    private $syllableLength = 3;
-    private $syllables ="lexegezacebisousesarmaindireaeratenberalavetiedorquanteisrion";
+
+// You need to generate random syllables. The simplest way to do it is to use syllables that are consonant-vowel, 
+// or consonant-vowel-consonant. From a list of consonants and vowels, 
+// pick randomly to build syllables, then join the syllables together to make a string.
+// Keep in mind your list of consonants shouldn't be letters that are consonants, 
+// but phonemes, so "th", "st", "sl", etc, 
+// could be entries in the consonant list.
+
+
+    // private $syllableLength = 3;
+    private $syllables = array(
+        'ber',
+        'cebi',
+        'di',
+        'dit',
+        'gez',
+        'la',
+        'lex',
+        'min',
+        'nas',
+        'net',
+        'qua',
+        'ra',
+        're',
+        'ri',
+        'ro',
+        'se',
+        'sla',
+        'so',
+        'ste',
+        'tel',
+        'tha',
+        'the',        
+        'vet',
+        );
 
     public function __construct(){}   
 
@@ -24,14 +57,14 @@ class NameGenerator {
     }
 
     private function getSyllable() {
-        $start = rand(1, strlen($this->syllables)-3);
-        return substr($this->syllables, $start, $this->syllableLength);
+        $key = array_rand($this->syllables);
+        return $this->syllables[$key];
     }
 
     private function tryAddingSpace($syllabelleCount) {
         $rand = rand(0 + $syllabelleCount, 10);
 
-        if ($rand > 5) {
+        if ($rand > 6) { // closer to 10 for less likely spaces,
             return ' ';
         } 
 

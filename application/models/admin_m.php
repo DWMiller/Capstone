@@ -27,7 +27,7 @@ class Admin_m extends Model {
 	}
 
 	public function activateQueuedPlayers() {
-		$sql = 'UPDATE users SET status = 3 WHERE status = 2';
+		$sql = 'UPDATE users SET status = 3, resources = 50, tech_armour = 0, tech_weapons = 0, tech_propulsion = 0 WHERE status = 2';
 		$this->dbh->query($sql);
 	}
 

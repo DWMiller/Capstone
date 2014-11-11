@@ -16,16 +16,24 @@ class Fleet_m extends Model {
 		 parent::__construct(); 
 
 		 if($data === NULL) {
-		 	$data = $this->getFleetData($locationID);
+		 	$data = $this->getFleetData($fleetID);
 		 }  
 		 
 		$this->data = $data;
 	} 
 
-	function getFleetData($locationID) {
+	function move($location) {
+		//shouldn't be instant, duh
+		$this->data['location_id'] = $location->data['id'];
+		$sql = "UPDATE fleets SET location_id = ? WHERE id = ?";
+		$stmt = $this->dbh->prepare($sql);    
+    	return $stmt->execute(array($this->data['location_id'],$this->data['id']));		
+	}
+
+	function getFleetData($fleetID) {
 		$sql = "SELECT * FROM fleets WHERE id = ?";
 		$stmt = $this->dbh->prepare($sql);
-    	$this->dbo->execute($stmt,array($locationID));
+    	$this->dbo->execute($stmt,array($fleetID));
 
     	// If more than one match, database is messed up
     	// If no matches, invalid request is being made

@@ -9,6 +9,7 @@ class Location_m extends Model {
 		'system_id' => NULL,
 		'position_x' => NULL,
 		'position_y' => NULL,
+		'name' => NULL,
 		'type' => NULL,
 		'resources' => NULL,
 		'size' => NULL,
@@ -63,6 +64,14 @@ class Location_m extends Model {
 
 		return $data;
 	}
+
+	function rename($name) {
+		$this->data['name'] = $name;
+		$sql = "UPDATE locations SET name = ? WHERE id = ?";
+		$stmt = $this->dbh->prepare($sql);    
+    	return $stmt->execute(array($this->data['name'],$this->data['id']));
+	}
+
 
 	function upgradeShipYard($increment = 1) {
 		$this->data['shipyards']+=$increment;

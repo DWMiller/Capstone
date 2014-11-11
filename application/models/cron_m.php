@@ -25,7 +25,7 @@ class Cron_m extends Model {
 					WHERE owner_id IS NOT NULL
 					GROUP BY owner_id) as s
 				SET u.resources = u.resources + s.rsum
-				WHERE u.id = s.owner_id";
+				WHERE u.id = s.owner_id AND u.status = 3";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array());	
  	}

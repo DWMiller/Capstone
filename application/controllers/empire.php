@@ -1,7 +1,7 @@
 <?php 	
 
 class Empire extends Controller {
-	private $Game;
+	// private $Game;
 	private $Auth;
 	private $Users;
 
@@ -9,7 +9,7 @@ class Empire extends Controller {
 
 	function __construct() {
 		parent::__construct();
-		$this->Game = new Game_m;
+		// $this->Game = new Game_m;
 		$this->Auth = new userauth_m(); 
 		$this->Users = new Users_m;	
 
@@ -44,4 +44,15 @@ class Empire extends Controller {
 			$this->output->json_response($this->TPL);
 		// }
 	}
+
+	function rename() {
+		$args = func_get_args()[0];
+		$location = new Location_m($args['location']);	
+		$name = $args['name'];		
+
+		$result = $location->rename($name);
+		$this->TPL['location-update'] = $location->data;
+		$this->output->json_response($this->TPL);		
+	}
+
 }
