@@ -47,6 +47,11 @@ class MapNode {
 		}
 	}
 
+	/**
+	 * [createChildNode description]
+	 * @param  [type] $range [description]
+	 * @return [type]        [description]
+	 */
 	public function createChildNode($range) {
 			// note: check positioning prior to placement
 			// bigger objects must be further from other objects 
@@ -59,9 +64,21 @@ class MapNode {
 			$center = new Point($this->scale/2,$this->scale/2);
 			$coords = new Point($x,$y);
 
-			$distance = $center->distance($coords);
+			// Must be outside bounds of star
+			// $distance = $center->distance($coords);
 
-			if($distance > $range) {
+			$valid = true;
+			foreach ($this->children as $key => $child) {
+				$d = $coords->distance($child->location);
+
+				if($d < 125 + $child->size) {
+					$valid = false;
+					break;
+				}
+			}	
+
+			//make sure not colliding with other children
+			if($valid) {
 				$this->children[] = new $this->childType($coords,4);	
 				return 4;
 			}				
@@ -145,32 +162,32 @@ class MapNode {
 
 	}
 
-	private function getNearbyNodes(&$nodeMap) {
-		$nodes = array();
+	// private function getNearbyNodes(&$nodeMap) {
+	// 	$nodes = array();
 
-		$innerBound = $this->range * (sqrt(2.0) / 2.0);
+	// 	$innerBound = $this->range * (sqrt(2.0) / 2.0);
 
-		$scale = count($nodeMap);
+	// 	$scale = count($nodeMap);
 
-		for ($x=0; $x < $scale; $x++) { 
-			for ($y=0; $y < $scale; $y++) { 
+	// 	for ($x=0; $x < $scale; $x++) { 
+	// 		for ($y=0; $y < $scale; $y++) { 
 
-				//Don't add self
-				if($this == $nodeMap[$x][$y]) {continue;}
+	// 			//Don't add self
+	// 			if($this == $nodeMap[$x][$y]) {continue;}
 
-				$xDist = abs($this->x - $x);
-				$yDist = abs($this->y - $y);
+	// 			$xDist = abs($this->x - $x);
+	// 			$yDist = abs($this->y - $y);
 
-				// outer bound box
-				if($xDist > $this->range || $yDist > $this->range ) {continue;}
+	// 			// outer bound box
+	// 			if($xDist > $this->range || $yDist > $this->range ) {continue;}
 
-				if($xDist > $innerBound || $yDist > $innerBound ) {continue;}
+	// 			if($xDist > $innerBound || $yDist > $innerBound ) {continue;}
 
-				$nodes[] = array($x,$y);
+	// 			$nodes[] = array($x,$y);
 
-			}
-		}
+	// 		}
+	// 	}
 
-		return $nodes;		
-	}
+	// 	return $nodes;		
+	// }
 }

@@ -35,8 +35,6 @@ class Location extends MapNode {
 				$locationData[] = 0;
 			}
 
-
-
 		    $stmt->execute($locationData);
 		} catch(PDOException $e) {
 		    $this->dbo->showErrorPage("Unable to insert location",$e );	
