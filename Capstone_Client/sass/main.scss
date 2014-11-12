@@ -1,0 +1,15 @@
+@import 'vendors/normalize';
+@import 'globals/vars';
+@import 'globals/base';
+
+@import 'globals/all';
+@import 'globals/smallSize';
+@import 'globals/mediumSize';
+@import 'globals/largeSize';
+
+@import 'modules/auth';
+
+@import 'modules/game';
+@import 'modules/map';
+@import 'modules/user';
+@import 'modules/details';

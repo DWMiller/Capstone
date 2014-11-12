@@ -1,0 +1,17 @@
+/* Desktops and laptops ----------- */
+
+@media only screen and (min-width: $md-brkp) {
+    html {
+        overflow: hidden;
+    }
+    html, body, #main-container {
+        
+    }   
+
+
+    /*Keeps code cola browser extensions from getting messed up*/ 
+    #codecola {
+        box-sizing: content-box;
+    }
+
+}

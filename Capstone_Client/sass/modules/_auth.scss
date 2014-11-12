@@ -1,0 +1,16 @@
+
+
+@media only screen and (max-width: $sm-brkp) {
+
+}
+
+@media only screen and (min-width: $md-brkp) {
+    #page-auth.visible {
+        display:inline-block;
+        // width:50em;
+        // margin:auto;
+    }
+}
+@media only screen and (min-width: $lg-brkp) {
+
+}

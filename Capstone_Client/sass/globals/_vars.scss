@@ -1,0 +1,19 @@
+$baseFontSize: 16px;
+$baseLineHeight: 1.5;
+
+$sm-brkp: 699px;
+$md-brkp: 700px;
+$lg-brkp: 1200px;
+
+$touch-height-min: 44px; // Minimum size to ensure touchable elemnts aren't too small for fingers
+$touch-width-min: 44px;
+$touch-margin: $baseLineHeight;
+
+$layer1: 1;
+$layer2: 1000;
+$layer3: 10000;
+
+
+$bg: url('../assets/images/stars_bg.png');
+
+$errorRed: rgb(199,25,25);

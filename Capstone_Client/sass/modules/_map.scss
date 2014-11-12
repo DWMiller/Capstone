@@ -1,0 +1,42 @@
+#game-map {
+    line-height: 1;
+}
+
+.back {
+    @extend .layer3;
+    position:absolute;
+    top:2em;
+    left: 1em;    
+    background-image: url('../assets/images/back_w.png');
+    background-size: contain;
+    border-radius: 100%;
+    width:5em;
+    height:5em;
+    opacity: 0.5;
+
+    &:hover {
+        cursor:pointer;
+        opacity: 0.8;
+    }
+}
+
+#game-map {
+    // height: 100%;
+}
+
+
+@media only screen and (max-width: $sm-brkp) {
+
+} 
+
+@media only screen and (min-width: $md-brkp) {
+
+
+}
+
+@media only screen and (min-width: $lg-brkp) {
+    #game-map {
+        @extend .inlineBlock;
+        width: 75%;
+    }
+}

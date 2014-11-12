@@ -1,0 +1,133 @@
+// /* PowerTip Plugin */
+// /* line 2, sass/powertip.scss */
+// #powerTip {
+//   cursor: default;
+//   background-image: -webkit-linear-gradient(-180deg, #0088ff 0%, #abf9ff 99%);
+//   background-image: -moz-linear-gradient(-180deg, #0088ff 0%, #abf9ff 99%);
+//   background-image: -o-linear-gradient(-180deg, #0088ff 0%, #abf9ff 99%);
+//   background-image: -ms-linear-gradient(-180deg, #0088ff 0%, #abf9ff 99%);
+//   -webkit-box-shadow: rgba(0, 213, 237, 0.38039) 2px 2px 3px 1px;
+//   -moz-box-shadow: rgba(0, 213, 237, 0.38039) 2px 2px 3px 1px;
+//   box-shadow: rgba(0, 213, 237, 0.38039) 2px 2px 3px 1px;
+//   border: 2px inset #0017e6;
+//   border-radius: 6px;
+//   color: #000000;
+//   display: none;
+//   padding: 10px;
+//   position: absolute;
+//   white-space: nowrap;
+//   z-index: 2147483647;
+//   font-family: "Courier New",serif;
+// }
+
+// /* line 24, sass/powertip.scss */
+// #powerTip:before {
+//   content: "";
+//   position: absolute;
+// }
+
+// /* line 28, sass/powertip.scss */
+// #powerTip.n:before, #powerTip.s:before {
+//   border-right: 5px solid transparent;
+//   border-left: 5px solid transparent;
+//   left: 50%;
+//   margin-left: -5px;
+// }
+
+// /* line 34, sass/powertip.scss */
+// #powerTip.e:before, #powerTip.w:before {
+//   border-bottom: 5px solid transparent;
+//   border-top: 5px solid transparent;
+//   margin-top: -5px;
+//   top: 50%;
+// }
+
+// /* line 40, sass/powertip.scss */
+// #powerTip.n:before {
+//   border-top: 10px solid #4b91d2;
+//   border-top: 10px solid rgba(75, 145, 210, 0.8);
+//   bottom: -10px;
+// }
+
+// /* line 45, sass/powertip.scss */
+// #powerTip.e:before {
+//   border-right: 10px solid #4b91d2;
+//   border-right: 10px solid rgba(75, 145, 210, 0.8);
+//   left: -10px;
+// }
+
+// /* line 50, sass/powertip.scss */
+// #powerTip.s:before {
+//   border-bottom: 10px solid #4b91d2;
+//   border-bottom: 10px solid rgba(75, 145, 210, 0.8);
+//   top: -10px;
+// }
+
+// /* line 55, sass/powertip.scss */
+// #powerTip.w:before {
+//   border-left: 10px solid #4b91d2;
+//   border-left: 10px solid rgba(75, 145, 210, 0.8);
+//   right: -10px;
+// }
+
+// /* line 60, sass/powertip.scss */
+// #powerTip.ne:before, #powerTip.se:before {
+//   border-right: 10px solid transparent;
+//   border-left: 0;
+//   left: 10px;
+// }
+
+// /* line 65, sass/powertip.scss */
+// #powerTip.nw:before, #powerTip.sw:before {
+//   border-left: 10px solid transparent;
+//   border-right: 0;
+//   right: 10px;
+// }
+
+// /* line 70, sass/powertip.scss */
+// #powerTip.ne:before, #powerTip.nw:before {
+//   border-top: 10px solid #4b91d2;
+//   border-top: 10px solid rgba(75, 145, 210, 0.8);
+//   bottom: -10px;
+// }
+
+// /* line 75, sass/powertip.scss */
+// #powerTip.se:before, #powerTip.sw:before {
+//   border-bottom: 10px solid #4b91d2;
+//   border-bottom: 10px solid rgba(75, 145, 210, 0.8);
+//   top: -10px;
+// }
+
+// /* line 81, sass/powertip.scss */
+// #powerTip.nw-alt:before, #powerTip.ne-alt:before,
+// #powerTip.sw-alt:before, #powerTip.se-alt:before {
+//   border-top: 10px solid #4b91d2;
+//   border-top: 10px solid rgba(75, 145, 210, 0.8);
+//   bottom: -10px;
+//   border-left: 5px solid transparent;
+//   border-right: 5px solid transparent;
+//   left: 10px;
+// }
+
+// /* line 89, sass/powertip.scss */
+// #powerTip.ne-alt:before {
+//   left: auto;
+//   right: 10px;
+// }
+
+// /* line 93, sass/powertip.scss */
+// #powerTip.sw-alt:before, #powerTip.se-alt:before {
+//   border-top: none;
+//   border-bottom: 10px solid #4b91d2;
+//   border-bottom: 10px solid rgba(75, 145, 210, 0.8);
+//   bottom: auto;
+//   top: -10px;
+// }
+
+// /* line 100, sass/powertip.scss */
+// #powerTip.se-alt:before {
+//   left: auto;
+//   right: 10px;
+// }
+
+// /******* END PowerTip Plugin Styles **************/

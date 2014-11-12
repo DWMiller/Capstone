@@ -1,0 +1,39 @@
+#module-user {
+	// position:absolute;
+	// top:0;	
+	width:100%;
+
+	p {
+		@extend .inlineBlock;
+	}
+
+	p+p {
+		margin-left: 2em;
+	}
+
+    .label {
+        font-weight: bold;
+        margin-right: 0.5em;
+        font-variant: small-caps;
+    }
+    .value {
+    }
+
+}
+
+@media only screen and (max-width: $sm-brkp) {
+
+}
+
+@media only screen and (min-width: $md-brkp) {
+
+
+}
+
+@media only screen and (min-width: $lg-brkp) {
+	#module-user {
+		float:left;
+        @extend .inlineBlock;
+        width: 75%;
+	}
+}
