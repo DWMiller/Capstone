@@ -688,7 +688,7 @@ CORE.extendConfig({
 CORE.extendConfig({
     map: {
         DRAW_INTERVAL: 100, //how often the map redraws
-        UPDATE_INTERVAL: 6000, // Rate at which new map data is requested from server   
+        UPDATE_INTERVAL: 10000, // Rate at which new map data is requested from server   
         imageMapping: {
             'system-terran': 'system-terran',
             'system-desert': 'system-desert',
@@ -1235,12 +1235,9 @@ CORE.createModule('admin', function(c) {
             data: {
                 api: {
                     cron: {
-                        generateShips: {
+                        executeTurn: {
                             placeholder: true
-                        },
-                        generateResources: {
-                            placeholder: true
-                        }                        
+                        }                           
                     }
                 }
             }
@@ -2038,6 +2035,10 @@ CORE.createModule('map', function(c, config) {
     function fleetDragEnd(event) {
         if (fleetTarget) {
             moveFleet(activeFleet, fleetTarget.data);
+        } else {
+            //Start updated again if no movement being triggered
+            //If movement triggered, updater should be started once fleet update is returned
+            startUpdater();
         }
 
         scope.notify({
@@ -2057,9 +2058,9 @@ CORE.createModule('map', function(c, config) {
         // only need to check collisions against 
         // all objects once collision with last collided object has stopped
         // otherwise just check if still colliding with last object
-        if(fleetTarget) {
-            var stillColliding = doObjectsCollide(kImg,fleetTarget);
-            if(stillColliding) {
+        if (fleetTarget) {
+            var stillColliding = doObjectsCollide(kImg, fleetTarget);
+            if (stillColliding) {
                 return;
             }
         }
@@ -2238,11 +2239,69 @@ CORE.createModule('map', function(c, config) {
         elements.stage.add(elements.layers.overlay);
     }
 
+    function simulateFleetMovement() {
+        var time = Math.round((new Date()).getTime());
+
+        elements.layers.fleets.getChildren().each(function(img) {
+            var fleet = img.data;
+
+            if (fleet.destination_id) {
+
+                var elapsedTime = time - fleet.departure_time * 1000;
+                var tripTime = fleet.arrival_time * 1000 - fleet.departure_time * 1000;
+
+                if (elapsedTime > tripTime) {
+                    // stopUpdater();
+                    // startUpdater();
+                    return;
+                }
+
+                var percentTravelled = elapsedTime / tripTime;
+
+                var x = (fleet.position_x * 1) + ((fleet.destination_x - fleet.position_x) * 1) * percentTravelled;
+                var y = (fleet.position_y * 1) + ((fleet.destination_y - fleet.position_y) * 1) * percentTravelled;
+
+                var coords = scaleCoordinates(x, y);
+
+                img.setX(coords.x);
+                img.setY(coords.y);
+
+                fleet.overlay.forEach(function(e) {
+                    e.remove();
+                });
+
+                fleet.overlay = addFleetOverlay(fleet, img.attrs);
+
+
+            }
+        });
+    }
+
     function addFleetToMap(fleet) {
 
         fleet.scale = 'fleet';
 
-        var coords = scaleCoordinates(fleet.position_x, fleet.position_y);
+        var x = fleet.position_x;
+        var y = fleet.position_y;
+
+        if (fleet.destination_id) {
+            var time = Math.round((new Date()).getTime() / 1000);
+
+            var elapsedTime = time - fleet.departure_time;
+            var tripTime = fleet.arrival_time - fleet.departure_time;
+
+            if (elapsedTime < tripTime) {
+                var percentTravelled = elapsedTime / tripTime;
+                x = (fleet.position_x * 1) + ((fleet.destination_x - fleet.position_x) * 1) * percentTravelled;
+                y = (fleet.position_y * 1) + ((fleet.destination_y - fleet.position_y) * 1) * percentTravelled;
+            } else {
+                x = fleet.destination_x;
+                y = fleet.destination_y;
+            }
+        }
+
+        var coords = scaleCoordinates(x, y);
+
         var owned = (fleet.owner_id === c.data.user.id);
 
         var drawWidth = 50;
@@ -2270,7 +2329,7 @@ CORE.createModule('map', function(c, config) {
             kImage.red(255);
         }
 
-        addFleetOverlay(fleet, kImage.attrs);
+        fleet.overlay = addFleetOverlay(fleet, kImage.attrs);
     }
 
     function addSystemToMap(system) {
@@ -2434,6 +2493,8 @@ CORE.createModule('map', function(c, config) {
     }
 
     function addFleetOverlay(fleet, kImage) {
+        var overlay = [];
+
         var size = $.extend({}, defaultText, {
             x: kImage.x + kImage.width + 3,
             y: kImage.y,
@@ -2441,13 +2502,38 @@ CORE.createModule('map', function(c, config) {
             fill: (fleet.owner_id === c.data.user.id) ? '#0FC90A' : '#FF0000'
         });
 
-        elements.layers.overlay.add(new Kinetic.Text(size));
+        if (fleet.destination_id) {
+            var destination = scaleCoordinates(fleet.destination_x, fleet.destination_y);
+            var x = kImage.x + kImage.width / 2;
+            var y = kImage.y + kImage.height / 2;
+
+            var line = new Kinetic.Line({
+                points: [x, y, destination.x, destination.y],
+                stroke: '#00FF00',
+                lineJoin: 'round',
+                strokeWidth: 2,
+                // tension: 1,
+                dash: [10, 5]
+            });
+            elements.layers.overlay.add(line);
+            overlay.push(line);
+        }
+
+        size = new Kinetic.Text(size);
+        overlay.push(size);
+
+        elements.layers.overlay.add(size);
+
+        return overlay;
     }
 
     function animate() {
+        simulateFleetMovement();
+
         elements.stage.drawScene();
 
         // console.log('animate');
+
         if (state) {
             animator = requestAnimationFrame(animate);
         }
@@ -2667,7 +2753,7 @@ CORE.Templates = function() {
             $row = $('<p>');
             $('<span>',{class:'label'}).text(CORE.data.language.structure.mines+": ").appendTo($row);
             $('<span>',{class:'value'}).text(data.mines).appendTo($row);
-            if(owned) {
+            if(owned && data.resources > 0) {
                 $('<button>',{class:'upgrade-structure', 'data-structure': 'mine'}).text('Upgrade').appendTo($row);
             }
             $container.append($row);   

@@ -40,7 +40,7 @@ CORE.Templates = function() {
             $row = $('<p>');
             $('<span>',{class:'label'}).text(CORE.data.language.structure.mines+": ").appendTo($row);
             $('<span>',{class:'value'}).text(data.mines).appendTo($row);
-            if(owned) {
+            if(owned && data.resources > 0) {
                 $('<button>',{class:'upgrade-structure', 'data-structure': 'mine'}).text('Upgrade').appendTo($row);
             }
             $container.append($row);   

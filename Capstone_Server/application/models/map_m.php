@@ -68,4 +68,11 @@ class Map_m extends Model {
 			return $this->dbo->execute($stmt,array(1,1,1,$locationID));
  	}
 
+ 	public static function getDistance($x1, $y1, $x2, $y2) {
+ 		$coordA = new Point($x1,$y1);
+		$coordB = new Point($x2,$y2);
+
+		return $coordA->distance($coordB);
+ 	}
+
 }

@@ -178,12 +178,9 @@ CORE.createModule('admin', function(c) {
             data: {
                 api: {
                     cron: {
-                        generateShips: {
+                        executeTurn: {
                             placeholder: true
-                        },
-                        generateResources: {
-                            placeholder: true
-                        }                        
+                        }                           
                     }
                 }
             }

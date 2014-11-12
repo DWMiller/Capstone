@@ -8,23 +8,25 @@ class Location extends MapNode {
 		$this->category = 'location';
 	} 	
 
-
 	public function finalize() {
 		$this->size = $this->seed;
 		$this->type = $this->determineType('planets');	
 	}
 
 	public function save($systemID) {
-
 		$sql = 'INSERT into locations (system_id,position_x,position_y,name,size,type,resources) values (?,?,?,?,?,?,?)';
 		$stmt = $this->dbh->prepare($sql);
 
 		try {
+			if(!$this->name) {
+				$this->name = $this->nameGenerator->generate();
+			}
+
 			$locationData = array(
 				$systemID,
 				$this->location->coords[0],
 				$this->location->coords[1],
-				$this->nameGenerator->generate(),
+				$this->name,
 				$this->size,
 				$this->type,
 			);

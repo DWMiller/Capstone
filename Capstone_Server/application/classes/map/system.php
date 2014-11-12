@@ -19,21 +19,31 @@ class System extends MapNode {
 		$this->scale = $scale;
 		$this->distributeSeed($this->size);
 
+		$star = $this->createStar();
+		$this->children[] = $star;
+
 		foreach ($this->children as $location) {
-			$location->finalize();
+			if($location !== $star) {
+				$location->finalize();
+			}
 		}	
 
-		//Crete star as child for location logic
+	}
 
+	private function createStar() {
+		//Crete star as child for location logic
 		$x = $this->scale/2;
 		$y = $this->scale/2;
 
 		$star = new $this->childType(new Point($x,$y),$this->size);	
+
+		$this->name = $this->nameGenerator->generate();
+
 		$star->size = $this->size;
 		$star->type = $this->type;
+		$star->name = $this->name;
 
-		$this->children[] = $star;
-		
+		return $star;		
 	}
 
 	public function save($sectorID) {
@@ -42,11 +52,15 @@ class System extends MapNode {
 		$stmt = $this->dbh->prepare($sql);
 
 		try {
+			if(!$this->name) {
+				$this->name = $this->nameGenerator->generate();
+			}
+
 		    $stmt->execute(array(
 		    	$sectorID,
 		    	$this->location->coords[0],
 		    	$this->location->coords[1],
-		    	$this->nameGenerator->generate(),
+		    	$this->name,
 		    	$this->size,$this->type));
 		} catch(PDOException $e) {
 		    $this->dbo->showErrorPage("Unable to insert system",$e );	

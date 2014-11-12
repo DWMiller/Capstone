@@ -6,6 +6,7 @@ class MapNode {
 
 	protected $category;
 
+
 	protected $location;
 	protected $scale; //length & width of node
 	protected $seed; 
@@ -13,6 +14,7 @@ class MapNode {
 	protected $size;
 	
 	protected $nameGenerator;
+	protected $name;
 
 	public function __construct($coords,$seed){ 
 		$this->dbo = Database::getInstance();

@@ -8,6 +8,7 @@ class Fleet_m extends Model {
 		'location_id' => NULL,
 		'size' => NULL,
 		'destination_id' => NULL,
+		'departure_time' => NULL,
 		'arrival_time' => NULL,
 		'battle_id' => NULL
 	);
@@ -24,14 +25,34 @@ class Fleet_m extends Model {
 
 	function move($location) {
 		//shouldn't be instant, duh
-		$this->data['location_id'] = $location->data['id'];
-		$sql = "UPDATE fleets SET location_id = ? WHERE id = ?";
+
+		$distance = Map_m::getDistance($this->data['position_x'],$this->data['position_y'],$location->data['position_x'],$location->data['position_y']);
+		$this->data['travelTime'] = $distance/FLEET_SPEED;
+
+		// $date = new DateTime();
+		// $date->modify('+'.$this->data['travelTime'].' seconds');
+		// 
+		$this->data['departure_time'] = time();
+		$this->data['arrival_time'] = time()+$this->data['travelTime'];
+
+		// $this->data['location_id'] = $location->data['id'];
+		$this->data['destination_id'] = $location->data['id'];
+
+		$sql = "UPDATE fleets SET destination_id = ?, departure_time = ?, arrival_time = ? WHERE id = ?";
 		$stmt = $this->dbh->prepare($sql);    
-    	return $stmt->execute(array($this->data['location_id'],$this->data['id']));		
+    	return $stmt->execute(array(
+    		$this->data['destination_id'],
+    		$this->data['departure_time'],
+    		$this->data['arrival_time'],
+    		$this->data['id']));		
 	}
 
 	function getFleetData($fleetID) {
-		$sql = "SELECT * FROM fleets WHERE id = ?";
+		$sql = "SELECT f.*, l.position_x, l.position_y, d.position_x destination_x, d.position_y destination_y
+				FROM  `fleets` f
+				JOIN  `locations` l ON f.location_id = l.id
+				LEFT JOIN  `locations` d ON f.destination_id = d.id 
+				WHERE f.id = ?";
 		$stmt = $this->dbh->prepare($sql);
     	$this->dbo->execute($stmt,array($fleetID));
 
@@ -51,9 +72,10 @@ class Fleet_m extends Model {
 		$dbo = Database::getInstance();
 		$dbh = $dbo->getPDOConnection();
 
-		$sql = "SELECT f.*, l.position_x, l.position_y 
+		$sql = "SELECT f.*, l.position_x, l.position_y, d.position_x destination_x, d.position_y destination_y
 				FROM  `fleets` f
 				JOIN  `locations` l ON f.location_id = l.id
+				LEFT JOIN `locations` d ON f.destination_id = d.id
 				WHERE l.system_id = ?";
 		$stmt = $dbh->prepare($sql);
     	$dbo->execute($stmt,array($systemID));

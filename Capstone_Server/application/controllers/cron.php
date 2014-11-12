@@ -34,9 +34,20 @@ class Cron extends Controller {
 			$this->Cron->addResources(); 
 	}
 	function generateShips() {
+		//Bug - will not recognize lack of fleet while fleet is enroute
 		$this->Cron->createMissingFleets();
 		$this->Cron->addShips();
 	}
 
+	function updateFleets() {
+		$this->Cron->fleetArrivals();
+		$this->Cron->fleetConquest();
+	}
+
+	function executeTurn() {
+		$this->generateResources();
+		$this->generateShips();
+		$this->updateFleets();		
+	}
 	
 }

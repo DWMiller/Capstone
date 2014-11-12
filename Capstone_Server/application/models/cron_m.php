@@ -53,8 +53,31 @@ class Cron_m extends Model {
  	public function addShips() {
  		$sql ="UPDATE `fleets` f
 		JOIN `locations` l ON f.location_id = l.id AND f.owner_id = l.owner_id
-		SET f.size = f.size + l.shipyards";
+		SET f.size = f.size + l.shipyards
+		WHERE f.destination_id IS NULL";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array());		
  	}
+
+ 	public function fleetArrivals() {
+ 		$sql = "UPDATE `fleets` 
+ 		SET location_id = destination_id, destination_id = null, arrival_time = null, departure_time = null 
+ 		WHERE arrival_time < ".time();
+ 		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute(array());
+ 	}
+
+ 	public function fleetConquest() {
+ 		$sql = "UPDATE locations as l
+		    INNER JOIN (SELECT l2.id,f.owner_id,COUNT(*) c 
+		    FROM fleets f
+		    JOIN locations l2 ON f.location_id = l2.id
+		    GROUP BY l2.id
+		    ) as s ON l.id = s.id
+		SET l.owner_id = s.owner_id
+		WHERE s.c = 1";
+ 		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute(array());		
+	}
+
 }
