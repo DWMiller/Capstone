@@ -688,7 +688,7 @@ CORE.extendConfig({
 CORE.extendConfig({
     map: {
         DRAW_INTERVAL: 100, //how often the map redraws
-        UPDATE_INTERVAL: 10000, // Rate at which new map data is requested from server   
+        UPDATE_INTERVAL: 4000, // Rate at which new map data is requested from server   
         imageMapping: {
             'system-terran': 'system-terran',
             'system-desert': 'system-desert',
@@ -1088,7 +1088,8 @@ CORE.createModule('admin', function(c) {
         bindEvents();
 
         triggerTurn();
-        setInterval(triggerTurn,5000);
+        setInterval(triggerTurn,10000);
+        setInterval(triggerMaintainence,2000);
     }
 
     function p_destroy(event) {
@@ -1109,8 +1110,6 @@ CORE.createModule('admin', function(c) {
         scope.addEvent(elements.game_end, 'click', endCurrentGame);
         scope.addEvent(elements.game_start, 'click', startNewGame);
         // scope.addEvent(elements.map_generate, 'click', generateMap);   
-        scope.addEvent(elements['cron-income'], 'click', runIncomeCron);
-        scope.addEvent(elements['cron-ships'], 'click', runShipCron);
         scope.addEvent(elements.stop, 'click', stop);
 
     }
@@ -1121,8 +1120,6 @@ CORE.createModule('admin', function(c) {
         scope.removeEvent(elements.game_end, 'click', endCurrentGame);
         scope.removeEvent(elements.game_start, 'click', startNewGame);
         // scope.removeEvent(elements.map_generate, 'click', generateMap);     
-        scope.removeEvent(elements['cron-income'], 'click', runIncomeCron);
-        scope.removeEvent(elements['cron-ships'], 'click', runShipCron);
         scope.removeEvent(elements.stop, 'click', stop);
 
     }
@@ -1193,41 +1190,6 @@ CORE.createModule('admin', function(c) {
         });
     }
 
-    function runIncomeCron(event) {
-        if (event.preventDefault) {
-            event.preventDefault();
-        }
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    cron: {
-                        generateResources: {
-                            placeholder: true
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    function runShipCron(event) {
-        if (event.preventDefault) {
-            event.preventDefault();
-        }
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    cron: {
-                        generateShips: {
-                            placeholder: true
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     function triggerTurn() {
         scope.notify({
@@ -1244,6 +1206,22 @@ CORE.createModule('admin', function(c) {
         });        
     }
   
+
+    function triggerMaintainence() {
+        scope.notify({
+            type: 'server-post',
+            data: {
+                api: {
+                    cron: {
+                        executeMaintainence: {
+                            placeholder: true
+                        }                           
+                    }
+                }
+            }
+        });        
+    }
+
     return {
         properties: p_properties,
         initialize: p_initialize,
@@ -2532,7 +2510,7 @@ CORE.createModule('map', function(c, config) {
 
         elements.stage.drawScene();
 
-        // console.log('animate');
+        console.log('animate');
 
         if (state) {
             animator = requestAnimationFrame(animate);

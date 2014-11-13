@@ -1,7 +1,7 @@
 CORE.extendConfig({
     map: {
         DRAW_INTERVAL: 100, //how often the map redraws
-        UPDATE_INTERVAL: 10000, // Rate at which new map data is requested from server   
+        UPDATE_INTERVAL: 4000, // Rate at which new map data is requested from server   
         imageMapping: {
             'system-terran': 'system-terran',
             'system-desert': 'system-desert',

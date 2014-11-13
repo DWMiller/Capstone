@@ -767,7 +767,7 @@ CORE.createModule('map', function(c, config) {
 
         elements.stage.drawScene();
 
-        // console.log('animate');
+        console.log('animate');
 
         if (state) {
             animator = requestAnimationFrame(animate);

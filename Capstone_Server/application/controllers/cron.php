@@ -20,34 +20,19 @@ class Cron extends Controller {
 		$this->output->json_response($this->TPL);
 	}
 
-	function generateResources() {
-		// $mines = $this->Cron->getMineData();
-
-		// foreach ($mines as $row) {
-		// 	$playerID = $row['owner_id'];
-		// 	$mineCount = $row['mine_count'];
-
-		// 	$income = $mineCount * $this->mineRate;
-
-		// 	$this->Cron->addResources($playerID, $income);
-		// }
-			$this->Cron->addResources(); 
-	}
-	function generateShips() {
+	function executeTurn() {
+		$this->Cron->addResources(); 
 		//Bug - will not recognize lack of fleet while fleet is enroute
 		$this->Cron->createMissingFleets();
-		$this->Cron->addShips();
-	}
-
-	function updateFleets() {
-		$this->Cron->fleetArrivals();
-		$this->Cron->fleetConquest();
-	}
-
-	function executeTurn() {
-		$this->generateResources();
-		$this->generateShips();
-		$this->updateFleets();		
+		$this->Cron->addShips();		
 	}
 	
+	function executeMaintainence() {
+		$this->Cron->fleetArrivals();
+		$this->Cron->fleetMergers();
+		$this->Cron->combat();
+		$this->Cron->fleetConquest();
+		$this->Cron->removeEmptyFleets();
+	}
+
 }

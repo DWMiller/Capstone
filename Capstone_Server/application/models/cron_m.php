@@ -47,6 +47,50 @@ class Cron_m extends Model {
 		$stmt->execute(array());				
  	}
 
+
+ 	//Any location with more than one fleet owned by a single player will have those fleets merged
+ 	public function fleetMergers() {
+ 	// 	$sql = "INSERT INTO fleets (location_id,owner_id,size)
+		// 	SELECT location_id,owner_id,SUM(size) size
+		// 	FROM fleets
+		// 	WHERE destination_id IS NULL
+		// 	GROUP BY location_id, owner_id
+		// 	HAVING COUNT(*) > 1";
+		// $stmt = $this->dbh->prepare($sql);
+		// $stmt->execute(array());
+
+ 		//Query representing new fleets that will be created
+ 		$sql="SELECT * ,SUM(size) size
+			FROM fleets
+			WHERE destination_id IS NULL
+			GROUP BY location_id, owner_id
+			HAVING COUNT(*) > 1";
+		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute(array());	
+
+		if ($stmt->rowCount() > 0){	
+			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			
+			//loop through fleets, delete all existing user fleets at location
+			$sql = "DELETE FROM fleets WHERE owner_id = ? AND location_id = ? AND destination_id IS NULL";
+			$stmt = $this->dbh->prepare($sql);
+			foreach ($result as $key => $newFleet) {
+				$stmt->execute(array($newFleet['owner_id'],$newFleet['location_id']));					
+			}
+
+			// Then, replace with newly created fleets
+			// Super inefficient, at the very least bundle statements together prior to executing
+			$sql = "INSERT INTO fleets(owner_id,location_id, size) VALUES (?,?,?)";
+			$stmt = $this->dbh->prepare($sql);// 
+			foreach ($result as $key => $newFleet) {
+				$stmt->execute(array($newFleet['owner_id'],$newFleet['location_id'],$newFleet['size']));					
+			}
+			// echo '<pre>';
+			// echo print_r($result,true);
+			// echo '</pre>';
+		}
+ 	}
+
  	/**
  	 * Add ships to fleets based on owned shipyards at location
  	 */
@@ -79,5 +123,57 @@ class Cron_m extends Model {
  		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array());		
 	}
+
+	public function combat() {
+		// Select all locations with multiple fleets
+		// Note: Fleet merging must precede this to ensure all fleets belong to different players
+		$sql = "SELECT l.*
+			FROM locations l
+			JOIN fleets f 
+			ON f.location_id = l.id
+			WHERE f.destination_id IS NULL
+			GROUP BY location_id
+			HAVING COUNT(*) > 1";
+
+ 		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute(array());
+
+		if ($stmt->rowCount() > 0){	
+			$locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			$sql = "SELECT * FROM fleets WHERE location_id = ?";
+			$stmt = $this->dbh->prepare($sql);
+			//Resolve combat at each location
+			foreach ($locations as $key => $location) {
+				$this->resolveLocationCombat($stmt,$location);
+			}
+		}	
+
+	}
+
+	private function resolveLocationCombat ($stmt,$location) {
+		// SELECT * FROM fleets WHERE location = ?
+		$stmt->execute(array($location['id']));
+
+		if ($stmt->rowCount() > 0){	
+			$fleets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			$sql = "UPDATE fleets SET size = size - 4 WHERE location_id = ?";
+			$stmt2 = $this->dbh->prepare($sql);
+
+			// foreach ($fleets as $key => $fleet) {
+				$stmt2->execute(array($location['id']));
+			// }
+
+			
+		}
+	}
+
+	function removeEmptyFleets() {
+		$sql = "DELETE FROM fleets WHERE size < 1";
+		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute(array());
+	}
+
 
 }
