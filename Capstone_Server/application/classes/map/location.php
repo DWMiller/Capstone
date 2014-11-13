@@ -5,7 +5,7 @@ class Location extends MapNode {
 	
 	public function __construct($coords,$seed){ 
 		parent::__construct($coords,$seed);
-		$this->category = 'location';
+		$this->category = 'planet'; //default category
 	} 	
 
 	public function finalize() {
@@ -14,7 +14,7 @@ class Location extends MapNode {
 	}
 
 	public function save($systemID) {
-		$sql = 'INSERT into locations (system_id,position_x,position_y,name,size,type,resources) values (?,?,?,?,?,?,?)';
+		$sql = 'INSERT into locations (system_id,position_x,position_y,name,category,size,type,resources) values (?,?,?,?,?,?,?,?)';
 		$stmt = $this->dbh->prepare($sql);
 
 		try {
@@ -27,6 +27,7 @@ class Location extends MapNode {
 				$this->location->coords[0],
 				$this->location->coords[1],
 				$this->name,
+				$this->category,
 				$this->size,
 				$this->type,
 			);

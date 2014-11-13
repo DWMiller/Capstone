@@ -97,7 +97,7 @@ class Cron_m extends Model {
  	public function addShips() {
  		$sql ="UPDATE `fleets` f
 		JOIN `locations` l ON f.location_id = l.id AND f.owner_id = l.owner_id
-		SET f.size = f.size + l.shipyards
+		SET f.size = f.size + (l.shipyards*l.resources)
 		WHERE f.destination_id IS NULL";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array());		
@@ -119,7 +119,7 @@ class Cron_m extends Model {
 		    GROUP BY l2.id
 		    ) as s ON l.id = s.id
 		SET l.owner_id = s.owner_id
-		WHERE s.c = 1";
+		WHERE s.c = 1 AND l.category = 'planet'";
  		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array());		
 	}

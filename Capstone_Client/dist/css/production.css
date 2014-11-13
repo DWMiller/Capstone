@@ -372,6 +372,8 @@ html, body, #main-container {
   color: white; }
 
 #main-container {
+  margin: 0 auto;
+  max-width: 2000px;
   text-align: center; }
 
 input[type="text"], input[type="password"], input[type="email"], input[type="submit"], button {
@@ -439,10 +441,10 @@ label * {
   100% {
     opacity: 1; } }
 
-@media only screen and (max-width: 699px) { }
+@media only screen and (max-width: 49.999em) { }
 
 /* Desktops and laptops ----------- */
-@media only screen and (min-width: 700px) {
+@media only screen and (min-width: 50em) {
   /*Keeps code cola browser extensions from getting messed up*/
   html {
     overflow: hidden; }
@@ -450,27 +452,28 @@ label * {
     box-sizing: content-box; } }
 
 /* Large screens ----------- */
-@media only screen and (min-width: 1200px) { }
+@media only screen and (min-width: 70em) { }
 
-@media only screen and (max-width: 699px) { }
+@media only screen and (max-width: 49.999em) { }
 
-@media only screen and (min-width: 700px) {
+@media only screen and (min-width: 50em) {
   #page-auth.visible {
     display: inline-block; } }
 
-@media only screen and (min-width: 1200px) { }
+@media only screen and (min-width: 70em) { }
 
 #module-game {
   overflow: hidden; }
 
-@media only screen and (max-width: 699px) { }
+@media only screen and (max-width: 49.999em) { }
 
-@media only screen and (min-width: 700px) { }
+@media only screen and (min-width: 50em) { }
 
-@media only screen and (min-width: 1200px) { }
+@media only screen and (min-width: 70em) { }
 
 #game-map {
-  line-height: 1; }
+  line-height: 1;
+  width: 100%; }
 
 .back {
   position: absolute;
@@ -486,13 +489,13 @@ label * {
     cursor: pointer;
     opacity: 0.8; }
 
-@media only screen and (max-width: 699px) { }
+@media only screen and (max-width: 49.999em) { }
 
-@media only screen and (min-width: 700px) { }
-
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-width: 50em) {
   #game-map {
     width: 75%; } }
+
+@media only screen and (min-width: 70em) { }
 
 #module-user {
   width: 100%; }
@@ -503,20 +506,23 @@ label * {
     margin-right: 0.5em;
     font-variant: small-caps; }
 
-@media only screen and (max-width: 699px) { }
+@media only screen and (max-width: 49.999em) { }
 
-@media only screen and (min-width: 700px) { }
+@media only screen and (min-width: 50em) { }
 
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-width: 70em) {
   #module-user {
     float: left;
     width: 75%; } }
 
-@media only screen and (max-width: 699px) {
+#module-details {
+  overflow-y: auto; }
+
+@media only screen and (max-width: 49.999em) {
   #module-details {
     display: none; } }
 
-@media only screen and (min-width: 700px) {
+@media only screen and (min-width: 50em) {
   #module-details {
     float: right;
     font-size: larger;
@@ -542,4 +548,4 @@ label * {
     #module-details button {
       width: 100%; } }
 
-@media only screen and (min-width: 1200px) { }
+@media only screen and (min-width: 70em) { }

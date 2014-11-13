@@ -46,6 +46,7 @@ class Map extends Controller {
 		// $args['password']);
 
 		$this->TPL['map-update']['systems'] = $this->map->getSystems($args['id']);
+		$this->TPL['map-update']['fleets'] = Fleet_m::getWormholeFleets($args['id']); //by sector
 		$this->TPL['user-update'] = $this->user;
 		
 		$this->output->json_response($this->TPL);

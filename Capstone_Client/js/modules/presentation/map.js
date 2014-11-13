@@ -114,10 +114,10 @@ CORE.createModule('map', function(c, config) {
 
         scope.addEvent(elements.back, 'click', backButtonClick);
 
-        elements.layers.map.on('click', layerClickHandler);
+        elements.layers.map.on('click touchstart', layerClickHandler);
         // scope.addEvent(elements.layers.fleets, 'click', layerClickHandler);
         // 
-        elements.layers.map.on('mouseover', showDetails);
+        elements.layers.map.on('mouseover touchstart', showDetails);
 
         // Need pointer cursor on image hover, 
         // Add hover class to page while image is hovered
@@ -130,13 +130,13 @@ CORE.createModule('map', function(c, config) {
     }
 
     function unbindEvents() {
-        elements.layers.map.off('click', layerClickHandler);
+        elements.layers.map.off('click touchstart', layerClickHandler);
         // scope.removeEvent(elements.layers.fleets, 'click', layerClickHandler);
 
         scope.ignore(Object.keys(listeners));
 
         scope.removeEvent(elements.back, 'click', backButtonClick);
-        elements.layers.map.off('mouseover', showDetails);
+        elements.layers.map.off('mouseover touchstart', showDetails);
 
         elements.layers.map.off('mouseover', imageMouseon);
         elements.layers.map.off('mouseout', imageMouseout);
@@ -180,6 +180,11 @@ CORE.createModule('map', function(c, config) {
     }
 
     function moveFleet(fleet, target) {
+        var destID = target.id;
+        if(target.scale === 'system') {
+            destID = target.wormhole_id;
+        }
+
         scope.notify({
             type: 'server-post',
             data: {
@@ -187,7 +192,7 @@ CORE.createModule('map', function(c, config) {
                     fleets: {
                         move: {
                             fleet: fleet.id,
-                            target: target.id
+                            target: destID
                         }
                     }
                 }
@@ -415,6 +420,7 @@ CORE.createModule('map', function(c, config) {
         loadImage('system-redStar', 'system/redStar.png');
         loadImage('system-yellowStar', 'system/yellowStar.png');
         loadImage('system-whiteStar', 'system/whiteStar.png');
+        loadImage('system-wormhole', 'system/wormhole.png');
         loadImage('sector-blueStar', 'sector/blueStar.png');
         loadImage('sector-redStar', 'sector/redStar.png');
         loadImage('sector-yellowStar', 'sector/yellowStar.png');
@@ -456,6 +462,8 @@ CORE.createModule('map', function(c, config) {
         elements.layers.map.destroyChildren();
         elements.layers.overlay.destroyChildren();
         elements.layers.fleets.destroyChildren();
+
+        imageMouseout();
 
         if (c.data.map.sector && c.data.map.scale === 'sector') {
             c.data.map.sector.forEach(addSystemToMap);
@@ -520,6 +528,12 @@ CORE.createModule('map', function(c, config) {
         var y = fleet.position_y;
 
         if (fleet.destination_id) {
+
+            if(c.data.map.scale === 'system' && fleet.destination_system !== c.data.map.id) {
+                // Don't show fleet in system if enroute to different system
+                return;
+            }
+
             var time = Math.round((new Date()).getTime() / 1000);
 
             var elapsedTime = time - fleet.departure_time;
@@ -647,6 +661,20 @@ CORE.createModule('map', function(c, config) {
             color = '#FF0000';
         }
 
+        var name = $.extend({}, defaultText, {
+            x: kImage.x,
+            y: kImage.y + kImage.height + baseLineSpacing,
+            text: location.name,
+            fill: color
+        });
+
+        elements.layers.overlay.add(new Kinetic.Text(name));
+
+        if(location.type === 'wormhole' || (location.position_x == 500 && location.position_y == 500)) {
+            return;
+        }
+
+
         var iconY = kImage.y + (kImage.height / 3) - (baseFontSize + baseLineSpacing) * 2;
 
         var iconWidth = 20;
@@ -699,12 +727,6 @@ CORE.createModule('map', function(c, config) {
             fill: color
         });
 
-        var name = $.extend({}, defaultText, {
-            x: kImage.x,
-            y: kImage.y + kImage.height + baseLineSpacing,
-            text: location.name,
-            fill: color
-        });
         // 
         // var coords = $.extend({}, defaultText, {
         //     x: kImage.x + kImage.width + 5,
@@ -715,7 +737,6 @@ CORE.createModule('map', function(c, config) {
 
         // elements.layers.overlay.add(new Kinetic.Text(coords));
 
-        elements.layers.overlay.add(new Kinetic.Text(name));
 
         elements.layers.overlay.add(new Kinetic.Image(mineIcon));
         elements.layers.overlay.add(new Kinetic.Text(mineCount));
@@ -729,12 +750,13 @@ CORE.createModule('map', function(c, config) {
 
     function addFleetOverlay(fleet, kImage) {
         var overlay = [];
+        var owned = (fleet.owner_id === c.data.user.id);
 
         var size = $.extend({}, defaultText, {
             x: kImage.x + kImage.width + 3,
             y: kImage.y,
             text: fleet.size,
-            fill: (fleet.owner_id === c.data.user.id) ? '#0FC90A' : '#FF0000'
+            fill: owned ? '#0FC90A' : '#FF0000'
         });
 
         if (fleet.destination_id) {
@@ -744,7 +766,7 @@ CORE.createModule('map', function(c, config) {
 
             var line = new Kinetic.Line({
                 points: [x, y, destination.x, destination.y],
-                stroke: '#00FF00',
+                stroke: owned ? '#0FC90A' : '#FF0000',
                 lineJoin: 'round',
                 strokeWidth: 2,
                 // tension: 1,

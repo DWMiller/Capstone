@@ -10,6 +10,8 @@ html, body, #main-container {
     color: white;
 }
 #main-container {
+    margin: 0 auto;
+    max-width: $max-width;
     text-align: center;
 }
 input[type="text"], input[type="password"], input[type="email"], input[type="submit"], button {

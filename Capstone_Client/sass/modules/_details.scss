@@ -1,43 +1,42 @@
-@media only screen and (max-width: $sm-brkp) {
     #module-details {
-        display: none;
+        overflow-y: auto;
     }
-}
-@media only screen and (min-width: $md-brkp) {
-    #module-details {
-        float:right;
-        @extend .inlineBlock;
-        font-size: larger;
-        width: 25%;
-        height: 100%;
-        border-left-width: 4px;
-        border-left-style: groove;
-        
-        header {
-            font-variant: small-caps;
-        }
-
-        .module-contents {
-            margin: 0 1em;
-        }
-        .label {
-            display: inline-block;
-            font-variant: small-caps;
-            font-weight: bold;
-            margin-right: 5%;
-            text-align: right;
-            width: 45%;
-        }
-        .value {
-            display: inline-block;
-            width: 50%;
-            text-align: left;
-        }
-        button {
-            width: 100%;
+    @media only screen and (max-width: $sm-brkp) {
+        #module-details {
+            display: none;
         }
     }
-}
-@media only screen and (min-width: $lg-brkp) {
-
-}
+    @media only screen and (min-width: $md-brkp) {
+        #module-details {
+            float: right;
+            @extend .inlineBlock;
+            font-size: larger;
+            width: 25%;
+            height: 100%;
+            border-left-width: 4px;
+            border-left-style: groove;
+            header {
+                font-variant: small-caps;
+            }
+            .module-contents {
+                margin: 0 1em;
+            }
+            .label {
+                display: inline-block;
+                font-variant: small-caps;
+                font-weight: bold;
+                margin-right: 5%;
+                text-align: right;
+                width: 45%;
+            }
+            .value {
+                display: inline-block;
+                width: 50%;
+                text-align: left;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    }
+    @media only screen and (min-width: $lg-brkp) {}

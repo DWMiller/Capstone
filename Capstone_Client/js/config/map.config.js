@@ -10,6 +10,7 @@ CORE.extendConfig({
             'system-molten': 'system-molten',
             'system-volcanic': 'system-volcanic',
             'system-asteroid': 'system-asteroid',
+            'system-wormhole': 'system-wormhole',
             'fleet': 'fleet',
             'beaker': 'beaker',
             'anchor': 'anchor',

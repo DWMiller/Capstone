@@ -15,7 +15,9 @@ class Map_m extends Model {
 	 }
 
 	 public function getSystems($val,$field = 'sector_id') {
-			$sql = "SELECT * FROM systems WHERE $field = ?";
+			$sql = "SELECT *,  
+			(SELECT id FROM locations WHERE system_id = s.id AND type = 'wormhole') as wormhole_id
+			FROM systems s WHERE $field = ?";
 			$stmt = $this->dbh->prepare($sql);
 			$this->dbo->execute($stmt,array($val));
 
@@ -30,8 +32,8 @@ class Map_m extends Model {
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	 }
 
-	 public function getUnclaimedLocations() {
-			$sql = "SELECT * FROM locations WHERE owner_id IS NULL";
+	 public function getUnclaimedStartLocations() {
+			$sql = "SELECT * FROM locations WHERE owner_id IS NULL AND category = 'planet' ORDER BY resources DESC, size DESC";
 			$stmt = $this->dbh->prepare($sql);
 			$this->dbo->execute($stmt,array());
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -45,12 +47,14 @@ class Map_m extends Model {
 	 * @return int[] Array of location ids
 	 */
  	public function findStartingLocations($quantity) {
- 		$locations = $this->getUnclaimedLocations();
+ 		$locations = $this->getUnclaimedStartLocations();
  		$selectedLocations = array();
 
  		for ($i=0; $i < $quantity; $i++) { 
- 			$randIndex = array_rand($locations);
- 			$selectedLocations[] = $locations[$randIndex]['id'];
+ 			// $randIndex = array_rand($locations);
+ 			// $selectedLocations[] = $locations[$randIndex]['id'];
+ 			$best = array_shift($locations);
+ 			$selectedLocations[] = $best['id'];
  		}
 
  		return $selectedLocations;

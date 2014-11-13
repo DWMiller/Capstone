@@ -17,13 +17,18 @@ class System extends MapNode {
 		$this->type = $this->determineType('stars');	
 
 		$this->scale = $scale;
-		$this->distributeSeed($this->size);
 
 		$star = $this->createStar();
 		$this->children[] = $star;
 
+		$wormhole = $this->createWormhole();
+
+		$this->children[] = $wormhole;
+
+		$this->distributeSeed($this->size);
+		
 		foreach ($this->children as $location) {
-			if($location !== $star) {
+			if($location !== $star && $location !== $wormhole) {
 				$location->finalize();
 			}
 		}	
@@ -41,9 +46,27 @@ class System extends MapNode {
 
 		$star->size = $this->size;
 		$star->type = $this->type;
+		$star->category = 'star';
 		$star->name = $this->name;
 
 		return $star;		
+	}
+
+	private function createWormhole() {
+		//Crete star as child for location logic
+		$x = mt_rand(0,1000);
+		$y = mt_rand(0,1000);
+
+		$data = $GLOBALS['locations']['special']['wormhole'];
+
+		$wormhole = new $this->childType(new Point($x,$y),$this->size);	
+
+		$wormhole->size = $data['size'];
+		$wormhole->type = 'wormhole';
+		$wormhole->category = 'special';
+		$wormhole->name = $this->name. " Wormhole";
+
+		return $wormhole;		
 	}
 
 	public function save($sectorID) {

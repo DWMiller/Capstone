@@ -70,6 +70,7 @@ class MapNode {
 			// $distance = $center->distance($coords);
 
 			$valid = true;
+			
 			foreach ($this->children as $key => $child) {
 				$d = $coords->distance($child->location);
 
