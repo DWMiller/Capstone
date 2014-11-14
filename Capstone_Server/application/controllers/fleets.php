@@ -24,7 +24,7 @@ class Fleets extends Controller {
 		
 		$fleet->move($targetLocation);
 
-		$this->TPL['fleet-update'] = $fleet->data;
+		$this->TPL['fleet-update'] = $fleet->getFleetData($fleet->data['id']);
 		$this->output->json_response($this->TPL);
 	}
 }

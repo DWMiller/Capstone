@@ -1,7 +1,7 @@
 CORE.extendConfig({
     map: {
         DRAW_INTERVAL: 100, //how often the map redraws
-        UPDATE_INTERVAL: 4000, // Rate at which new map data is requested from server   
+        UPDATE_INTERVAL: 5000, // Rate at which new map data is requested from server   
         imageMapping: {
             'system-terran': 'system-terran',
             'system-desert': 'system-desert',
@@ -36,12 +36,12 @@ CORE.extendConfig({
             id: 1
         },
         drawScaleFactor: {
-            sector: 10,
+            sector: 15,
             system: 20
         },
-        mapScaleFactor: {
-            sector: 100,
-            system: 1000
-        }
+        // mapScaleFactor: {
+        //     sector: 100,
+        //     system: 1000
+        // }
     }
 });

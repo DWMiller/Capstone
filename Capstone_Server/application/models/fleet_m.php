@@ -24,9 +24,14 @@ class Fleet_m extends Model {
 	} 
 
 	function move($location) {
-		//shouldn't be instant, duh
-
-		$distance = Map_m::getDistance($this->data['position_x'],$this->data['position_y'],$location->data['position_x'],$location->data['position_y']);
+		if($this->data['location_system'] == $location->data['location_system']) {
+			// Inner System movement
+			$distance = Map_m::getDistance($this->data['position_x'],$this->data['position_y'],$location->data['position_x'],$location->data['position_y']);
+		} else {
+			// Inter-stellar movement
+			$distance = SYSTEM_DISTANCE_MOD * Map_m::getDistance($this->data['location_system_x'],$this->data['location_system_y'],$location->data['location_system_x'],$location->data['location_system_y']);
+		}
+		
 		$this->data['travelTime'] = $distance/FLEET_SPEED;
 
 		// $date = new DateTime();
@@ -48,10 +53,15 @@ class Fleet_m extends Model {
 	}
 
 	function getFleetData($fleetID) {
-		$sql = "SELECT f.*, l.position_x, l.position_y, d.position_x destination_x, d.position_y destination_y
+		$sql = "SELECT f.*, l.position_x, l.position_y, l.owner_id location_owner, 
+						l2.id location_system, l2.position_x location_system_x, l2.position_y location_system_y,
+						d.position_x destination_x, d.position_y destination_y, 
+						d2.id destination_system, d2.position_x destination_system_x, d2.position_y destination_system_y
 				FROM  `fleets` f
 				JOIN  `locations` l ON f.location_id = l.id
+				JOIN  `systems` l2 ON l2.id = l.system_id
 				LEFT JOIN  `locations` d ON f.destination_id = d.id 
+				LEFT JOIN  `systems` d2 ON d2.id = d.system_id 
 				WHERE f.id = ?";
 		$stmt = $this->dbh->prepare($sql);
     	$this->dbo->execute($stmt,array($fleetID));
@@ -72,7 +82,7 @@ class Fleet_m extends Model {
 		$dbo = Database::getInstance();
 		$dbh = $dbo->getPDOConnection();
 
-		$sql = "SELECT f.*, l.position_x, l.position_y, d.position_x destination_x, d.position_y destination_y, d.system_id destination_system
+		$sql = "SELECT f.*, l.position_x, l.position_y, l.owner_id location_owner, d.position_x destination_x, d.position_y destination_y, d.system_id destination_system
 				FROM  `fleets` f
 				JOIN  `locations` l ON f.location_id = l.id
 				LEFT JOIN `locations` d ON f.destination_id = d.id
@@ -96,13 +106,16 @@ class Fleet_m extends Model {
 		$dbo = Database::getInstance();
 		$dbh = $dbo->getPDOConnection();
 
-		$sql = "SELECT f.*, s.position_x position_x, s.position_y position_y, s2.position_x destination_x, s2.position_y destination_y
+		$sql = "SELECT f.*, l.position_x, l.position_y, l.owner_id location_owner, 
+						l2.id location_system, l2.position_x location_system_x, l2.position_y location_system_y,
+						d.position_x destination_x, d.position_y destination_y, 
+						d2.id destination_system, d2.position_x destination_system_x, d2.position_y destination_system_y
 				FROM  `fleets` f
 				JOIN  `locations` l ON f.location_id = l.id
+				JOIN  `systems` l2 ON l2.id = l.system_id
 				LEFT JOIN  `locations` d ON f.destination_id = d.id
-				JOIN  `systems` s ON l.system_id = s.id
-				LEFT JOIN  `systems` s2 ON d.system_id = s2.id
-				WHERE s.sector_id = ? AND l.type = 'wormhole'";
+				LEFT JOIN  `systems` d2 ON d2.id = d.system_id 
+				WHERE l2.sector_id = ? AND l.type = 'wormhole'";
 		$stmt = $dbh->prepare($sql);
     	$dbo->execute($stmt,array($sectorID));
 

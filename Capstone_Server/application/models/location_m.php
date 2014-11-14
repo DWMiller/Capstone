@@ -29,7 +29,11 @@ class Location_m extends Model {
 	} 
 
 	function getLocationData($locationID) {
-		$sql = "SELECT * FROM locations WHERE id = ?";
+		$sql = "SELECT l.*, 
+		l2.id as location_system, l2.position_x as location_system_x, l2.position_y as location_system_y
+		FROM locations l
+		JOIN systems l2 ON l2.id = l.system_id 
+		WHERE l.id = ?";
 		$stmt = $this->dbh->prepare($sql);
     	$this->dbo->execute($stmt,array($locationID));
 

@@ -97,7 +97,7 @@ class Cron_m extends Model {
  	public function addShips() {
  		$sql ="UPDATE `fleets` f
 		JOIN `locations` l ON f.location_id = l.id AND f.owner_id = l.owner_id
-		SET f.size = f.size + (l.shipyards*l.resources)
+		SET f.size = f.size + (l.shipyards*(l.resources/2))
 		WHERE f.destination_id IS NULL";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array());		
