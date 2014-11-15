@@ -1,6 +1,6 @@
 <?php
 
-class Userauth_m extends Model {
+class Userauth_m extends Core_Model {
 
 	private $username;
 	private $password;

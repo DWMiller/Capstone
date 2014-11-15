@@ -1,6 +1,6 @@
 <?php
 
-class Game_m extends Model {
+class Game_m extends Core_Model {
 
 	public function __construct(){ 
 		 parent::__construct();

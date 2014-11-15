@@ -3,7 +3,7 @@
 /**
  * 
  */
- class Register extends Controller
+ class Register extends Core_Controller
  {
  	private $users;
 

@@ -1,6 +1,6 @@
  <?php 	
 
-class Home extends Controller {
+class Home extends Core_Controller {
 	// private $game;
 
 	//  function __construct() {

@@ -1,6 +1,6 @@
 <?php 	
 
-class Cron extends Controller {
+class Cron extends Core_Controller {
 	
 	// private $Auth;
 	private $Cron;

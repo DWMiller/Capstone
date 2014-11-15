@@ -1,8 +1,8 @@
 <?php 	
 
-class Game extends Controller {
+class Game extends Core_Controller {
 	private $game;
-	private $Auth;
+	// private $Auth;
 	private $users;
 
 	private $user;
@@ -10,7 +10,7 @@ class Game extends Controller {
 	function __construct() {
 		parent::__construct();
 		$this->game = new Game_m;
-		$this->Auth = new userauth_m(); 
+		// $this->Auth = new userauth_m(); 
 		$this->users = new Users_m;	
 
 		$this->user = $this->Auth->loggedIn();

@@ -1,6 +1,6 @@
 <?php
 
-class Admin_m extends Model {
+class Admin_m extends Core_Model {
 	public function __construct(){ 
 		 parent::__construct(); 
 	} 

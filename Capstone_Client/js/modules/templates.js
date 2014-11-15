@@ -1,7 +1,17 @@
 CORE.Templates = function() {
-   'use strict';
+    'use strict';
+
+    // var vals = {
+    //     'MINE_BASE' : 1,
+    //     'SHIPYARD_BASE' : 1.5,
+    //     'LAB_BASE' : 2
+    // };
+
     return {
         location: function(data) {
+            var structureCount = data.mines*1+data.shipyards*1+data.labs*1;
+            console.log(structureCount);
+
             var owned = (data.owner_id === CORE.data.user.id);
             var $container = $('<div>');
 
@@ -36,20 +46,20 @@ CORE.Templates = function() {
             $('<span>',{class:'label'}).text("Owner:").appendTo($row);
             $('<span>',{class:'value'}).text(data.owner_id||'Unclaimed').appendTo($row);
             $container.append($row);                                    
-            
+
             $row = $('<p>');
             $('<span>',{class:'label'}).text(CORE.data.language.structure.mines+": ").appendTo($row);
             $('<span>',{class:'value'}).text(data.mines).appendTo($row);
             if(owned && data.resources > 0) {
-                $('<button>',{class:'upgrade-structure', 'data-structure': 'mine'}).text('Upgrade').appendTo($row);
+                $('<button>',{class:'upgrade-structure', 'data-structure': 'mine'}).text('Upgrade - ' + data['upgrade-cost-mine']).appendTo($row);
             }
-            $container.append($row);   
-            
+            $container.append($row);           
+
             $row = $('<p>');
             $('<span>',{class:'label'}).text(CORE.data.language.structure.shipyards+": ").appendTo($row);
             $('<span>',{class:'value'}).text(data.shipyards).appendTo($row);
             if(owned) {
-                $('<button>',{class:'upgrade-structure', 'data-structure': 'shipyard'}).text('Upgrade').appendTo($row);
+                $('<button>',{class:'upgrade-structure', 'data-structure': 'shipyard'}).text('Upgrade - ' + data['upgrade-cost-shipyard']).appendTo($row);
             }
             $container.append($row);   
             
@@ -57,7 +67,7 @@ CORE.Templates = function() {
             $('<span>',{class:'label'}).text(CORE.data.language.structure.labs+": ").appendTo($row);
             $('<span>',{class:'value'}).text(data.labs).appendTo($row);
             if(owned) {
-                $('<button>',{class:'upgrade-structure', 'data-structure': 'lab'}).text('Upgrade').appendTo($row);
+                $('<button>',{class:'upgrade-structure', 'data-structure': 'lab'}).text('Upgrade - ' + data['upgrade-cost-lab']).appendTo($row);
             }
             $container.append($row);     
 

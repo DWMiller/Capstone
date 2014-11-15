@@ -1,6 +1,6 @@
 <?php
 
-class Cron_m extends Model {
+class Cron_m extends Core_Model {
 	public function __construct(){ 
 		 parent::__construct();
 	 } 
@@ -97,7 +97,7 @@ class Cron_m extends Model {
  	public function addShips() {
  		$sql ="UPDATE `fleets` f
 		JOIN `locations` l ON f.location_id = l.id AND f.owner_id = l.owner_id
-		SET f.size = f.size + (l.shipyards*(l.resources/2))
+		SET f.size = f.size + (l.shipyards * l.resources/2) + l.shipyards
 		WHERE f.destination_id IS NULL";
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array());		

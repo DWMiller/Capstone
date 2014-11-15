@@ -1,15 +1,15 @@
 <?php 	
 
-class Admin extends Controller {
+class Admin extends Core_Controller {
 	
-	private $Auth;
+	// private $Auth;
 	private $admin;
 	private $map;
 
 	function __construct() {
 		parent::__construct();
 		$this->admin = new Admin_m;
-		$this->Auth = new userauth_m(); 
+		// $this->Auth = new userauth_m(); 
 
 		if(!$this->Auth->loggedIn()) {
 			exit;

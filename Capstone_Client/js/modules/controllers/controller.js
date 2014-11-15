@@ -69,6 +69,7 @@ CORE.createModule('controller', function(c) {
         c.stopModule('details');
         c.stopModule('admin');
         c.stopModule('user');
+        c.stopModule('admin');
     }
 
     function restart() {

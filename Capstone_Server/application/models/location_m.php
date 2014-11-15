@@ -1,6 +1,6 @@
 <?php
 
-class Location_m extends Model {
+class Location_m extends Core_Model {
 
 	//db reference vars
 	public $data = [
@@ -18,14 +18,18 @@ class Location_m extends Model {
 		'labs' => NULL
 	];
 
+	private $structureCount;
+
 	public function __construct($locationID, $data = NULL){ 
 		 parent::__construct(); 
 
 		 if($data === NULL) {
 		 	$data = $this->getLocationData($locationID);
 		 }  
-		 
+
 		$this->data = $data;
+
+		$this->structureCount = $this->data['shipyards']+$this->data['mines']+$this->data['labs'];
 	} 
 
 	function getLocationData($locationID) {
@@ -40,7 +44,7 @@ class Location_m extends Model {
     	// If more than one match, database is messed up
     	// If no matches, invalid request is being made
 		if ($stmt->rowCount() == 1){	
-			$result = $stmt->fetch(PDO::FETCH_ASSOC);
+			$result = $stmt->fetch(PDO::FETCH_ASSOC);			
 			return $result;
 		} else {
 			return false;
@@ -97,5 +101,17 @@ class Location_m extends Model {
 		$stmt = $this->dbh->prepare($sql);    
     	return $this->dbo->execute($stmt,array($this->data['labs'],$this->data['id']));
 	}
+
+	function getMineUpgradeCost() {
+		return round(pow($this->structureCount+1,2)*MINE_BASE/($this->data['size']/10));
+	}
+
+	function getShipyardUpgradeCost() {
+		return round(pow($this->structureCount+1,2)*SHIPYARD_BASE/($this->data['size']/10));
+	}
+
+	function getLabUpgradeCost() {
+		return round(pow($this->structureCount+1,2)*LAB_BASE/($this->data['size']/10));
+	}	
 
 }

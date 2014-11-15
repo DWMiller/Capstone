@@ -30,8 +30,8 @@
         "redGiant": "Red Giant"
     },
     "structure": {
-        "mines": "Mines",
-        "shipyards": "Shipyards",
-        "labs": "Labs"
+        "mines": "Industry",
+        "shipyards": "Military",
+        "labs": "Research"
     }
 }

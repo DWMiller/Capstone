@@ -9,6 +9,8 @@ CORE.createModule('admin', function(c) {
 
     var listeners = {};
 
+    var turnUpdater, maintainenceUpdater;
+
     /************************************ MODULE INITIALIZATION ************************************/
     /************************************ POSTS ************************************/
     /************************************ RESPONSES ************************************/
@@ -31,8 +33,8 @@ CORE.createModule('admin', function(c) {
         bindEvents();
 
         triggerTurn();
-        setInterval(triggerTurn,10000);
-        setInterval(triggerMaintainence,2000);
+        turnUpdater = setInterval(triggerTurn,10000);
+        maintainenceUpdater = setInterval(triggerMaintainence,1000);
     }
 
     function p_destroy(event) {
@@ -45,6 +47,9 @@ CORE.createModule('admin', function(c) {
         unbindEvents();
         scope = null;
         elements = {};
+
+        clearInterval(turnUpdater);
+        clearInterval(maintainenceUpdater);
     }
 
     function bindEvents() {

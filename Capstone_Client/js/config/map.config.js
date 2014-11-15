@@ -1,7 +1,7 @@
 CORE.extendConfig({
     map: {
         DRAW_INTERVAL: 100, //how often the map redraws
-        UPDATE_INTERVAL: 5000, // Rate at which new map data is requested from server   
+        UPDATE_INTERVAL: 3000, // Rate at which new map data is requested from server   
         imageMapping: {
             'system-terran': 'system-terran',
             'system-desert': 'system-desert',
@@ -15,6 +15,7 @@ CORE.extendConfig({
             'beaker': 'beaker',
             'anchor': 'anchor',
             'mine': 'mine',
+            'explosion': 'explosion',
             'system-blueGiant': 'system-blueStar',
             'system-blueHyperGiant': 'system-blueStar',
             'system-blueStar': 'system-blueStar',
@@ -39,6 +40,26 @@ CORE.extendConfig({
             sector: 15,
             system: 20
         },
+        colours: {
+            neutralWhite: {
+                hex: '#EAEAEA',
+                r: 234,
+                g: 234,
+                b: 234
+            },
+            ownedGreen:{
+                hex: '#0A9210',
+                r: 10,
+                g: 146,
+                b: 16
+            },
+            enemyRed:{
+                hex: '#E0140A',
+                r: 224,
+                g: 20,
+                b: 10
+            }, 
+        }
         // mapScaleFactor: {
         //     sector: 100,
         //     system: 1000

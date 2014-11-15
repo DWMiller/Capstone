@@ -1,6 +1,6 @@
 <?php
 
-class Map_m extends Model {
+class Map_m extends Core_Model {
 
 	public function __construct(){ 
 		 parent::__construct();
@@ -15,9 +15,13 @@ class Map_m extends Model {
 	 }
 
 	 public function getSystems($val,$field = 'sector_id') {
-			$sql = "SELECT *,  
+			$sql = "SELECT s.*, SUM(f.size) as system_ships,  
 			(SELECT id FROM locations WHERE system_id = s.id AND type = 'wormhole') as wormhole_id
-			FROM systems s WHERE $field = ?";
+			FROM `systems` s 			
+			LEFT JOIN `locations` l ON l.system_id = s.id
+			LEFT JOIN `fleets` f ON f.location_id = l.id
+			WHERE $field = ?
+			GROUP BY id";
 			$stmt = $this->dbh->prepare($sql);
 			$this->dbo->execute($stmt,array($val));
 

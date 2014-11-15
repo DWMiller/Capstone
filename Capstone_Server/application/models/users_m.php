@@ -1,6 +1,6 @@
 <?php
 
-class Users_m extends Model {
+class Users_m extends Core_Model {
 
 	public function __construct(){ 
 		parent::__construct();
@@ -13,10 +13,16 @@ class Users_m extends Model {
 
 		$sql = 'INSERT INTO users (username,status,email,salt,password) values (?,?,?,?,?)';
 		$stmt = $this->dbh->prepare($sql);
-
 		$this->dbo->execute($stmt,array($username,1,$email,$salt,$password));
 
-		return $stmt->rowCount() == 1;
+		$userID = $this->dbh->lastInsertId(); 
+
+		//Maybe use a trigger for this?
+		$sql = 'INSERT INTO user_settings (user_id) values (?)';
+		$stmt = $this->dbh->prepare($sql);
+		$this->dbo->execute($stmt,array($userID));
+
+		return $userID;
 	}
 
 
@@ -72,6 +78,12 @@ class Users_m extends Model {
 		$stmt = $this->dbh->prepare($sql);
     
     	$this->dbo->execute($stmt,array(USER_QUEUED,$user['id']));
+	}
+
+	public function removeResources($id,$amount) {
+		$sql = "UPDATE users SET resources = resources - ? WHERE id = ?";
+		$stmt = $this->dbh->prepare($sql);
+    	$stmt->execute(array($amount,$id));
 	}
 
 	public function leaveQueue(&$user) {

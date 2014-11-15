@@ -35,11 +35,8 @@ CORE.createModule('map', function(c, config) {
     var baseFontSize = 16;
     var baseLineSpacing = 4;
 
-    var defaultText = {
-        fontSize: baseFontSize,
-        fontFamily: 'Georgia',
-        fill: '#FFF'
-    };
+    var defaultText;
+
     var defaultIcon = {
         width: 20,
         height: 20
@@ -51,13 +48,15 @@ CORE.createModule('map', function(c, config) {
 
     var activeFleet = null,
         fleetTarget = null;
+
+    var lastDragCheck, dragCheckThreshold = 300; // limits drag handling logic to occur every x amount of milliseconds
+
+    var time = new Date().getTime();
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
         scope = sb.create(c, p_properties.id, 'module-game');
-
         elements.mapWrapper = $("#game-map");
-
         elements.user = $('#module-user');
 
         w = elements.mapWrapper.width();
@@ -69,6 +68,12 @@ CORE.createModule('map', function(c, config) {
             width: w,
             height: h
         });
+
+        defaultText = { // Default to be used when creating kinetic text objects
+                fontSize: baseFontSize,
+                fontFamily: 'Georgia',
+                fill: config.colours.neutralWhite.hex
+        };
 
         bindEvents();
 
@@ -88,10 +93,8 @@ CORE.createModule('map', function(c, config) {
             }
         });
 
-        state = true;
-
-        getMapData();
         startUpdater();
+        getMapData();
 
         addHistory();
 
@@ -105,7 +108,6 @@ CORE.createModule('map', function(c, config) {
     function p_destroy() {
         cancelAnimationFrame(animator);
         scope.hide();
-        state = false;
         unbindEvents();
         scope = null;
         elements = {};
@@ -130,6 +132,11 @@ CORE.createModule('map', function(c, config) {
         elements.layers.fleets.on('dragstart', fleetDragStart);
         elements.layers.fleets.on('dragend', fleetDragEnd);
         elements.layers.fleets.on('dragmove', fleetDragging);
+
+        // Great for performance, annoying for presentation
+        // $(window).on('focus', windowFocusOn);
+        // $(window).on('blur', windowFocusOut);
+
     }
 
     function unbindEvents() {
@@ -147,6 +154,9 @@ CORE.createModule('map', function(c, config) {
         elements.layers.fleets.off('dragstart', fleetDragStart);
         elements.layers.fleets.off('dragend', fleetDragEnd);
 
+        $(window).off('focus', windowFocusOn);
+        $(window).off('blur', windowFocusOut);        
+
     }
 
     /************************************ UI Handlers ************************************/
@@ -161,6 +171,15 @@ CORE.createModule('map', function(c, config) {
     function imageMouseout() {
         c.dom.removeClass(scope.self(), 'hover');
     }
+
+    function windowFocusOn() {
+        startUpdater();
+    }
+
+    function windowFocusOut() {
+        stopUpdater();
+    }
+
 
     /************************************ POSTS ************************************/
     function getMapData() {
@@ -252,39 +271,51 @@ CORE.createModule('map', function(c, config) {
 
         if(state) {
             populateFleets(); 
-        }
-        
-        startUpdater();
+        } else {
+            startUpdater();
+        }   
     }
 
     /************************************ UI Event Handlers ************************************/
 
     function layerClickHandler(event) {
+        var object = event.target.data;
+
         // System is lowest map layer, can not drill down further
         if (c.data.map.scale === 'system') {
+
+            if(object.type==='wormhole') {
+                navigateBack();
+            }
             return;
         }
 
         addHistory();
 
-        var object = event.target.data;
-
         c.data.map.scale = object.scale;
         c.data.map.id = object.id;
         // c.data.map.size = config.mapScaleFactor[object.scale];
 
-        state = false;
+        stopUpdater();
         getMapData();
-        state = true;
+        startUpdater();
 
     }
 
     function fleetDragStart(event) {
+        lastDragCheck = time;
+
         stopUpdater();
         activeFleet = event.target.data;
     }
 
     function fleetDragging(event) {
+        if(lastDragCheck > (time - dragCheckThreshold)) {
+            return;
+        }
+        
+        lastDragCheck = time;
+
         var kImg = event.target;
         processFleetIntersections(kImg);
     }
@@ -405,10 +436,13 @@ CORE.createModule('map', function(c, config) {
      * @return {[type]} [description]
      */
     function navigateBack() {
+        c.data.map.fleets = null;
+        stopUpdater();
+
         c.data.map = history.pop();
-        state = false;
+
+        startUpdater();
         getMapData();
-        state = true;
     }
 
     function showDetails(event) {
@@ -449,6 +483,7 @@ CORE.createModule('map', function(c, config) {
         loadImage('sector-yellowStar', 'sector/yellowStar.png');
         loadImage('sector-whiteStar', 'sector/whiteStar.png');
         loadImage('fleet', 'fleet.png');
+        loadImage('explosion', 'system/explosion.jpg');
         loadImage('beaker', 'beaker.png');
         loadImage('anchor', 'anchor.png');
         loadImage('mine', 'mine.png');
@@ -471,7 +506,7 @@ CORE.createModule('map', function(c, config) {
     function loadSprites() {
         var w = 84,
             h = 84;
-        imageResources.sprites.wormhole = new Kinetic.Sprite({
+        imageResources.sprites.wormhole = {
             // x: 500,
             // y: 500,
             image: imageResources[config.imageMapping['system-wormhole']],
@@ -503,7 +538,7 @@ CORE.createModule('map', function(c, config) {
             },
             frameRate: 15,
             frameIndex: 0
-        });
+        };
     }
 
     function setStageSize() {
@@ -560,20 +595,26 @@ CORE.createModule('map', function(c, config) {
 
     function clearFleetOverlays() {
         elements.layers.fleets.getChildren().each(function(img) {
-            img.data.overlay.forEach(function(e) {
+            img.data.overlay.forEach(function(e) {            
                 e.remove();
+                e = null;
             });
+            img.data.overlay = null;
         });
     }
 
     function simulateFleetMovement() {
-        clearFleetOverlays();
-
-        var time = Math.round((new Date()).getTime());
+        // clearFleetOverlays();
 
         elements.layers.fleets.getChildren().each(function(img) {
-
             var fleet = img.data;
+
+            if(fleet.arrived) {
+                // This fleet was moved and has arrived in a previous simulation
+                // Nothing to update until fresh map data replaces it
+                return;
+            }
+
             var x1, y1, x2, y2;
 
             if (c.data.map.scale === 'system') {
@@ -590,36 +631,45 @@ CORE.createModule('map', function(c, config) {
 
             if (fleet.destination_id) {
 
+                //Clear overlay for this fleet, will be recreated - Note, should be moved instead of replaced
+                fleet.overlay.forEach(function(e) {            
+                    e.remove();
+                    e = null;
+                });
+                fleet.overlay = null;
+
                 var elapsedTime = time - fleet.departure_time * 1000;
                 var tripTime = fleet.arrival_time * 1000 - fleet.departure_time * 1000;
 
                 if (elapsedTime > tripTime) {
-                    getMapData();
-                    stopUpdater();
-                    startUpdater();
-                    return;
+                    x1 = x2;
+                    y1 = y2;
+                    fleet.arrived = true;
+                    // Should only fire once per fleet
+                    // getMapData();
+                    // stopUpdater();
+                    // startUpdater();
+                    // return;
+                } else {
+                    var percentTravelled = elapsedTime / tripTime;
+                    x1 = (x1 * 1) + ((x2 - x1) * 1) * percentTravelled;
+                    y1 = (y1 * 1) + ((y2 - y1) * 1) * percentTravelled;                    
                 }
-
-                var percentTravelled = elapsedTime / tripTime;
-
-                x1 = (x1 * 1) + ((x2 - x1) * 1) * percentTravelled;
-                y1 = (y1 * 1) + ((y2 - y1) * 1) * percentTravelled;
-
 
                 var coords = scaleCoordinates(x1, y1);
 
                 img.setX(coords.x);
                 img.setY(coords.y);
 
-                
+                fleet.overlay = addFleetOverlay(fleet, img.attrs);
             }
         });
 
         // Add fresh overlays to all fleets
-        elements.layers.fleets.getChildren().each(function(img) {
-            var fleet = img.data;
-            fleet.overlay = addFleetOverlay(fleet, img.attrs);
-        });
+        // elements.layers.fleets.getChildren().each(function(img) {
+        //     var fleet = img.data;
+        //     fleet.overlay = addFleetOverlay(fleet, img.attrs);
+        // });
 
         
     }
@@ -628,7 +678,6 @@ CORE.createModule('map', function(c, config) {
 
         fleet.scale = 'fleet';
         var x1, y1, x2, y2;
-
 
         if (c.data.map.scale === 'system') {
             x1 = fleet.position_x;
@@ -648,8 +697,6 @@ CORE.createModule('map', function(c, config) {
                 // Don't show fleet in system if enroute to different system
                 return;
             }
-
-            var time = Math.round((new Date()).getTime() / 1000);
 
             var elapsedTime = time - fleet.departure_time;
             var tripTime = fleet.arrival_time - fleet.departure_time;
@@ -700,9 +747,13 @@ CORE.createModule('map', function(c, config) {
         kImage.filters([Kinetic.Filters.RGB]);
 
         if (owned) {
-            kImage.green(255);
+            kImage.red(config.colours.ownedGreen.r);
+            kImage.green(config.colours.ownedGreen.g);
+            kImage.blue(config.colours.ownedGreen.b);
         } else {
-            kImage.red(255);
+            kImage.red(config.colours.enemyRed.r);
+            kImage.green(config.colours.enemyRed.g);
+            kImage.blue(config.colours.enemyRed.b);
         }
 
         fleet.overlay = addFleetOverlay(fleet, kImage.attrs);
@@ -737,7 +788,7 @@ CORE.createModule('map', function(c, config) {
 
         var kImage;
         if (location.type === 'wormhole') {
-            kImage = imageResources.sprites.wormhole;
+            kImage = new Kinetic.Sprite(imageResources.sprites.wormhole);
 
             kImage.stop(); //if not stopped prior to starting animation speed will stack
             kImage.start();
@@ -777,25 +828,38 @@ CORE.createModule('map', function(c, config) {
         //     fill: (userSystems[system.id]) ? '#0FC90A' : '#FFF'
         // });
 
+        var ships = $.extend({}, defaultText, {
+            x: kImage.x + kImage.width,
+            y: kImage.y - baseLineSpacing*2,
+            text: system.system_ships || "0",
+            fill: config.colours.neutralWhite.hex
+        });
+
+
         var name = $.extend({}, defaultText, {
             x: kImage.x,
             y: kImage.y + kImage.height + baseLineSpacing,
             text: system.name,
-            fill: (userSystems[system.id]) ? '#0FC90A' : '#FFF'
+            fill: (userSystems[system.id]) ? config.colours.ownedGreen.hex : config.colours.neutralWhite.hex
         });
 
         elements.layers.overlay.add(new Kinetic.Text(name));
+        elements.layers.overlay.add(new Kinetic.Text(ships));
     }
 
     function addLocationOverlay(location, kImage) {
+        if (location.type === 'wormhole') {
+            return;
+        }
+
         var color;
 
         if (!location.owner_id) {
-            color = '#FFF';
+            color = config.colours.neutralWhite.hex;
         } else if (location.owner_id === c.data.user.id) {
-            color = '#00FF00';
+            color = config.colours.ownedGreen.hex;
         } else {
-            color = '#FF0000';
+            color = config.colours.enemyRed.hex;
         }
 
         var name = $.extend({}, defaultText, {
@@ -807,7 +871,7 @@ CORE.createModule('map', function(c, config) {
 
         elements.layers.overlay.add(new Kinetic.Text(name));
 
-        if (location.type === 'wormhole' || (location.category === 'star')) {
+        if ((location.category === 'star')) {
             return;
         }
 
@@ -885,6 +949,8 @@ CORE.createModule('map', function(c, config) {
     }
 
     function addFleetOverlay(fleet, kImage) {
+
+
         var overlay = [];
         var owned = (fleet.owner_id === c.data.user.id);
 
@@ -892,7 +958,7 @@ CORE.createModule('map', function(c, config) {
             x: kImage.x + kImage.width,
             y: kImage.y,
             text: fleet.size,
-            fill: owned ? '#0FC90A' : '#FF0000'
+            fill: owned ? config.colours.ownedGreen.hex : config.colours.enemyRed.hex
         });
 
         if (fleet.destination_id) {
@@ -917,7 +983,7 @@ CORE.createModule('map', function(c, config) {
 
             var line = new Kinetic.Line({
                 points: [x1, y1, destination.x, destination.y],
-                stroke: owned ? '#0FC90A' : '#FF0000',
+                stroke: owned ? config.colours.ownedGreen.hex : config.colours.enemyRed.hex,
                 lineJoin: 'round',
                 strokeWidth: 2,
                 // tension: 1,
@@ -941,24 +1007,27 @@ CORE.createModule('map', function(c, config) {
         return overlay;
     }
 
-    function animate() {
+    function animate(timestamp) {
+        //timestamp is milliseconds since page was opened, not useful here
+        time = new Date().getTime();
+
         simulateFleetMovement();
-
-        elements.stage.drawScene();
-
-        // if (state) {
         animator = requestAnimationFrame(animate);
-        // }
+        elements.stage.drawScene();
     }
 
     function startUpdater() {
+        if(!state) {
+            updater = setInterval(getMapData, config.UPDATE_INTERVAL);
+        }
         state = true;
-        updater = setInterval(getMapData, config.UPDATE_INTERVAL);
     }
 
     function stopUpdater() {
-        state = false;
-        clearInterval(updater);
+        if(state) {
+            clearInterval(updater);
+        }
+        state = false;        
     }
 
     return {

@@ -5,6 +5,7 @@ function myAutoLoader ($className) {
     
       $locations = array(
           '/system/classes/',
+          '/application/core/',
           '/application/controllers/',
           '/application/models/',
           '/application/classes/geometry/',

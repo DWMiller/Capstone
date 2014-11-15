@@ -1,8 +1,8 @@
 <?php 	
 
-class Empire extends Controller {
+class Empire extends Core_Controller {
 	// private $Game;
-	private $Auth;
+	// private $Auth;
 	private $Users;
 
 	private $user;
@@ -10,7 +10,7 @@ class Empire extends Controller {
 	function __construct() {
 		parent::__construct();
 		// $this->Game = new Game_m;
-		$this->Auth = new userauth_m(); 
+		// $this->Auth = new userauth_m(); 
 		$this->Users = new Users_m;	
 
 		$this->user = $this->Auth->loggedIn();
@@ -27,6 +27,23 @@ class Empire extends Controller {
 
 		//calculate costs
 		$result;
+		$cost;
+		switch($type) {
+			case 'shipyard':
+				$cost = $location->getShipyardUpgradeCost();
+				break;
+			case 'mine':
+				$cost = $location->getMineUpgradeCost();
+				break;
+			case 'lab':
+				$cost = $location->getLabUpgradeCost();
+				break;
+		}
+
+		if($this->user['resources'] < $cost) {
+			return;
+		}
+
 		switch($type) {
 			case 'shipyard':
 				$result = $location->upgradeShipYard(1);
@@ -39,7 +56,11 @@ class Empire extends Controller {
 				break;
 		}
 
+		$this->Users->removeResources($this->user['id'],$cost);
+		$this->user['resources'] -= $cost;
+
 		// if($result) {
+			$this->TPL['user-update'] = $this->user;
 			$this->TPL['location-update'] = $location->data;
 			$this->output->json_response($this->TPL);
 		// }

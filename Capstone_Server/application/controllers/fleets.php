@@ -1,13 +1,13 @@
 <?php 	
 
-class Fleets extends Controller {
-	private $Auth;
+class Fleets extends Core_Controller {
+	// private $Auth;
 	private $Users;
 	private $user;
 
 	function __construct() {
 		parent::__construct();
-		$this->Auth = new userauth_m(); 
+		// $this->Auth = new userauth_m(); 
 		$this->Users = new Users_m;	
 
 		$this->user = $this->Auth->loggedIn();

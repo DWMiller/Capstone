@@ -1,6 +1,6 @@
 <?php
 
-class Fleet_m extends Model {
+class Fleet_m extends Core_Model {
 
 	public $data = array(
 		'id' => NULL,

@@ -3,13 +3,13 @@
 /**
  * 
  */
- class Logout extends Controller {
- 	private $Auth;
+ class Logout extends Core_Controller {
+ 	// private $Auth;
 	private $users;
 
 	function __construct() {
 		parent::__construct();
-		$this->Auth = new userauth_m(); 
+		// $this->Auth = new userauth_m(); 
 		$this->users = new Users_m;		  
 	}
 
