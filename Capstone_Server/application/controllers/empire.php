@@ -2,19 +2,14 @@
 
 class Empire extends Core_Controller {
 	// private $Game;
-	// private $Auth;
 	private $Users;
-
-	private $user;
 
 	function __construct() {
 		parent::__construct();
 		// $this->Game = new Game_m;
-		// $this->Auth = new userauth_m(); 
 		$this->Users = new Users_m;	
 
-		$this->user = $this->Auth->loggedIn();
-		if(!$this->user) {
+		if(!$this->User) {
 			exit;
 		}
 	}
@@ -40,7 +35,7 @@ class Empire extends Core_Controller {
 				break;
 		}
 
-		if($this->user['resources'] < $cost) {
+		if($this->User['resources'] < $cost) {
 			return;
 		}
 
@@ -56,11 +51,12 @@ class Empire extends Core_Controller {
 				break;
 		}
 
-		$this->Users->removeResources($this->user['id'],$cost);
-		$this->user['resources'] -= $cost;
+		$this->Users->removeResources($this->User['id'],$cost);
+		$this->User['resources'] -= $cost;
+		$location->calcUpgradeCosts();
 
 		// if($result) {
-			$this->TPL['user-update'] = $this->user;
+			$this->TPL['user-update'] = $this->filteredUserData();
 			$this->TPL['location-update'] = $location->data;
 			$this->output->json_response($this->TPL);
 		// }
@@ -75,5 +71,4 @@ class Empire extends Core_Controller {
 		$this->TPL['location-update'] = $location->data;
 		$this->output->json_response($this->TPL);		
 	}
-
 }

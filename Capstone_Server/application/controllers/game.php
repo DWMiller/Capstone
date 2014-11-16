@@ -2,28 +2,23 @@
 
 class Game extends Core_Controller {
 	private $game;
-	// private $Auth;
 	private $users;
-
-	private $user;
 
 	function __construct() {
 		parent::__construct();
 		$this->game = new Game_m;
-		// $this->Auth = new userauth_m(); 
 		$this->users = new Users_m;	
 
-		$this->user = $this->Auth->loggedIn();
-		if(!$this->user) {
+		if(!$this->User) {
+			echo 'test';
 			exit;
 		}
 	}
 	
 	function index () {
-		$game = $this->game->getCurrentGame();
-		$this->TPL['game-update']['game'] = $game;
-
-		$this->output->json_response($this->TPL);
+		// $game = $this->game->getCurrentGame();
+		// $this->TPL['game-update']['game'] = $game;
+		// $this->done();
 	}
 
 	/**
@@ -31,12 +26,12 @@ class Game extends Core_Controller {
 	 * @return [type] [description]
 	 */
 	function join_queue() { 
-		if($this->user['status'] == USER_IDLE) {
-			$this->users->joinQueue($this->user);
+		if($this->User['status'] == USER_IDLE) {
+			$this->users->joinQueue($this->User);
 		}
 
-		$this->TPL['queue-update']['user-status'] = $this->user['status'];
-		$this->output->json_response($this->TPL);
+		$this->TPL['queue-update']['user-status'] = $this->User['status'];
+		$this->done();
 	}
 
 	/**
@@ -44,13 +39,13 @@ class Game extends Core_Controller {
 	 * @return [type] [description]
 	 */
 	function leave_queue() { 
-
-		if($this->user['status'] == USER_QUEUED) {
-			$this->users->leaveQueue($this->user);
+		if($this->User['status'] == USER_QUEUED) {
+			$this->users->leaveQueue($this->User);
 		}
 
-		$this->TPL['queue-update']['user-status'] = $this->user['status'];
-		$this->output->json_response($this->TPL);
+		$this->TPL['queue-update']['user-status'] = $this->User['status'];
+		$this->done();
+		
 	}
 
 	/**
@@ -58,7 +53,12 @@ class Game extends Core_Controller {
 	 * @return [type] [description]
 	 */
 	function update() {
+		$this->TPL['queue-update']['user-status'] = $this->User['status'];
+		$this->done();
+	}
 
+	function done() {
+		$this->output->json_response($this->TPL);
 	}
 
 }

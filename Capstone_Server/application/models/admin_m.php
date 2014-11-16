@@ -5,12 +5,6 @@ class Admin_m extends Core_Model {
 		 parent::__construct(); 
 	} 
 
-	public function clearExpiredSessions() {
-	 	$sql = file_get_contents('system/scripts/sessions.sql');
-		$stmt = $this->dbh->prepare($sql);
-		$this->dbo->execute($stmt,array());
-	}
-
 	public function deleteCurrentGame() {
 		$sql = 'TRUNCATE TABLE game_settings;';
 		$this->dbh->query($sql);
@@ -28,7 +22,8 @@ class Admin_m extends Core_Model {
 
 	public function activateQueuedPlayers() {
 		$sql = 'UPDATE users SET status = 3, resources = 50, tech_armour = 0, tech_weapons = 0, tech_propulsion = 0 WHERE status = 2';
-		$this->dbh->query($sql);
+		$result = $this->dbh->query($sql);
+		return $result->rowCount();
 	}
 
 	public function createNewGame($players = 12) {
@@ -38,13 +33,18 @@ class Admin_m extends Core_Model {
 		$this->dbo->execute($stmt,$data);		
 	}
 
+	public function eraseBattleLogs() {
+		$sql = 'TRUNCATE battle_logs';
+ 		$this->dbh->query($sql);
+	}
+
 	public function eraseMap() {
  		$sql = 'DELETE FROM locations; DELETE FROM systems; ';
  		$this->dbh->query($sql);
 	}
 
 	public function eraseFleets() {
- 		$sql = 'DELETE FROM fleets;';
+ 		$sql = 'TRUNCATE fleets;';
  		$this->dbh->query($sql);
 	}
 

@@ -18,20 +18,20 @@ class Game_m extends Core_Model {
 
 
 	 public function getCurrentGame() {
-	 	$sql = 'SELECT * FROM game_settings';
-		$stmt = $this->dbh->prepare($sql);
-		$this->dbo->execute($stmt,array());	
+	 // 	$sql = 'SELECT * FROM game_settings';
+		// $stmt = $this->dbh->prepare($sql);
+		// $this->dbo->execute($stmt,array());	
 
-		if ($stmt->rowCount() >= 1)
-		{	
-			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			return $result[0];
-		} else {
-			return false;
-		}	
+		// if ($stmt->rowCount() >= 1)
+		// {	
+		// 	$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		// 	return $result[0];
+		// } else {
+		// 	return false;
+		// }	
 	 }
 
 	 public function getNextGame() {
-	 	return true;
+	 	// return true;
 	 }
 }

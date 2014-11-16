@@ -74,6 +74,8 @@ class Userauth_m extends Core_Model {
 
 	private function hackerCheck()
 	{
+		$currentIP = $this->users->getIP();
+
 		// if ($_SESSION['auth']['ipAddress'] != $_SERVER['REMOTE_ADDR']) {
 		// 	$this->logout();
 		// }
@@ -84,10 +86,10 @@ class Userauth_m extends Core_Model {
 		return false;
 	}
 
-	public function logout()
+	public function logout($userID)
 	{
 		if(isset($_REQUEST['session'])) {
-			$this->users->clearSession($_REQUEST['session']);
+			$this->users->clearAllSessions($userID);
 			$_SESSION = array();
 			// session_destroy();			
 		}
@@ -96,10 +98,12 @@ class Userauth_m extends Core_Model {
 	public function validSessionExists()
 	{
 		if(isset($_REQUEST['session'])) {
-			return $this->users->getActiveUsersByField($_REQUEST['session'],'session')[0];
-		} else {
-			return false;
+			$user = $this->users->getActiveUsersByField($_REQUEST['session'],'session');
+			$user = $user[0];
+			return $user;
 		}
+		
+		return false;
 	}
 
 }

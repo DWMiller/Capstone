@@ -1,19 +1,21 @@
 <?php 	
 
 class Admin extends Core_Controller {
-	
-	// private $Auth;
+
 	private $admin;
 	private $map;
 
 	function __construct() {
 		parent::__construct();
 		$this->admin = new Admin_m;
-		// $this->Auth = new userauth_m(); 
 
-		if(!$this->Auth->loggedIn()) {
+		if(!$this->User) {
 			exit;
-		}  
+		}
+
+		if(!$this->User['is_admin']) {
+			exit;
+		}
 
 		$this->map = new Map_m;
 	}
@@ -22,32 +24,31 @@ class Admin extends Core_Controller {
 		$this->output->json_response($this->TPL);
 	}
 
-	public function clear() {
-		$this->admin->clearExpiredSessions();
-	}
-
 	public function new_game() {
 		$args = func_get_args()[0];
 
 		//Comment out when live
 		$this->admin->queueAllPlayers();
 		
-		$this->admin->activateQueuedPlayers();
+		$playerCount = $this->admin->activateQueuedPlayers();
 
-		$this->admin->createNewGame();//$args['player_count']
-		$this->generate(array('scale'=> 1000, 'seed'=>200));
-		$this->admin->placePlayers();
+		if($playerCount >= MIN_PLAYERS) {
+			$this->admin->createNewGame();//$args['player_count']
+
+			//Don't change scale, equates to dimensions of map and values other than 1000 are not currently supported
+			$this->admin->createMap(1000, 25*$playerCount);
+			$this->admin->placePlayers();			
+		} else {
+			$this->end_game();
+		}
+
 	}
 
 	public function end_game() {
 		$this->admin->deleteCurrentGame();
 		$this->admin->eraseFleets();
+		$this->admin->eraseBattleLogs();
 		$this->admin->eraseMap();
 		$this->admin->clearActivePlayers();
-	}
-
-	public function generate() {
-		$args = func_get_args()[0];
-		$this->admin->createMap($args['scale'],$args['seed']);
 	}
 }

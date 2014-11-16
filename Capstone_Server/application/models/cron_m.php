@@ -1,34 +1,83 @@
 <?php
 
 class Cron_m extends Core_Model {
-	public function __construct(){ 
-		 parent::__construct();
-	 } 
+	/*********************** QUERIES ************************************/
 
- 	// public function getMineData() {
-		// $sql = "SELECT owner_id,COUNT(mines) mine_count FROM locations WHERE owner_id IS NOT NULL GROUP BY owner_id";
-		// $stmt = $this->dbh->prepare($sql);
-		// $this->dbo->execute($stmt,array());
-		// return $stmt->fetchAll(PDO::FETCH_ASSOC);
- 	// }
-
- 	// public function addResources($playerID, $amount) {
-		// $sql = "UPDATE users SET resources = resources + ? WHERE id = ?";
-		// $stmt = $this->dbh->prepare($sql);
-		// $this->dbo->execute($stmt,array($amount,$playerID));	
- 	// }
-
- 	public function addResources() {
-		$sql = "UPDATE users u,
+	// Grants users resources based on mine ownership
+	private $sql_addResources = "UPDATE users u,
 					(SELECT owner_id, sum(resources*mines)  as rsum
 					FROM locations 
 					WHERE owner_id IS NOT NULL
 					GROUP BY owner_id) as s
 				SET u.resources = u.resources + s.rsum
 				WHERE u.id = s.owner_id AND u.status = 3";
-		$stmt = $this->dbh->prepare($sql);
-		$stmt->execute(array());	
+
+	// Creates fleets where no fleet is present and location has a shipyard
+	private $sql_createMissingFleets = "INSERT INTO fleets( location_id, owner_id ) 
+				SELECT l.id, l.owner_id
+				FROM  `locations` l
+				LEFT JOIN  `fleets` f ON l.id = f.location_id
+				WHERE l.shipyards > 0
+				AND f.id IS NULL";
+
+	// Gets representation of merged fleets at a location (all fleets owned by a user if ship counts were merged)
+	private $sql_mergeFleets = "SELECT * ,SUM(size) size
+			FROM fleets
+			WHERE destination_id IS NULL
+			GROUP BY location_id, owner_id
+			HAVING COUNT(*) > 1";
+
+	// Expand fleets based on shipyards/resources at fleet location
+	private $sql_addShips = "UPDATE `fleets` f
+		JOIN `locations` l ON f.location_id = l.id AND f.owner_id = l.owner_id
+		SET f.size = f.size + (l.shipyards * l.resources/2) + l.shipyards
+		WHERE f.destination_id IS NULL";
+
+	// Get locations where combat is occuring 
+	private $sql_combatLocations = "SELECT l.*
+			FROM locations l
+			JOIN fleets f 
+			ON f.location_id = l.id
+			WHERE f.destination_id IS NULL
+			GROUP BY location_id
+			HAVING COUNT(*) > 1";
+
+	// Get fleets involved in combat at location
+	private $sql_combatFleets = "SELECT f.*, u.tech_weapons, u.tech_armour FROM fleets f
+				JOIN users u ON u.id = f.owner_id 
+		 		WHERE f.location_id = ?
+		 		ORDER BY f.size DESC";
+
+
+	//Statements for above queries
+	// Not strictly needed, but more efficient if a query is used more than once
+	private $stmt_addResources;
+	private $stmt_createMissingFleets;
+	private $stmt_mergeFleets;
+	private $stmt_addShips;
+	private $stmt_combatLocations;
+	private $stmt_combatFleets;
+
+
+	public function __construct(){ 
+		 parent::__construct();
+		 $this->stmt_addResources = $this->dbh->prepare($this->sql_addResources);
+		 $this->stmt_createMissingFleets = $this->dbh->prepare($this->sql_createMissingFleets);	
+		 $this->stmt_mergeFleets = $this->dbh->prepare($this->sql_mergeFleets);
+		 $this->stmt_addShips = $this->dbh->prepare($this->sql_addShips);
+		 $this->stmt_combatLocations = $this->dbh->prepare($this->sql_combatLocations);
+		 $this->stmt_combatFleets = $this->dbh->prepare($this->sql_combatFleets);
+	} 
+
+ 	public function addResources() {
+		$this->stmt_addResources->execute(array());	
  	}
+
+
+	public function clearExpiredSessions() {
+	 	$sql = "DELETE FROM active_sessions WHERE expires < NOW()";
+		$this->dbh->query($sql);
+	}
 
  	/**
  	 * Create a new fleet on every planet with shipyards that does not already have a fleet
@@ -37,14 +86,7 @@ class Cron_m extends Core_Model {
  		//TODO 
  		// No fleets may not be an adequate condition, as enemy fleets being present should not stop this process
  		// No owned fleets would be better, figure out SQL for it
- 		$sql = "INSERT INTO fleets( location_id, owner_id ) 
-				SELECT l.id, l.owner_id
-				FROM  `locations` l
-				LEFT JOIN  `fleets` f ON l.id = f.location_id
-				WHERE l.shipyards >0
-				AND f.id IS NULL";
-		$stmt = $this->dbh->prepare($sql);
-		$stmt->execute(array());				
+		$this->stmt_createMissingFleets->execute(array());				
  	}
 
 
@@ -60,16 +102,11 @@ class Cron_m extends Core_Model {
 		// $stmt->execute(array());
 
  		//Query representing new fleets that will be created
- 		$sql="SELECT * ,SUM(size) size
-			FROM fleets
-			WHERE destination_id IS NULL
-			GROUP BY location_id, owner_id
-			HAVING COUNT(*) > 1";
-		$stmt = $this->dbh->prepare($sql);
-		$stmt->execute(array());	
 
-		if ($stmt->rowCount() > 0){	
-			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$this->stmt_mergeFleets->execute(array());	
+
+		if ($this->stmt_mergeFleets->rowCount() > 0){	
+			$result = $this->stmt_mergeFleets->fetchAll(PDO::FETCH_ASSOC);
 			
 			//loop through fleets, delete all existing user fleets at location
 			$sql = "DELETE FROM fleets WHERE owner_id = ? AND location_id = ? AND destination_id IS NULL";
@@ -95,12 +132,7 @@ class Cron_m extends Core_Model {
  	 * Add ships to fleets based on owned shipyards at location
  	 */
  	public function addShips() {
- 		$sql ="UPDATE `fleets` f
-		JOIN `locations` l ON f.location_id = l.id AND f.owner_id = l.owner_id
-		SET f.size = f.size + (l.shipyards * l.resources/2) + l.shipyards
-		WHERE f.destination_id IS NULL";
-		$stmt = $this->dbh->prepare($sql);
-		$stmt->execute(array());		
+		$this->stmt_addShips->execute(array());		
  	}
 
  	public function fleetArrivals() {
@@ -116,6 +148,7 @@ class Cron_m extends Core_Model {
 		    INNER JOIN (SELECT l2.id,f.owner_id,COUNT(*) c 
 		    FROM fleets f
 		    JOIN locations l2 ON f.location_id = l2.id
+		    WHERE f.destination_id IS NULL
 		    GROUP BY l2.id
 		    ) as s ON l.id = s.id
 		SET l.owner_id = s.owner_id
@@ -127,47 +160,88 @@ class Cron_m extends Core_Model {
 	public function combat() {
 		// Select all locations with multiple fleets
 		// Note: Fleet merging must precede this to ensure all fleets belong to different players
-		$sql = "SELECT l.*
-			FROM locations l
-			JOIN fleets f 
-			ON f.location_id = l.id
-			WHERE f.destination_id IS NULL
-			GROUP BY location_id
-			HAVING COUNT(*) > 1";
 
- 		$stmt = $this->dbh->prepare($sql);
-		$stmt->execute(array());
+		$this->stmt_combatLocations->execute(array());
 
-		if ($stmt->rowCount() > 0){	
-			$locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		if ($this->stmt_combatLocations->rowCount() > 0){	
+			$locations = $this->stmt_combatLocations->fetchAll(PDO::FETCH_ASSOC);
 
-			$sql = "SELECT * FROM fleets WHERE location_id = ?";
-			$stmt = $this->dbh->prepare($sql);
 			//Resolve combat at each location
 			foreach ($locations as $key => $location) {
-				$this->resolveLocationCombat($stmt,$location);
+				$this->resolveLocationCombat($location);
 			}
 		}	
 
 	}
 
-	private function resolveLocationCombat ($stmt,$location) {
+	private function resolveLocationCombat ($location) {
 		// SELECT * FROM fleets WHERE location = ?
-		$stmt->execute(array($location['id']));
+		$this->stmt_combatFleets->execute(array($location['id']));
 
-		if ($stmt->rowCount() > 0){	
-			$fleets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		if ($this->stmt_combatFleets->rowCount() > 0){	
+			$fleets = $this->stmt_combatFleets->fetchAll(PDO::FETCH_ASSOC);
 
-			$sql = "UPDATE fleets SET size = size - 4 WHERE location_id = ?";
-			$stmt2 = $this->dbh->prepare($sql);
+			// $sql = "UPDATE fleets SET size = size - 4 WHERE location_id = ?";
+			// $stmt2 = $this->dbh->prepare($sql);
 
-			// foreach ($fleets as $key => $fleet) {
-				$stmt2->execute(array($location['id']));
-			// }
-
+			// // foreach ($fleets as $key => $fleet) {
+			// 	$stmt2->execute(array($location['id']));
+			// // }
+			// 
 			
+			
+			//largest fleet attacks every other fleet, and is then removed from array
+			//Then second largest fleet repeats, etc...
+			//
+			while(count($fleets) > 1) {
+				$active = $fleets[0];
+
+				// Get all fleets excluding first fleet (should be largest)
+				$targets = array_slice($fleets, 1);
+
+				foreach ($targets as $fleet) {
+					$this->engagement($active,$fleet);
+				}
+
+				$fleets = $targets;
+			}
 		}
 	}
+
+	private function engagement($fleet1, $fleet2) {
+		// echo '<pre>';
+		// echo print_r($fleet1);
+		// echo print_r($fleet2);
+		// echo '</pre>';
+
+		// Battle losses equal square root of smaller fleets size, min of 1
+		$losses = ($fleet1['size'] > $fleet2['size']) ? sqrt($fleet2['size']) : sqrt($fleet1['size']);
+
+		if($losses < 1) {
+			$losses = 1;
+		}
+		
+		$fleet1['losses'] = 0;
+		$fleet2['losses'] = 0;
+
+		if(rand(0,1)) {
+			$loser = $fleet1;
+			$fleet1['losses'] = $losses;
+
+		} else {
+			$loser = $fleet2;
+			$fleet2['losses'] = $losses;
+		}
+
+	 	$sql = "UPDATE `fleets` 
+ 		SET size = size - ?
+ 		WHERE id = ?;
+ 		INSERT INTO `battle_logs` (location_id,player1_id,player2_id,player1_losses,player2_losses)
+ 		VALUES (?,?,?,?,?)";
+ 		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute(array($losses, $loser['id'],$fleet1['location_id'],$fleet1['owner_id'],$fleet2['owner_id'],$fleet1['losses'],$fleet2['losses']));	
+	}
+
 
 	function removeEmptyFleets() {
 		$sql = "DELETE FROM fleets WHERE size < 1";

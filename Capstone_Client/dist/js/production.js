@@ -707,9 +707,8 @@ CORE.createModule('system-server', function(c) {
  * @type {Object}
  */
 CORE.extendConfig({
-	example: {
-		setting1: 'test',
-		setting2: 11	
+	lobby: {
+		UPDATE_INTERVAL: 5000,
 	}
 });
 CORE.extendConfig({
@@ -728,7 +727,8 @@ CORE.extendConfig({
 CORE.extendConfig({
     map: {
         DRAW_INTERVAL: 100, //how often the map redraws
-        UPDATE_INTERVAL: 3000, // Rate at which new map data is requested from server   
+        UPDATE_INTERVAL: 3000, // Rate at which new map data is requested from server  
+        dragCheckThreshold: 200, // limits drag handling logic to occur every x amount of milliseconds
         imageMapping: {
             'system-terran': 'system-terran',
             'system-desert': 'system-desert',
@@ -1129,7 +1129,7 @@ CORE.createModule('admin', function(c) {
 
     var listeners = {};
 
-    var turnUpdater, maintainenceUpdater;
+    var turnUpdater, maintainenceUpdater,combatTurnUpdater;
 
     /************************************ MODULE INITIALIZATION ************************************/
     /************************************ POSTS ************************************/
@@ -1140,21 +1140,17 @@ CORE.createModule('admin', function(c) {
         scope = sb.create(c, p_properties.id, 'module-admin');
 
         elements = {
-            session_clear: scope.find('#admin-session_clear'),
             game_end: scope.find('#admin-game_end'),
             game_start: scope.find('#admin-game_start'),
-            // map_generate: scope.find('#admin-map_generate'),
             stop: scope.find('#admin-module-stop'),
-            'cron-income': scope.find('#cron-income'),
-            'cron-ships': scope.find('#cron-ships')
         };
 
         scope.show();
         bindEvents();
 
-        triggerTurn();
-        turnUpdater = setInterval(triggerTurn,10000);
-        maintainenceUpdater = setInterval(triggerMaintainence,1000);
+        turnUpdater = setInterval(triggerTurn, 10000);
+        combatTurnUpdater = setInterval(triggerCombatTurn, 3000);
+        maintainenceUpdater = setInterval(triggerMaintainence, 1000);
     }
 
     function p_destroy(event) {
@@ -1169,25 +1165,22 @@ CORE.createModule('admin', function(c) {
         elements = {};
 
         clearInterval(turnUpdater);
+        clearInterval(combatTurnUpdater);
         clearInterval(maintainenceUpdater);
     }
 
     function bindEvents() {
         scope.listen(listeners);
-        scope.addEvent(elements.session_clear, 'click', clearExpiredSessions);
         scope.addEvent(elements.game_end, 'click', endCurrentGame);
         scope.addEvent(elements.game_start, 'click', startNewGame);
-        // scope.addEvent(elements.map_generate, 'click', generateMap);   
         scope.addEvent(elements.stop, 'click', stop);
 
     }
 
     function unbindEvents() {
         scope.ignore(Object.keys(listeners));
-        scope.removeEvent(elements.session_clear, 'click', clearExpiredSessions);
         scope.removeEvent(elements.game_end, 'click', endCurrentGame);
         scope.removeEvent(elements.game_start, 'click', startNewGame);
-        // scope.removeEvent(elements.map_generate, 'click', generateMap);     
         scope.removeEvent(elements.stop, 'click', stop);
 
     }
@@ -1198,25 +1191,6 @@ CORE.createModule('admin', function(c) {
         }
 
         c.stopModule(p_properties.id);
-    }
-
-    function clearExpiredSessions(event) {
-        if (event.preventDefault) {
-            event.preventDefault();
-        }
-
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    admin: {
-                        clear: {
-                            placeholder: true //can't serialize empty object
-                        }
-                    }
-                }
-            }
-        });
     }
 
     function endCurrentGame(event) {
@@ -1260,34 +1234,54 @@ CORE.createModule('admin', function(c) {
 
 
     function triggerTurn() {
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    cron: {
-                        executeTurn: {
-                            placeholder: true
-                        }                           
+        if (c.data.user.status == 3) {
+            scope.notify({
+                type: 'server-post',
+                data: {
+                    api: {
+                        cron: {
+                            executeTurn: {
+                                placeholder: true
+                            }
+                        }
                     }
                 }
-            }
-        });        
+            });
+        }
     }
-  
+
+    function triggerCombatTurn() {
+        if (c.data.user.status == 3) {
+            scope.notify({
+                type: 'server-post',
+                data: {
+                    api: {
+                        cron: {
+                            executeCombatTurn: {
+                                placeholder: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
 
     function triggerMaintainence() {
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    cron: {
-                        executeMaintainence: {
-                            placeholder: true
-                        }                           
+        if (c.data.user.status == 3) {
+            scope.notify({
+                type: 'server-post',
+                data: {
+                    api: {
+                        cron: {
+                            executeMaintainence: {
+                                placeholder: true
+                            }
+                        }
                     }
                 }
-            }
-        });        
+            });
+        }
     }
 
     return {
@@ -1310,7 +1304,9 @@ CORE.createModule('details', function(c) {
     var listeners = {
         'details-show': showDetails,
         'location-update': locationUpdate,
-        'details-hide': hide
+        'details-hide': hide,
+        'details-clear': clear
+
     };
 
     var currentData;
@@ -1434,7 +1430,12 @@ CORE.createModule('details', function(c) {
 
     function hide() {
         $(elements.contents).hide();
+    }
+
+    function clear() {
         currentData = null;
+        $(elements.contents).html('');
+        hide();
     }
 
     return {
@@ -1445,7 +1446,7 @@ CORE.createModule('details', function(c) {
 
 });
 
-CORE.createModule('lobby', function(c) {
+CORE.createModule('lobby', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -1457,6 +1458,9 @@ CORE.createModule('lobby', function(c) {
     var listeners = {
         'queue-update': updateQueue
     };
+
+
+    var gameChecker;
 
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
@@ -1474,10 +1478,16 @@ CORE.createModule('lobby', function(c) {
         bindEvents();
         scope.show();
 
-        updateChoices();
+        requestQueueUpdate();
+        gameChecker = setInterval(requestQueueUpdate, config.UPDATE_INTERVAL);
+
+        // updateChoices();
     }
 
     function p_destroy() {
+        console.log('test');
+        clearInterval(gameChecker);
+
         scope.hide();
         unbindEvents();
         scope = null;
@@ -1488,14 +1498,12 @@ CORE.createModule('lobby', function(c) {
         scope.listen(listeners);
         scope.addEvent(elements.join, 'click', joinQueue);
         scope.addEvent(elements.leave, 'click', leaveQueue);
-        // scope.addEvent(elements.play, 'click', playGame);
     }
 
     function unbindEvents() {
         scope.ignore(Object.keys(listeners));
         scope.removeEvent(elements.join, 'click', joinQueue);
         scope.removeEvent(elements.leave, 'click', leaveQueue);
-        // scope.removeEvent(elements.play, 'click', playGame);
     }
 
     /************************************ POSTS ************************************/
@@ -1530,6 +1538,21 @@ CORE.createModule('lobby', function(c) {
                 api: {
                     game: {
                         leave_queue: {
+                            placeholder: true
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function requestQueueUpdate() {
+        scope.notify({
+            type: 'server-post',
+            data: {
+                api: {
+                    game: {
+                        update: {
                             placeholder: true
                         }
                     }
@@ -1821,7 +1844,7 @@ CORE.createModule('map', function(c, config) {
     var listeners = {
         'map-update': updateMapData,
         'location-update': updateLocation,
-        'fleet-update': updateFleet,
+        'fleet-update': fleetUpdate_Response,
 
     };
 
@@ -1860,9 +1883,11 @@ CORE.createModule('map', function(c, config) {
     var activeFleet = null,
         fleetTarget = null;
 
-    var lastDragCheck, dragCheckThreshold = 300; // limits drag handling logic to occur every x amount of milliseconds
+    var lastDragCheck; // limits drag handling logic to occur every x amount of milliseconds
 
     var time = new Date().getTime();
+
+    var groupMove = false;
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
@@ -1928,7 +1953,7 @@ CORE.createModule('map', function(c, config) {
     function bindEvents() {
         scope.listen(listeners);
 
-        scope.addEvent(elements.back, 'click', backButtonClick);
+        // scope.addEvent(elements.back, 'click', backButtonClick);
 
         elements.layers.map.on('click touchstart', layerClickHandler);
         // scope.addEvent(elements.layers.fleets, 'click', layerClickHandler);
@@ -1947,6 +1972,10 @@ CORE.createModule('map', function(c, config) {
         // Great for performance, annoying for presentation
         // $(window).on('focus', windowFocusOn);
         // $(window).on('blur', windowFocusOut);
+        
+        $(document).on('keydown', keyPressHandler);
+
+            
 
     }
 
@@ -1956,7 +1985,7 @@ CORE.createModule('map', function(c, config) {
 
         scope.ignore(Object.keys(listeners));
 
-        scope.removeEvent(elements.back, 'click', backButtonClick);
+        // scope.removeEvent(elements.back, 'click', backButtonClick);
         elements.layers.map.off('mouseover touchstart', showDetails);
 
         elements.layers.map.off('mouseover', imageMouseon);
@@ -1965,30 +1994,11 @@ CORE.createModule('map', function(c, config) {
         elements.layers.fleets.off('dragstart', fleetDragStart);
         elements.layers.fleets.off('dragend', fleetDragEnd);
 
+        $(document).off('keydown', keyPressHandler);
+
         $(window).off('focus', windowFocusOn);
         $(window).off('blur', windowFocusOut);        
 
-    }
-
-    /************************************ UI Handlers ************************************/
-    function backButtonClick() {
-        navigateBack();
-    }
-
-    function imageMouseon() {
-        c.dom.addClass(scope.self(), 'hover');
-    }
-
-    function imageMouseout() {
-        c.dom.removeClass(scope.self(), 'hover');
-    }
-
-    function windowFocusOn() {
-        startUpdater();
-    }
-
-    function windowFocusOut() {
-        stopUpdater();
     }
 
 
@@ -2018,13 +2028,24 @@ CORE.createModule('map', function(c, config) {
             destID = target.wormhole_id;
         }
 
+        var moveFleets = [fleet.id];
+
+        if(groupMove) {
+            moveFleets = [];
+            c.data.map.fleets.forEach(function(fleet) {
+                if(fleet.owner_id === c.data.user.id) {
+                     moveFleets.push(fleet.id); 
+                }
+            });
+        }
+
         scope.notify({
             type: 'server-post',
             data: {
                 api: {
                     fleets: {
                         move: {
-                            fleet: fleet.id,
+                            fleet: moveFleets,
                             target: destID
                         }
                     }
@@ -2070,24 +2091,47 @@ CORE.createModule('map', function(c, config) {
             }
         });
 
+        data.scale = 'location';
+        showDetails(data); 
+
         populate();
     }
 
-    function updateFleet(data) {
-        c.data.map.fleets.forEach(function(fleet, index) {
-            if (data.id === fleet.id) {
-                c.data.map.fleets[index] = data;
-            }
-        });
+    function fleetUpdate_Response(data) {
+        data.forEach(updateFleet);
 
         if(state) {
             populateFleets(); 
         } else {
             startUpdater();
-        }   
+        }           
     }
 
     /************************************ UI Event Handlers ************************************/
+
+    // function backButtonClick() {
+    //     navigateBack();
+    // }
+
+    function imageMouseon() {
+        c.dom.addClass(scope.self(), 'hover');
+    }
+
+    function imageMouseout() {
+        c.dom.removeClass(scope.self(), 'hover');
+    }
+
+    function toggleGroupMove() {
+        groupMove = !groupMove;
+    }
+
+    function windowFocusOn() {
+        startUpdater();
+    }
+
+    function windowFocusOut() {
+        stopUpdater();
+    }
 
     function layerClickHandler(event) {
         var object = event.target.data;
@@ -2121,7 +2165,7 @@ CORE.createModule('map', function(c, config) {
     }
 
     function fleetDragging(event) {
-        if(lastDragCheck > (time - dragCheckThreshold)) {
+        if(lastDragCheck > (time - config.dragCheckThreshold)) {
             return;
         }
         
@@ -2134,6 +2178,9 @@ CORE.createModule('map', function(c, config) {
     function fleetDragEnd(event) {
         if (fleetTarget) {
             moveFleet(activeFleet, fleetTarget.data);
+            fleetTarget.data.fleetMove = false;
+            fleetTarget = false;
+            activeFleet = false;
         } else {
             //Start updated again if no movement being triggered
             //If movement triggered, updater should be started once fleet update is returned
@@ -2143,10 +2190,17 @@ CORE.createModule('map', function(c, config) {
         startUpdater();
 
         scope.notify({
-            type: 'details-hide',
+            type: 'details-clear',
             data: true
         });
 
+    }
+
+    function keyPressHandler(event) {
+        switch(event.keyCode) {
+            case 17: //shift key
+            toggleGroupMove();
+        }
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
@@ -2257,9 +2311,15 @@ CORE.createModule('map', function(c, config) {
     }
 
     function showDetails(event) {
+        var item = event;
+
+        if(typeof event.target !== 'undefined') {
+            item = event.target.data;
+        } 
+
         scope.notify({
             type: 'details-show',
-            data: event.target.data
+            data: item
         });
     }
 
@@ -2525,9 +2585,12 @@ CORE.createModule('map', function(c, config) {
 
         var coords = scaleCoordinates(x1, y1);
 
-        // For fleets at location, draw on different sides of planet if owner or not
+        var owned = (fleet.owner_id === c.data.user.id);
+
+        // Draw users fleets on one side, enemy fleets on the other
+        // TODO - find a way to merge enemy fleets
         if (!fleet.destination_id) {
-            if (fleet.location_owner == fleet.owner_id) {
+            if (owned) {
                 coords.x += 10;
                 coords.y -= 15;
             } else {
@@ -2536,7 +2599,7 @@ CORE.createModule('map', function(c, config) {
             }
         }
 
-        var owned = (fleet.owner_id === c.data.user.id);
+        
 
         var drawWidth = 50;
         var drawHeight = 40;
@@ -2760,20 +2823,17 @@ CORE.createModule('map', function(c, config) {
     }
 
     function addFleetOverlay(fleet, kImage) {
-
-
         var overlay = [];
         var owned = (fleet.owner_id === c.data.user.id);
 
         var size = $.extend({}, defaultText, {
-            x: kImage.x + kImage.width,
+            x: owned ? (kImage.x + kImage.width) : (kImage.x - 20),
             y: kImage.y,
             text: fleet.size,
             fill: owned ? config.colours.ownedGreen.hex : config.colours.enemyRed.hex
         });
 
         if (fleet.destination_id) {
-
             var x1, y1, x2, y2;
 
             if (c.data.map.scale === 'system') {
@@ -2802,12 +2862,7 @@ CORE.createModule('map', function(c, config) {
             });
             elements.layers.overlay.add(line);
             overlay.push(line);
-        } else {
-            if (fleet.location_owner != fleet.owner_id) {
-                //draw size text on left of fleet if on unowned planet
-                size.x = kImage.x - 20;
-            }
-        }
+        } 
 
         size = new Kinetic.Text(size);
 
@@ -2839,6 +2894,15 @@ CORE.createModule('map', function(c, config) {
             clearInterval(updater);
         }
         state = false;        
+    }
+
+    function updateFleet(fleet) {
+        c.data.map.fleets.forEach(function(fleet2, index) {
+            //find matching fleet in local data
+            if (fleet.id === fleet2.id) {
+                c.data.map.fleets[index] = fleet;
+            }
+        });
     }
 
     return {
@@ -3015,7 +3079,6 @@ CORE.Templates = function() {
     return {
         location: function(data) {
             var structureCount = data.mines*1+data.shipyards*1+data.labs*1;
-            console.log(structureCount);
 
             var owned = (data.owner_id === CORE.data.user.id);
             var $container = $('<div>');

@@ -10,7 +10,9 @@ CORE.createModule('details', function(c) {
     var listeners = {
         'details-show': showDetails,
         'location-update': locationUpdate,
-        'details-hide': hide
+        'details-hide': hide,
+        'details-clear': clear
+
     };
 
     var currentData;
@@ -134,7 +136,12 @@ CORE.createModule('details', function(c) {
 
     function hide() {
         $(elements.contents).hide();
+    }
+
+    function clear() {
         currentData = null;
+        $(elements.contents).html('');
+        hide();
     }
 
     return {

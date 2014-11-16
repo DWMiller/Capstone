@@ -30,7 +30,14 @@ class Location_m extends Core_Model {
 		$this->data = $data;
 
 		$this->structureCount = $this->data['shipyards']+$this->data['mines']+$this->data['labs'];
+		$this->calcUpgradeCosts();
 	} 
+
+	function calcUpgradeCosts() {
+		$this->data['upgrade-cost-mine'] = $this->getMineUpgradeCost();
+		$this->data['upgrade-cost-shipyard'] = $this->getShipyardUpgradeCost();
+		$this->data['upgrade-cost-lab'] = $this->getLabUpgradeCost();
+	}
 
 	function getLocationData($locationID) {
 		$sql = "SELECT l.*, 
@@ -85,13 +92,15 @@ class Location_m extends Core_Model {
 		$this->data['shipyards']+=$increment;
 		$sql = "UPDATE locations SET shipyards = ? WHERE id = ?";
 		$stmt = $this->dbh->prepare($sql);    
+		$this->structureCount++;
     	return $this->dbo->execute($stmt,array($this->data['shipyards'],$this->data['id']));
 	}
 
 	function upgradeMine($increment = 1) {
 		$this->data['mines']+=$increment;
 		$sql = "UPDATE locations SET mines = ? WHERE id = ?";
-		$stmt = $this->dbh->prepare($sql);    
+		$stmt = $this->dbh->prepare($sql);   
+		$this->structureCount++; 
     	return $this->dbo->execute($stmt,array($this->data['mines'],$this->data['id']));
 	}
 
@@ -99,6 +108,7 @@ class Location_m extends Core_Model {
 		$this->data['labs']+=$increment;
 		$sql = "UPDATE locations SET labs = ? WHERE id = ?";
 		$stmt = $this->dbh->prepare($sql);    
+		$this->structureCount++;
     	return $this->dbo->execute($stmt,array($this->data['labs'],$this->data['id']));
 	}
 

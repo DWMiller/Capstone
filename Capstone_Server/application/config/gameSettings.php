@@ -4,7 +4,7 @@ define('TURN_QUICK_TIME', 60); // 1 minute
 define('FLEET_SPEED',100);
 define('SYSTEM_DISTANCE_MOD', 3); //multiples to make travel between stars longer
 define('USER_UNACTIVATED', 0);
-
+define('MIN_PLAYERS', 2);
 
 define('USER_IDLE', 1);
 define('USER_QUEUED', 2);

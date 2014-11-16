@@ -5,8 +5,7 @@
  * @type {Object}
  */
 CORE.extendConfig({
-	example: {
-		setting1: 'test',
-		setting2: 11	
+	lobby: {
+		UPDATE_INTERVAL: 5000,
 	}
 });

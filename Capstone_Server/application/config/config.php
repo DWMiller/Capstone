@@ -22,3 +22,5 @@ function myAutoLoader ($className) {
 
  		trigger_error("Controller file $classFile could not be lazy loaded");
  }
+
+ define('SESSION_LIMIT',2000); 

@@ -24,6 +24,10 @@ class Fleet_m extends Core_Model {
 	} 
 
 	function move($location) {
+		// echo '<pre>';
+		// echo print_r($this->data,true);
+		// echo '</pre>';
+
 		if($this->data['location_system'] == $location->data['location_system']) {
 			// Inner System movement
 			$distance = Map_m::getDistance($this->data['position_x'],$this->data['position_y'],$location->data['position_x'],$location->data['position_y']);

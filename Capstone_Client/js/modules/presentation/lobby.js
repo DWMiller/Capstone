@@ -1,4 +1,4 @@
-CORE.createModule('lobby', function(c) {
+CORE.createModule('lobby', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -10,6 +10,9 @@ CORE.createModule('lobby', function(c) {
     var listeners = {
         'queue-update': updateQueue
     };
+
+
+    var gameChecker;
 
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
@@ -27,10 +30,16 @@ CORE.createModule('lobby', function(c) {
         bindEvents();
         scope.show();
 
-        updateChoices();
+        requestQueueUpdate();
+        gameChecker = setInterval(requestQueueUpdate, config.UPDATE_INTERVAL);
+
+        // updateChoices();
     }
 
     function p_destroy() {
+        console.log('test');
+        clearInterval(gameChecker);
+
         scope.hide();
         unbindEvents();
         scope = null;
@@ -41,14 +50,12 @@ CORE.createModule('lobby', function(c) {
         scope.listen(listeners);
         scope.addEvent(elements.join, 'click', joinQueue);
         scope.addEvent(elements.leave, 'click', leaveQueue);
-        // scope.addEvent(elements.play, 'click', playGame);
     }
 
     function unbindEvents() {
         scope.ignore(Object.keys(listeners));
         scope.removeEvent(elements.join, 'click', joinQueue);
         scope.removeEvent(elements.leave, 'click', leaveQueue);
-        // scope.removeEvent(elements.play, 'click', playGame);
     }
 
     /************************************ POSTS ************************************/
@@ -83,6 +90,21 @@ CORE.createModule('lobby', function(c) {
                 api: {
                     game: {
                         leave_queue: {
+                            placeholder: true
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function requestQueueUpdate() {
+        scope.notify({
+            type: 'server-post',
+            data: {
+                api: {
+                    game: {
+                        update: {
                             placeholder: true
                         }
                     }

@@ -10,7 +10,7 @@ CORE.createModule('map', function(c, config) {
     var listeners = {
         'map-update': updateMapData,
         'location-update': updateLocation,
-        'fleet-update': updateFleet,
+        'fleet-update': fleetUpdate_Response,
 
     };
 
@@ -49,9 +49,11 @@ CORE.createModule('map', function(c, config) {
     var activeFleet = null,
         fleetTarget = null;
 
-    var lastDragCheck, dragCheckThreshold = 300; // limits drag handling logic to occur every x amount of milliseconds
+    var lastDragCheck; // limits drag handling logic to occur every x amount of milliseconds
 
     var time = new Date().getTime();
+
+    var groupMove = false;
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
@@ -117,7 +119,7 @@ CORE.createModule('map', function(c, config) {
     function bindEvents() {
         scope.listen(listeners);
 
-        scope.addEvent(elements.back, 'click', backButtonClick);
+        // scope.addEvent(elements.back, 'click', backButtonClick);
 
         elements.layers.map.on('click touchstart', layerClickHandler);
         // scope.addEvent(elements.layers.fleets, 'click', layerClickHandler);
@@ -136,6 +138,10 @@ CORE.createModule('map', function(c, config) {
         // Great for performance, annoying for presentation
         // $(window).on('focus', windowFocusOn);
         // $(window).on('blur', windowFocusOut);
+        
+        $(document).on('keydown', keyPressHandler);
+
+            
 
     }
 
@@ -145,7 +151,7 @@ CORE.createModule('map', function(c, config) {
 
         scope.ignore(Object.keys(listeners));
 
-        scope.removeEvent(elements.back, 'click', backButtonClick);
+        // scope.removeEvent(elements.back, 'click', backButtonClick);
         elements.layers.map.off('mouseover touchstart', showDetails);
 
         elements.layers.map.off('mouseover', imageMouseon);
@@ -154,30 +160,11 @@ CORE.createModule('map', function(c, config) {
         elements.layers.fleets.off('dragstart', fleetDragStart);
         elements.layers.fleets.off('dragend', fleetDragEnd);
 
+        $(document).off('keydown', keyPressHandler);
+
         $(window).off('focus', windowFocusOn);
         $(window).off('blur', windowFocusOut);        
 
-    }
-
-    /************************************ UI Handlers ************************************/
-    function backButtonClick() {
-        navigateBack();
-    }
-
-    function imageMouseon() {
-        c.dom.addClass(scope.self(), 'hover');
-    }
-
-    function imageMouseout() {
-        c.dom.removeClass(scope.self(), 'hover');
-    }
-
-    function windowFocusOn() {
-        startUpdater();
-    }
-
-    function windowFocusOut() {
-        stopUpdater();
     }
 
 
@@ -207,13 +194,24 @@ CORE.createModule('map', function(c, config) {
             destID = target.wormhole_id;
         }
 
+        var moveFleets = [fleet.id];
+
+        if(groupMove) {
+            moveFleets = [];
+            c.data.map.fleets.forEach(function(fleet) {
+                if(fleet.owner_id === c.data.user.id) {
+                     moveFleets.push(fleet.id); 
+                }
+            });
+        }
+
         scope.notify({
             type: 'server-post',
             data: {
                 api: {
                     fleets: {
                         move: {
-                            fleet: fleet.id,
+                            fleet: moveFleets,
                             target: destID
                         }
                     }
@@ -259,24 +257,47 @@ CORE.createModule('map', function(c, config) {
             }
         });
 
+        data.scale = 'location';
+        showDetails(data); 
+
         populate();
     }
 
-    function updateFleet(data) {
-        c.data.map.fleets.forEach(function(fleet, index) {
-            if (data.id === fleet.id) {
-                c.data.map.fleets[index] = data;
-            }
-        });
+    function fleetUpdate_Response(data) {
+        data.forEach(updateFleet);
 
         if(state) {
             populateFleets(); 
         } else {
             startUpdater();
-        }   
+        }           
     }
 
     /************************************ UI Event Handlers ************************************/
+
+    // function backButtonClick() {
+    //     navigateBack();
+    // }
+
+    function imageMouseon() {
+        c.dom.addClass(scope.self(), 'hover');
+    }
+
+    function imageMouseout() {
+        c.dom.removeClass(scope.self(), 'hover');
+    }
+
+    function toggleGroupMove() {
+        groupMove = !groupMove;
+    }
+
+    function windowFocusOn() {
+        startUpdater();
+    }
+
+    function windowFocusOut() {
+        stopUpdater();
+    }
 
     function layerClickHandler(event) {
         var object = event.target.data;
@@ -310,7 +331,7 @@ CORE.createModule('map', function(c, config) {
     }
 
     function fleetDragging(event) {
-        if(lastDragCheck > (time - dragCheckThreshold)) {
+        if(lastDragCheck > (time - config.dragCheckThreshold)) {
             return;
         }
         
@@ -323,6 +344,9 @@ CORE.createModule('map', function(c, config) {
     function fleetDragEnd(event) {
         if (fleetTarget) {
             moveFleet(activeFleet, fleetTarget.data);
+            fleetTarget.data.fleetMove = false;
+            fleetTarget = false;
+            activeFleet = false;
         } else {
             //Start updated again if no movement being triggered
             //If movement triggered, updater should be started once fleet update is returned
@@ -332,10 +356,17 @@ CORE.createModule('map', function(c, config) {
         startUpdater();
 
         scope.notify({
-            type: 'details-hide',
+            type: 'details-clear',
             data: true
         });
 
+    }
+
+    function keyPressHandler(event) {
+        switch(event.keyCode) {
+            case 17: //shift key
+            toggleGroupMove();
+        }
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
@@ -446,9 +477,15 @@ CORE.createModule('map', function(c, config) {
     }
 
     function showDetails(event) {
+        var item = event;
+
+        if(typeof event.target !== 'undefined') {
+            item = event.target.data;
+        } 
+
         scope.notify({
             type: 'details-show',
-            data: event.target.data
+            data: item
         });
     }
 
@@ -714,9 +751,12 @@ CORE.createModule('map', function(c, config) {
 
         var coords = scaleCoordinates(x1, y1);
 
-        // For fleets at location, draw on different sides of planet if owner or not
+        var owned = (fleet.owner_id === c.data.user.id);
+
+        // Draw users fleets on one side, enemy fleets on the other
+        // TODO - find a way to merge enemy fleets
         if (!fleet.destination_id) {
-            if (fleet.location_owner == fleet.owner_id) {
+            if (owned) {
                 coords.x += 10;
                 coords.y -= 15;
             } else {
@@ -725,7 +765,7 @@ CORE.createModule('map', function(c, config) {
             }
         }
 
-        var owned = (fleet.owner_id === c.data.user.id);
+        
 
         var drawWidth = 50;
         var drawHeight = 40;
@@ -949,20 +989,17 @@ CORE.createModule('map', function(c, config) {
     }
 
     function addFleetOverlay(fleet, kImage) {
-
-
         var overlay = [];
         var owned = (fleet.owner_id === c.data.user.id);
 
         var size = $.extend({}, defaultText, {
-            x: kImage.x + kImage.width,
+            x: owned ? (kImage.x + kImage.width) : (kImage.x - 20),
             y: kImage.y,
             text: fleet.size,
             fill: owned ? config.colours.ownedGreen.hex : config.colours.enemyRed.hex
         });
 
         if (fleet.destination_id) {
-
             var x1, y1, x2, y2;
 
             if (c.data.map.scale === 'system') {
@@ -991,12 +1028,7 @@ CORE.createModule('map', function(c, config) {
             });
             elements.layers.overlay.add(line);
             overlay.push(line);
-        } else {
-            if (fleet.location_owner != fleet.owner_id) {
-                //draw size text on left of fleet if on unowned planet
-                size.x = kImage.x - 20;
-            }
-        }
+        } 
 
         size = new Kinetic.Text(size);
 
@@ -1028,6 +1060,15 @@ CORE.createModule('map', function(c, config) {
             clearInterval(updater);
         }
         state = false;        
+    }
+
+    function updateFleet(fleet) {
+        c.data.map.fleets.forEach(function(fleet2, index) {
+            //find matching fleet in local data
+            if (fleet.id === fleet2.id) {
+                c.data.map.fleets[index] = fleet;
+            }
+        });
     }
 
     return {

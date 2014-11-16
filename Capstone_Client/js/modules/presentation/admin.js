@@ -9,7 +9,7 @@ CORE.createModule('admin', function(c) {
 
     var listeners = {};
 
-    var turnUpdater, maintainenceUpdater;
+    var turnUpdater, maintainenceUpdater,combatTurnUpdater;
 
     /************************************ MODULE INITIALIZATION ************************************/
     /************************************ POSTS ************************************/
@@ -20,21 +20,17 @@ CORE.createModule('admin', function(c) {
         scope = sb.create(c, p_properties.id, 'module-admin');
 
         elements = {
-            session_clear: scope.find('#admin-session_clear'),
             game_end: scope.find('#admin-game_end'),
             game_start: scope.find('#admin-game_start'),
-            // map_generate: scope.find('#admin-map_generate'),
             stop: scope.find('#admin-module-stop'),
-            'cron-income': scope.find('#cron-income'),
-            'cron-ships': scope.find('#cron-ships')
         };
 
         scope.show();
         bindEvents();
 
-        triggerTurn();
-        turnUpdater = setInterval(triggerTurn,10000);
-        maintainenceUpdater = setInterval(triggerMaintainence,1000);
+        turnUpdater = setInterval(triggerTurn, 10000);
+        combatTurnUpdater = setInterval(triggerCombatTurn, 3000);
+        maintainenceUpdater = setInterval(triggerMaintainence, 1000);
     }
 
     function p_destroy(event) {
@@ -49,25 +45,22 @@ CORE.createModule('admin', function(c) {
         elements = {};
 
         clearInterval(turnUpdater);
+        clearInterval(combatTurnUpdater);
         clearInterval(maintainenceUpdater);
     }
 
     function bindEvents() {
         scope.listen(listeners);
-        scope.addEvent(elements.session_clear, 'click', clearExpiredSessions);
         scope.addEvent(elements.game_end, 'click', endCurrentGame);
         scope.addEvent(elements.game_start, 'click', startNewGame);
-        // scope.addEvent(elements.map_generate, 'click', generateMap);   
         scope.addEvent(elements.stop, 'click', stop);
 
     }
 
     function unbindEvents() {
         scope.ignore(Object.keys(listeners));
-        scope.removeEvent(elements.session_clear, 'click', clearExpiredSessions);
         scope.removeEvent(elements.game_end, 'click', endCurrentGame);
         scope.removeEvent(elements.game_start, 'click', startNewGame);
-        // scope.removeEvent(elements.map_generate, 'click', generateMap);     
         scope.removeEvent(elements.stop, 'click', stop);
 
     }
@@ -78,25 +71,6 @@ CORE.createModule('admin', function(c) {
         }
 
         c.stopModule(p_properties.id);
-    }
-
-    function clearExpiredSessions(event) {
-        if (event.preventDefault) {
-            event.preventDefault();
-        }
-
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    admin: {
-                        clear: {
-                            placeholder: true //can't serialize empty object
-                        }
-                    }
-                }
-            }
-        });
     }
 
     function endCurrentGame(event) {
@@ -140,34 +114,54 @@ CORE.createModule('admin', function(c) {
 
 
     function triggerTurn() {
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    cron: {
-                        executeTurn: {
-                            placeholder: true
-                        }                           
+        if (c.data.user.status == 3) {
+            scope.notify({
+                type: 'server-post',
+                data: {
+                    api: {
+                        cron: {
+                            executeTurn: {
+                                placeholder: true
+                            }
+                        }
                     }
                 }
-            }
-        });        
+            });
+        }
     }
-  
+
+    function triggerCombatTurn() {
+        if (c.data.user.status == 3) {
+            scope.notify({
+                type: 'server-post',
+                data: {
+                    api: {
+                        cron: {
+                            executeCombatTurn: {
+                                placeholder: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
 
     function triggerMaintainence() {
-        scope.notify({
-            type: 'server-post',
-            data: {
-                api: {
-                    cron: {
-                        executeMaintainence: {
-                            placeholder: true
-                        }                           
+        if (c.data.user.status == 3) {
+            scope.notify({
+                type: 'server-post',
+                data: {
+                    api: {
+                        cron: {
+                            executeMaintainence: {
+                                placeholder: true
+                            }
+                        }
                     }
                 }
-            }
-        });        
+            });
+        }
     }
 
     return {

@@ -11,25 +11,26 @@ class Users_m extends Core_Model {
 		$salt = $this->getSalt();
 		$password = hash('sha384',$salt.$password);  	
 
-		$sql = 'INSERT INTO users (username,status,email,salt,password) values (?,?,?,?,?)';
+		$sql = 'INSERT INTO users (status,email,salt,password) values (?,?,?,?)';
 		$stmt = $this->dbh->prepare($sql);
-		$this->dbo->execute($stmt,array($username,1,$email,$salt,$password));
+		$this->dbo->execute($stmt,array(1,$email,$salt,$password));
 
 		$userID = $this->dbh->lastInsertId(); 
 
 		//Maybe use a trigger for this?
-		$sql = 'INSERT INTO user_settings (user_id) values (?)';
+		$sql = 'INSERT INTO user_settings (user_id,username) values (?,?)';
 		$stmt = $this->dbh->prepare($sql);
-		$this->dbo->execute($stmt,array($userID));
+		$this->dbo->execute($stmt,array($userID,$username));
 
 		return $userID;
 	}
 
 
 	public function getActiveUsersByField($val,$field = 'id') {		
-		$sql = "SELECT * FROM users
-		LEFT JOIN active_sessions ON user_id = id
-		WHERE $field = ?";
+		$sql = "SELECT u.* FROM users u
+		LEFT JOIN active_sessions a ON a.user_id = u.id
+		WHERE a.".$field." = ?";
+
 		$stmt = $this->dbh->prepare($sql);
     
     	$this->dbo->execute($stmt,array($val));
@@ -60,15 +61,31 @@ class Users_m extends Core_Model {
 	}
 
 	public function createSession($userID) {
-		$sql = "INSERT INTO active_sessions (user_id,session,expires) values (?,?,?)";
+		$ip = $this->getIP();
+
+		$sql = "INSERT INTO active_sessions (user_id,ip,session,expires) values (?,?,?,?)";
 		$stmt = $this->dbh->prepare($sql);
     
     	$session = $this->getSalt();
-    	$expires = date('Y-m-d H:i:s',time()+2000);
+    	$expires = date('Y-m-d H:i:s',time()+SESSION_LIMIT);
 
-    	$this->dbo->execute($stmt,array($userID,$session,$expires));
+    	$this->dbo->execute($stmt,array($userID,$ip,$session,$expires));
 
 		return $session;
+	}
+
+	private function getIP() {
+		//Test if it is a shared client
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+		  $ip=$_SERVER['HTTP_CLIENT_IP'];
+		//Is it a proxy address
+		}elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+		  $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+		}else{
+		  $ip=$_SERVER['REMOTE_ADDR'];
+		}
+		//The value of $ip at this point would look something like: "192.0.34.166"
+		return ip2long($ip); //The $ip would now look something like: 1073732954			
 	}
 
 	public function joinQueue(&$user) {
@@ -100,6 +117,12 @@ class Users_m extends Core_Model {
 		$stmt = $this->dbh->prepare($sql);
    
     	$this->dbo->execute($stmt,array($session));
+	}
+
+	public function clearAllSessions($userID) {
+		$sql = "DELETE FROM active_sessions WHERE user_id = ?";
+		$stmt = $this->dbh->prepare($sql);
+    	$stmt->execute(array($userID));
 	}
 
 	private function getSalt() {
