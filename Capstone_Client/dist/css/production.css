@@ -147,6 +147,7 @@ figure {
  * Address differences between Firefox and other browsers.
  */
 hr {
+  -moz-box-sizing: content-box;
   box-sizing: content-box;
   height: 0; }
 
@@ -260,6 +261,8 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
 input[type="search"] {
   -webkit-appearance: textfield;
   /* 1 */
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
   /* 2 */
   box-sizing: content-box; }
 
@@ -314,18 +317,87 @@ table {
 td, th {
   padding: 0; }
 
-.inlineBlock, #game-map, #module-user p, #module-user, #module-details {
+/*! The MIT License (MIT)
+
+Copyright (c) 2014 Prince John Wesley <princejohnwesley@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+**/
+.jcs {
+  position: relative;
+  border-style: solid;
+  border-radius: 100%;
+  border-color: hotpink;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-width: 5px;
+  cursor: pointer; }
+
+.jcs-value {
+  position: absolute;
+  border-style: none;
+  border-radius: 100%;
+  border: 2px solid #ecf8d4;
+  text-align: center;
+  pointer-events: none;
+  line-height: 4em;
+  color: white;
+  background-color: yellowgreen;
+  outline: none; }
+
+.jcs-indicator {
+  position: absolute;
+  border-radius: 100%;
+  background-color: deeppink;
+  border: 1px solid #b1b1b1;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  pointer-events: none; }
+
+.jcs-panel {
+  position: relative;
+  display: inline-block;
+  border-style: solid;
+  border-color: transparent;
+  cursor: pointer; }
+
+.jcs-value img {
+  border-radius: 100%;
+  background: transparent;
+  width: inherit;
+  height: inherit; }
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.panel, .back {
+  z-index: 300; }
+
+.inlineBlock, #game-map, #module-user p, #module-details {
   display: inline-block;
   vertical-align: top; }
-
-.layer1 {
-  z-index: 1; }
-
-.layer2 {
-  z-index: 1000; }
-
-.layer3, .panel, .back {
-  z-index: 10000; }
 
 .scr-only {
   position: absolute;
@@ -412,24 +484,10 @@ label * {
   right: 0; }
 
 .blink_me {
-  -webkit-animation-name: blinker;
-          animation-name: blinker;
-  -webkit-animation-duration: 1s;
-          animation-duration: 1s;
-  -webkit-animation-timing-function: linear;
-          animation-timing-function: linear;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite; }
-
-@-webkit-keyframes blinker {
-  0% {
-    opacity: 1; }
-
-  50% {
-    opacity: 0; }
-
-  100% {
-    opacity: 1; } }
+  animation-name: blinker;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite; }
 
 @keyframes blinker {
   0% {
@@ -475,45 +533,37 @@ label * {
   line-height: 1;
   width: 100%; }
 
-.back {
-  position: absolute;
-  top: 2em;
-  left: 1em;
-  background-image: url('../assets/images/back_w.png');
-  background-size: contain;
-  border-radius: 100%;
-  width: 5em;
-  height: 5em;
-  opacity: 0.5; }
-  .back:hover {
-    cursor: pointer;
-    opacity: 0.8; }
-
 @media only screen and (max-width: 49.999em) { }
 
 @media only screen and (min-width: 50em) {
   #game-map {
-    width: 75%; } }
+    width: 70%; } }
 
 @media only screen and (min-width: 70em) { }
 
-#module-user {
-  width: 100%; }
-  #module-user p + p {
-    margin-left: 2em; }
-  #module-user .label {
-    font-weight: bold;
-    margin-right: 0.5em;
-    font-variant: small-caps; }
+#module-user p + p {
+  margin-left: 2em; }
+#module-user .label {
+  font-weight: bolder;
+  margin-right: 0.5em;
+  font-variant: small-caps; }
 
-@media only screen and (max-width: 49.999em) { }
+@media only screen and (max-width: 49.999em) {
+  #module-user {
+    width: 100%; }
+    #module-user p {
+      display: block; }
+    #module-user p + p {
+      margin: 0; } }
 
-@media only screen and (min-width: 50em) { }
-
-@media only screen and (min-width: 70em) {
+@media only screen and (min-width: 50em) {
   #module-user {
     float: left;
-    width: 75%; } }
+    width: 75%;
+    border-bottom-width: 4px;
+    border-bottom-style: groove; } }
+
+@media only screen and (min-width: 70em) { }
 
 #module-details {
   overflow-y: auto; }
@@ -549,3 +599,100 @@ label * {
       width: 100%; } }
 
 @media only screen and (min-width: 70em) { }
+
+#module-commandBar {
+  line-height: 0; }
+
+.command-label, .command-key {
+  line-height: 1.5; }
+
+.command-label {
+  display: block;
+  font-variant: small-caps;
+  font-size: smaller; }
+
+.command-btn {
+  position: relative;
+  background-color: white;
+  color: black;
+  display: inline-block;
+  cursor: pointer; }
+  .command-btn img {
+    display: block;
+    width: 100%;
+    opacity: 0.7; }
+    .command-btn img:hover {
+      opacity: 0.8; }
+  .command-btn.active img {
+    opacity: 1; }
+
+.command-key {
+  position: absolute;
+  background-color: black;
+  padding: 0 0.25em;
+  color: white;
+  border-radius: 5px 0 0 0;
+  font-size: smaller;
+  bottom: 0;
+  right: 0; }
+
+.command-btn + .command-btn {
+  border-top-width: 4px;
+  border-top-style: groove; }
+
+@media only screen and (max-width: 49.999em) {
+  #module-commandBar {
+    display: none; } }
+
+@media only screen and (min-width: 50em) {
+  #module-commandBar {
+    float: left;
+    font-size: larger;
+    width: 5%;
+    border-left-width: 4px;
+    border-left-style: groove;
+    border-right-width: 4px;
+    border-right-style: groove;
+    border-bottom-width: 4px;
+    border-bottom-style: groove; } }
+
+@media only screen and (min-width: 70em) { }
+
+#widget-fleetSplitter {
+  box-sizing: content-box;
+  line-height: 1;
+  position: absolute;
+  top: 40%;
+  left: 30%;
+  padding-top: 1em;
+  width: 12em;
+  border-radius: 10%;
+  border: 2px groove white; }
+  #widget-fleetSplitter .jcs-panel {
+    height: 8em; }
+  #widget-fleetSplitter .jcs {
+    border-color: #00FF00;
+    border-width: 10px; }
+  #widget-fleetSplitter .jcs-value {
+    background-color: #0000FF;
+    cursor: pointer;
+    opacity: 0.7; }
+    #widget-fleetSplitter .jcs-value:hover {
+      opacity: 1; }
+  #widget-fleetSplitter .jcs-indicator {
+    background-color: #0000FF; }
+  #widget-fleetSplitter .widget-button {
+    cursor: pointer;
+    background-color: #c2d4ff;
+    line-height: 2em;
+    font-variant: small-caps;
+    font-weight: bold;
+    font-size: larger;
+    margin: auto;
+    width: 90%;
+    height: 2em;
+    color: black;
+    border-radius: 5px;
+    margin-bottom: 1em; }
+    #widget-fleetSplitter .widget-button:hover {
+      background-color: #3d77ff; }

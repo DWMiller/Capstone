@@ -9,7 +9,7 @@ CORE.createModule('logout', function(c) {
 
     var listeners = {};
 
-/************************************ MODULE INITIALIZATION ************************************/
+    /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
         scope = sb.create(c, p_properties.id, 'page-logout');
@@ -41,7 +41,7 @@ CORE.createModule('logout', function(c) {
         scope.removeEvent(elements.logout, 'click', logout);
     }
 
-/************************************ POSTS ************************************/
+    /************************************ POSTS ************************************/
 
     function logout(event) {
         event.preventDefault();
@@ -56,11 +56,8 @@ CORE.createModule('logout', function(c) {
                     }
                 }
             }
+            
         });
-
-/************************************ RESPONSES ************************************/
-/************************************ GENERAL FUNCTIONS ************************************/
-      
         scope.notify({
             type: 'session-clear',
             data: {}
@@ -71,6 +68,11 @@ CORE.createModule('logout', function(c) {
             data: {}
         });
     }
+
+    /************************************ RESPONSES ************************************/
+    /************************************ GENERAL FUNCTIONS ************************************/
+
+
 
 
 

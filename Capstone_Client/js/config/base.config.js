@@ -5,7 +5,14 @@
  * @type {Object}
  */
 CORE.extendConfig({
-	lobby: {
-		UPDATE_INTERVAL: 5000,
-	}
+    lobby: {
+        UPDATE_INTERVAL: 5000,
+    },
+    game: {
+        UPDATE_INTERVAL: 5000,
+        defaultData: {
+            scale: 'sector',
+            id: 1
+        },
+    }
 });

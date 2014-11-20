@@ -1,0 +1,46 @@
+#widget-fleetSplitter {
+    box-sizing: content-box;
+    line-height: 1;
+    position: absolute;
+    top: 40%;
+    left: 30%;
+    padding-top: 1em;
+    width: 12em;
+    border-radius: 10%;
+    border: 2px groove white;
+    .jcs-panel {
+        height: 8em;
+    }
+    .jcs {
+        border-color: #00FF00;
+        border-width: 10px;
+    }
+    .jcs-value {
+        background-color: #0000FF;
+        cursor: pointer;
+        opacity: 0.7;
+        &:hover {
+            opacity: 1;
+        }
+    }
+    .jcs-indicator {
+        background-color: #0000FF;
+    }
+    .widget-button {
+        cursor: pointer;
+        background-color: rgb(194, 212, 255);
+        line-height: 2em;
+        font-variant: small-caps;
+        font-weight: bold;
+        font-size: larger;
+        margin: auto;
+        width: 90%;
+        height: 2em;
+        color: black;
+        border-radius: 5px;
+        margin-bottom: 1em;
+        &:hover {
+            background-color: rgb(61, 119, 255);
+        }
+    }
+}

@@ -28,9 +28,9 @@ CORE.createModule('admin', function(c) {
         scope.show();
         bindEvents();
 
-        turnUpdater = setInterval(triggerTurn, 10000);
+        turnUpdater = setInterval(triggerTurn, 15000);
         combatTurnUpdater = setInterval(triggerCombatTurn, 3000);
-        maintainenceUpdater = setInterval(triggerMaintainence, 1000);
+        maintainenceUpdater = setInterval(triggerMaintainence, 250);
     }
 
     function p_destroy(event) {

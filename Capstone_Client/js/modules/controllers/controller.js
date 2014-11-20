@@ -53,7 +53,10 @@ CORE.createModule('controller', function(c) {
         console.log('STATE: Playing Game');
         c.stopModule('lobby');
         c.startModule('game');
-        c.startModule('map'); 
+        c.startModule('commands');
+        c.startModule('fleets');
+        c.startModule('animator'); 
+        c.startModule('widgets'); 
         c.startModule('details');
         c.startModule('user');
     }
@@ -65,7 +68,10 @@ CORE.createModule('controller', function(c) {
         c.stopModule('logout');
         c.stopModule('register');
         c.stopModule('game');
-        c.stopModule('map');
+        c.stopModule('commands');
+        c.stopModule('fleets');        
+        c.stopModule('animator');
+        c.stopModule('widgets');
         c.stopModule('details');
         c.stopModule('admin');
         c.stopModule('user');

@@ -1,39 +1,38 @@
 #module-user {
-	// position:absolute;
-	// top:0;	
-	width:100%;
-
-	p {
-		@extend .inlineBlock;
-	}
-
-	p+p {
-		margin-left: 2em;
-	}
-
+    // position:absolute;
+    // top:0;	
+   
+    p {
+        @extend .inlineBlock;
+    }
+    p+p {
+        margin-left: 2em;
+    }
     .label {
-        font-weight: bold;
+        font-weight: bolder;
         margin-right: 0.5em;
         font-variant: small-caps;
     }
-    .value {
-    }
-
+    .value {}
 }
-
 @media only screen and (max-width: $sm-brkp) {
+    #module-user {
+    	width: 100%;
 
+        p {
+            display: block;
+        }
+        p+p {
+            margin: 0;
+        }
+    }
 }
-
 @media only screen and (min-width: $md-brkp) {
-
-
-}
-
-@media only screen and (min-width: $lg-brkp) {
-	#module-user {
-		float:left;
-        @extend .inlineBlock;
+    #module-user {
+        float: left;
         width: 75%;
-	}
+        border-bottom-width: 4px;
+        border-bottom-style: groove;
+    }
 }
+@media only screen and (min-width: $lg-brkp) {}

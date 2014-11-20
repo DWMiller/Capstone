@@ -2,15 +2,7 @@
     display: inline-block;
     vertical-align: top;
 }
-.layer1 {
-    z-index: $layer1;
-}
-.layer2 {
-    z-index: $layer2;
-}
-.layer3 {
-    z-index: $layer3;
-}
+
 .scr-only {
     position: absolute;
     left: -10000px;

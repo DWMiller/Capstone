@@ -56,6 +56,32 @@ class Fleet_m extends Core_Model {
     		$this->data['id']));		
 	}
 
+	/**
+	 * Move existing fleet, create new fleet in position with remaining ships
+	 * @param  [type] $location  [description]
+	 * @param  [type] $splitSize [description]
+	 * @return [type]            [description]
+	 */
+	function splitMove($location, $splitSize) {
+		//Move existing fleet immedietely, we'll reduce it enroute, which sounds stupid but should be fine
+		$this->move($location);
+
+		$remainingSize = $this->data['size'] - $splitSize;
+		$this->data['size'] = $splitSize;
+
+		$sql = "UPDATE fleets SET size = ? WHERE id = ?";
+		$stmt = $this->dbh->prepare($sql);    
+    	$stmt->execute(array($this->data['size'],$this->data['id']));
+
+
+    	// Create new fleet at starting location with remaining ships
+		
+		$sql = "INSERT INTO fleets(location_id, owner_id, size) VALUES (?,?,?)";
+		$stmt = $this->dbh->prepare($sql);  
+		$stmt->execute(array($this->data['location_id'],$this->data['owner_id'], $remainingSize));
+	}
+
+
 	function getFleetData($fleetID) {
 		$sql = "SELECT f.*, l.position_x, l.position_y, l.owner_id location_owner, 
 						l2.id location_system, l2.position_x location_system_x, l2.position_y location_system_y,
@@ -135,5 +161,32 @@ class Fleet_m extends Core_Model {
 		return $data;		
 	}
 
+	public static function getSectorFleets($sectorID) {
+		$dbo = Database::getInstance();
+		$dbh = $dbo->getPDOConnection();
 
+		$sql = "SELECT SUM(f.size) size, f.owner_id, l2.id location_system
+				FROM  `fleets` f
+				JOIN  `locations` l ON f.location_id = l.id
+				JOIN  `systems` l2 ON l2.id = l.system_id
+				WHERE f.destination_id IS NULL
+				AND l2.sector_id = ?
+				GROUP BY location_system, f.owner_id";
+		$stmt = $dbh->prepare($sql);
+    	$dbo->execute($stmt,array($sectorID));
+
+    	// If more than one match, database is messed up
+    	// If no matches, invalid request is being made
+		if ($stmt->rowCount() > 0){	
+			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $result;
+		} else {
+			return false;
+		}	
+
+		return $data;		
+	}
 }
+
+
+

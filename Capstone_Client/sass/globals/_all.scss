@@ -38,7 +38,6 @@ label * {
     width: 100%;
 }
 .panel {
-    @extend .layer3;
     position: absolute;
     border: 1px solid #8A8A8A;
 }

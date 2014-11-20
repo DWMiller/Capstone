@@ -111,7 +111,7 @@ CORE.Templates = function() {
             var $container = $('<div>');
 
             var $row = $('<p>');
-            $('<span>',{class:'label'}).text("Resources:").appendTo($row);
+            $('<span>',{class:'label'}).text("Resources: ").appendTo($row);
             $('<span>',{class:'value'}).text(data.resources).appendTo($row);
             $container.append($row);
 

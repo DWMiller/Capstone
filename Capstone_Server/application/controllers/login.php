@@ -17,7 +17,7 @@
 
 		if($this->User) {
 			$this->TPL['login-success']['user'] = $this->User;
-			$this->TPL['login-success']['locations'] = Location_m::getPlayerLocations($this->User['id']);
+			// $this->TPL['login-success']['locations'] = Location_m::getPlayerLocations($this->User['id']);
 		} else {
 			$this->TPL['login-failure'] = true;
 		}

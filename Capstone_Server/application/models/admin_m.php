@@ -39,7 +39,7 @@ class Admin_m extends Core_Model {
 	}
 
 	public function eraseMap() {
- 		$sql = 'DELETE FROM locations; DELETE FROM systems; ';
+ 		$sql = 'SET FOREIGN_KEY_CHECKS = 0; TRUNCATE locations; TRUNCATE systems; SET FOREIGN_KEY_CHECKS = 1;';
  		$this->dbh->query($sql);
 	}
 

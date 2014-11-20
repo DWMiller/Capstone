@@ -80,6 +80,31 @@ class Location_m extends Core_Model {
 		return $data;
 	}
 
+	public static function getSectorLocations($sectorID) {
+		$dbo = Database::getInstance();
+		$dbh = $dbo->getPDOConnection();	
+		$sql ="SELECT COUNT(*) as owned_planets, l.owner_id, l2.id location_system
+			FROM `locations` l
+			JOIN `systems` l2 ON l2.id = l.system_id
+			WHERE l2.sector_id = ?
+			GROUP BY location_system, l.owner_id";
+
+		$stmt = $dbh->prepare($sql);
+    	$dbo->execute($stmt,array($sectorID));
+
+    	// If more than one match, database is messed up
+    	// If no matches, invalid request is being made
+		if ($stmt->rowCount() > 0){	
+			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $result;
+		} else {
+			return false;
+		}	
+
+		return $data;
+	}
+
+
 	function rename($name) {
 		$this->data['name'] = $name;
 		$sql = "UPDATE locations SET name = ? WHERE id = ?";

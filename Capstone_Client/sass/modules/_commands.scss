@@ -1,0 +1,71 @@
+#module-commandBar {
+    line-height: 0;
+}
+
+.command-label,.command-key {
+    line-height: $baseLineHeight;    
+}
+
+.command-label {
+
+    display: block;
+    font-variant: small-caps;
+    font-size: smaller;
+}
+.command-btn {
+    position:relative;
+    background-color: white;
+    color: black;
+    display: inline-block;
+    img {
+        display: block;
+        width: 100%;
+        opacity: 0.7;
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+    &.active {
+        img {
+            opacity: 1;
+        }
+    }
+    cursor: pointer;
+}
+
+.command-key {
+    position:absolute;
+    background-color: black;
+    padding: 0 0.25em;
+    color:white;
+    border-radius: 5px 0 0 0;
+    font-size: smaller;
+    bottom:0;
+    right:0;
+}
+
+
+.command-btn+.command-btn {
+    border-top-width: 4px;
+    border-top-style: groove;
+}
+@media only screen and (max-width: $sm-brkp) {
+    #module-commandBar {
+        display: none;
+    }
+}
+@media only screen and (min-width: $md-brkp) {
+    #module-commandBar {
+        float: left;
+        font-size: larger;
+        width: 5%;
+        // height: 90%;
+        border-left-width: 4px;
+        border-left-style: groove;
+        border-right-width: 4px;
+        border-right-style: groove;
+        border-bottom-width: 4px;
+        border-bottom-style: groove;
+    }
+}
+@media only screen and (min-width: $lg-brkp) {}

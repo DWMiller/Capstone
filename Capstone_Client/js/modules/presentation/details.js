@@ -10,6 +10,7 @@ CORE.createModule('details', function(c) {
     var listeners = {
         'details-show': showDetails,
         'location-update': locationUpdate,
+        'map-focus': showDetails,
         'details-hide': hide,
         'details-clear': clear
 

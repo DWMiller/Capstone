@@ -7,10 +7,10 @@ module.exports = {
 		files: ['sass/**/*'],
 		tasks: ['sass']		
 	},
-	autoprefixer: {
-		files: ['dist/css/production.css'],
-		tasks: ['autoprefixer']		
-	},	
+	// autoprefixer: {
+	// 	files: ['dist/css/production.css'],
+	// 	tasks: ['autoprefixer']		
+	// },	
 	html: {
 		files: ['index.html'],
 		tasks: ['newer:htmlmin']				

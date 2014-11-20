@@ -47,6 +47,18 @@ class Map extends Core_Controller {
 
 		$this->TPL['map-update']['fleets'] = $fleets;
 
+
+		$sectorLocationSummary = Location_m::getSectorLocations($args['id']);
+		if($sectorLocationSummary) {
+			$this->TPL['map-update']['systemLocations'] =$sectorLocationSummary;
+		}
+
+
+		$sectorFleetSummary = Fleet_m::getSectorFleets($args['id']);
+		if($sectorFleetSummary) {
+			$this->TPL['map-update']['systemFleets'] = $sectorFleetSummary;
+		}
+
 		$this->done();
 	}
 

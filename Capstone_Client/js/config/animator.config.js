@@ -1,8 +1,8 @@
 CORE.extendConfig({
-    map: {
-        DRAW_INTERVAL: 100, //how often the map redraws
-        UPDATE_INTERVAL: 3000, // Rate at which new map data is requested from server  
-        dragCheckThreshold: 200, // limits drag handling logic to occur every x amount of milliseconds
+    animator: {
+        // DRAW_INTERVAL: 100, //how often the map redraws
+        // UPDATE_INTERVAL: 3000, // Rate at which new map data is requested from server  
+        dragCheckThreshold: 100, // limits drag handling logic to occur every x amount of milliseconds
         imageMapping: {
             'system-terran': 'system-terran',
             'system-desert': 'system-desert',
@@ -33,10 +33,6 @@ CORE.extendConfig({
             'sector-redGiant': 'sector-redStar'            
         },
         imagePath: 'assets/images/map/',
-        defaultData: {
-            scale: 'sector',
-            id: 1
-        },
         drawScaleFactor: {
             sector: 15,
             system: 20
@@ -60,10 +56,10 @@ CORE.extendConfig({
                 g: 20,
                 b: 10
             }, 
+        }, 
+        text: {
+            fontSize : 16,
+            lineSpacing : 4,
         }
-        // mapScaleFactor: {
-        //     sector: 100,
-        //     system: 1000
-        // }
     }
 });

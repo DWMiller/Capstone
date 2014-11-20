@@ -1,7 +1,8 @@
 module.exports = {
     js: {
         src: [
-            'js/libs/**/*.js',
+            'js/libs/dependencies/*.js',
+            'js/libs/*.js',
             'js/dmf.js',
             'js/config/**/*.js',
             'js/modules/**/*.js',

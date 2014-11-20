@@ -75,7 +75,6 @@
 
 
         <div id="module-game" class="module main hidden">
-            <!-- <div id="map-back" class="back ui"></div> -->
 
             <div id="module-user" class="ui overlay">
 
@@ -91,10 +90,35 @@
                 <!-- <button class="close">Close</button> -->
             </div>
 
+            <div id="module-commandBar" class="ui overlay">
+                <div id="command-groupMove" data-command="groupMove" class="command-btn" title="While this command is active, all fleets on the screen will move together when any fleet is moved.">
+                    <span class="command-label">Group Move</span>
+                    <img src="assets/images/buttons/fleet_group.png" alt="">
+                    <span class="command-key">Shift</span>
+                </div>
+                <div id="command-fleetSplit" data-command="fleetSplit" class="command-btn" title="While this command is active, you will be prompted to split ships in a fleet when moving.">
+                    <span class="command-label">Fleet Split</span>
+                    <img src="assets/images/buttons/fleet_split.png" alt="">
+                    <span class="command-key">S</span>
+                </div>
+            </div>
+
             <div id="game-map" class="">
 
             </div>
 
+            <div id="widget-fleetSplitter" class="ui hidden">
+                <div class="slider"></div>  
+                <div class="widget-button">Send</div>              
+            </div>
+
+            <div id="module-infoFeed" class="ui overlay hidden">
+
+            </div>
+
+            <div id="module-playerStats" class="ui overlay hidden">
+
+            </div>
         </div>
 
         <div id="module-admin" class="module ui hidden">

@@ -21,7 +21,6 @@ class Fleets extends Core_Controller {
 			$args['fleet'] = array($args['fleet']);
 		}
 
-
 		$fleets = array();
 		foreach ($args['fleet'] as $fleet) {
 			// TODO - Validate fleet actually exists
@@ -30,8 +29,20 @@ class Fleets extends Core_Controller {
 
 		// Maybe figure out how to move all fleets in a single query
 		foreach ($fleets as $fleet) {
-			$fleet->move($targetLocation);
-			$this->TPL['fleet-update'][] = $fleet->getFleetData($fleet->data['id']);
+
+			if(!$fleet->data['destination_id']) {
+
+				if(isset($args['split']) && $args['splitSize'] < $fleet->data['size']) {
+					$fleet->splitMove($targetLocation, $args['splitSize']);
+					// $this->TPL['fleet-created'][] = $fleet->getFleetData($fleet->data['id']);
+					$this->TPL['fleet-update'][] = $fleet->getFleetData($fleet->data['id']);
+				} else {
+					$fleet->move($targetLocation);
+					$this->TPL['fleet-update'][] = $fleet->getFleetData($fleet->data['id']);
+				}
+				
+				
+			}
 		}
 
 
