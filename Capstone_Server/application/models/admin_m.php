@@ -21,7 +21,7 @@ class Admin_m extends Core_Model {
 	}
 
 	public function activateQueuedPlayers() {
-		$sql = 'UPDATE users SET status = 3, resources = 50, tech_armour = 0, tech_weapons = 0, tech_propulsion = 0 WHERE status = 2';
+		$sql = 'UPDATE users SET status = 3, resources = 50, knowledge = 0, tech_armour = 0, tech_weapons = 0, tech_propulsion = 0 WHERE status = 2';
 		$result = $this->dbh->query($sql);
 		return $result->rowCount();
 	}

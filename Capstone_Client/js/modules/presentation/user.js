@@ -24,7 +24,7 @@ CORE.createModule('user', function(c) {
         bindEvents();
         scope.show();
 
-        if(c.data.user) {
+        if (c.data.user) {
             refresh();
         }
     }
@@ -38,18 +38,35 @@ CORE.createModule('user', function(c) {
 
     function bindEvents() {
         scope.listen(listeners);
-        // scope.addEvent(elements.close, 'click', hide);
-        // $(elements.contents).on('click', '.upgrade-structure', upgradeStructure);
+        // $(scope.self()).on('click', '.widget-research', openResearchMenu);
+        $(scope.self()).on('click', '.research-start', triggerResearch);
     }
 
     function unbindEvents() {
         scope.ignore(Object.keys(listeners));
-        // scope.removeEvent(elements.close, 'click', hide);
-        // $(elements.contents).off('click', '.upgrade-structure', upgradeStructure);
+        // $(scope.self()).off('click', '.widget-research', openResearchMenu);
+        $(scope.self()).off('click', '.research-start', triggerResearch);
     }
 
     /************************************ POSTS ************************************/
 
+    function triggerResearch(e) {
+        var button = $(e.currentTarget);
+        var researchType = button.data('research');
+        
+        scope.notify({
+            type: 'server-post',
+            data: {
+                api: {
+                    empire: {
+                        research: {
+                            type: researchType
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     /************************************ RESPONSES ************************************/
 
@@ -59,9 +76,17 @@ CORE.createModule('user', function(c) {
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
+
     function refresh() {
         $(scope.self()).html(c.Templates.userDetails(c.data.user));
     }
+
+    // function openResearchMenu() {
+    //     scope.notify({
+    //         type: 'show-widget-research',
+    //         data: true
+    //     });        
+    // }
 
     return {
         properties: p_properties,

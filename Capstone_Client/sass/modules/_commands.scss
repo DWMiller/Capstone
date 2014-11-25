@@ -58,7 +58,7 @@
     #module-commandBar {
         float: left;
         font-size: larger;
-        width: 5%;
+        width: 10%;
         // height: 90%;
         border-left-width: 4px;
         border-left-style: groove;
@@ -68,4 +68,9 @@
         border-bottom-style: groove;
     }
 }
-@media only screen and (min-width: $lg-brkp) {}
+@media only screen and (min-width: $lg-brkp) {
+    #module-commandBar {
+        width: 5%;
+    }
+
+}

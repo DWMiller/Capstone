@@ -23,7 +23,7 @@ class Fleet_m extends Core_Model {
 		$this->data = $data;
 	} 
 
-	function move($location) {
+	function move($location, $propulsionTech) {
 		// echo '<pre>';
 		// echo print_r($this->data,true);
 		// echo '</pre>';
@@ -36,7 +36,7 @@ class Fleet_m extends Core_Model {
 			$distance = SYSTEM_DISTANCE_MOD * Map_m::getDistance($this->data['location_system_x'],$this->data['location_system_y'],$location->data['location_system_x'],$location->data['location_system_y']);
 		}
 		
-		$this->data['travelTime'] = $distance/FLEET_SPEED;
+		$this->data['travelTime'] = $distance/(FLEET_SPEED + $propulsionTech * (FLEET_SPEED*.05));
 
 		// $date = new DateTime();
 		// $date->modify('+'.$this->data['travelTime'].' seconds');
@@ -62,9 +62,9 @@ class Fleet_m extends Core_Model {
 	 * @param  [type] $splitSize [description]
 	 * @return [type]            [description]
 	 */
-	function splitMove($location, $splitSize) {
+	function splitMove($location, $splitSize, $propulsionTech) {
 		//Move existing fleet immedietely, we'll reduce it enroute, which sounds stupid but should be fine
-		$this->move($location);
+		$this->move($location,$propulsionTech);
 
 		$remainingSize = $this->data['size'] - $splitSize;
 		$this->data['size'] = $splitSize;
@@ -79,6 +79,8 @@ class Fleet_m extends Core_Model {
 		$sql = "INSERT INTO fleets(location_id, owner_id, size) VALUES (?,?,?)";
 		$stmt = $this->dbh->prepare($sql);  
 		$stmt->execute(array($this->data['location_id'],$this->data['owner_id'], $remainingSize));
+
+		return $this->dbh->lastInsertId();
 	}
 
 

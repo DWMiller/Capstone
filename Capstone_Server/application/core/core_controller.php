@@ -23,9 +23,13 @@ class Core_Controller extends Controller {
 
         if($this->User['status'] == USER_PLAYING) {
 	        $filteredData['resources'] = $this->User['resources'];
-	        $filteredData['tech_weapons'] = $this->User['tech_weapons'];
-	        $filteredData['tech_propulsion'] = $this->User['tech_propulsion'];
-	        $filteredData['tech_armour'] = $this->User['tech_armour'];
+	        $filteredData['knowledge'] = $this->User['knowledge'];
+	        $filteredData['tech_weapons'] = $this->User['tech_weapons']+1;
+	        $filteredData['tech_propulsion'] = $this->User['tech_propulsion']+1;
+	        $filteredData['tech_armour'] = $this->User['tech_armour']+1;
+	        $filteredData['tech_weapons_cost'] = 10 + ($this->User['tech_weapons']+1)*10;
+	        $filteredData['tech_propulsion_cost'] = 10 + ($this->User['tech_propulsion']+1)*10;
+	        $filteredData['tech_armour_cost'] = 10 + ($this->User['tech_armour']+1)*10;
         }
 
 	 	return $filteredData;

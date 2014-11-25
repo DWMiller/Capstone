@@ -111,24 +111,35 @@ CORE.Templates = function() {
             var $container = $('<div>');
 
             var $row = $('<p>');
-            $('<span>',{class:'label'}).text("Resources: ").appendTo($row);
+            $('<span>',{class:'label'}).text("Currency: ").appendTo($row);
             $('<span>',{class:'value'}).text(data.resources).appendTo($row);
             $container.append($row);
 
             $row = $('<p>');
+            $('<span>',{class:'label'}).text("Research Points: ").appendTo($row);
+            $('<span>',{class:'value'}).text(data.knowledge).appendTo($row);
+            $container.append($row);
+
+            $row = $('<p>');
             $('<span>',{class:'label'}).text('Armour Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_armour).appendTo($row);
+            $('<span>',{class:'value'}).text(data.tech_armour+' ').appendTo($row);
+            $('<button>',{class:'research-start', 'data-research': 'armour'}).text('+1 ('+data.tech_armour_cost+')').appendTo($row);
             $container.append($row);
 
             $row = $('<p>');
             $('<span>',{class:'label'}).text('Propulsion Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_propulsion).appendTo($row);
+            $('<span>',{class:'value'}).text(data.tech_propulsion+' ').appendTo($row);
+            $('<button>',{class:'research-start', 'data-research': 'propulsion'}).text('+1 ('+data.tech_propulsion_cost+')').appendTo($row);
             $container.append($row);
 
             $row = $('<p>');
             $('<span>',{class:'label'}).text('Weapons Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_weapons).appendTo($row);
-            $container.append($row);            
+            $('<span>',{class:'value'}).text(data.tech_weapons+' ').appendTo($row);
+            $('<button>',{class:'research-start', 'data-research': 'weapons'}).text('+1 ('+data.tech_weapons_cost+')').appendTo($row);
+            $container.append($row);           
+
+            // $row = $('<button>').html("Research").addClass('widget-research').appendTo($row);
+            // $container.append($row);    
 
             return $container;
         },

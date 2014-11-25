@@ -3,14 +3,14 @@
 class Cron_m extends Core_Model {
 	/*********************** QUERIES ************************************/
 
-	// Grants users resources based on mine ownership
+	// Grants users resources based on mine ownership, knowledge based on labs
 	private $sql_addResources = "UPDATE users u,
-					(SELECT owner_id, sum(resources*mines)  as rsum
+					(SELECT owner_id, sum(resources*mines) as rsum, sum(labs) as lsum
 					FROM locations 
 					WHERE owner_id IS NOT NULL
 					GROUP BY owner_id) as s
-				SET u.resources = u.resources + s.rsum
-				WHERE u.id = s.owner_id AND u.status = 3";
+				SET u.resources = u.resources + s.rsum, u.knowledge = u.knowledge + s.lsum
+				WHERE u.id = s.owner_id AND u.status = 3;";
 
 	// Creates fleets where no fleet is present and location has a shipyard
 	private $sql_createMissingFleets = "INSERT INTO fleets( location_id, owner_id ) 
@@ -214,32 +214,89 @@ class Cron_m extends Core_Model {
 		// echo print_r($fleet2);
 		// echo '</pre>';
 
-		// Battle losses equal square root of smaller fleets size, min of 1
-		$losses = ($fleet1['size'] > $fleet2['size']) ? sqrt($fleet2['size']) : sqrt($fleet1['size']);
+		$fleet1AttackDie = new Dice(0,$fleet1['tech_weapons']);
+		$fleet2AttackDie = new Dice(0,$fleet2['tech_weapons']);
+		$fleet1DefDie = new Dice(0,$fleet1['tech_armour']);
+		$fleet2DefDie = new Dice(0,$fleet2['tech_armour']);
+
+		// Battle losses equal square root of average fleet size
+		$avg = ($fleet1['size'] + $fleet2['size']) / 2;
+		$losses = sqrt($avg);
 
 		if($losses < 1) {
 			$losses = 1;
 		}
 		
-		$fleet1['losses'] = 0;
-		$fleet2['losses'] = 0;
+		//both sides lose sqrt of smaller fleet
+		$fleet1['losses'] = $losses;
+		$fleet2['losses'] = $losses;
 
-		if(rand(0,1)) {
-			$loser = $fleet1;
-			$fleet1['losses'] = $losses;
 
+		/***********Attack phase***********/
+
+		$fleet1AttackRoll = $fleet1AttackDie->roll();
+		$fleet2AttackRoll = $fleet2AttackDie->roll();
+
+		// Whoever rolls higher kills extra 25%
+		if($fleet1AttackRoll < $fleet2AttackRoll) {
+			$fleet1['losses'] *= 1.25;
 		} else {
-			$loser = $fleet2;
-			$fleet2['losses'] = $losses;
+			$fleet2['losses'] *= 1.25;
 		}
 
-	 	$sql = "UPDATE `fleets` 
- 		SET size = size - ?
- 		WHERE id = ?;
- 		INSERT INTO `battle_logs` (location_id,player1_id,player2_id,player1_losses,player2_losses)
- 		VALUES (?,?,?,?,?)";
+		/*********** Save phase 1 ***********/
+		// If player 2 makes a save roll, loses fewer ships
+		
+		$fleet1AttackRoll2 = $fleet1AttackDie->roll();
+		$fleet2SaveRoll = $fleet2DefDie->roll();
+
+		
+		if($fleet1AttackRoll2 < $fleet2SaveRoll) {
+			$fleet2['losses'] *= 0.75;
+		}
+
+		/*********** Save phase 2 ***********/
+		// If player 1 makes a save roll, loses fewer ships
+
+		$fleet2AttackRoll2 = $fleet2AttackDie->roll();
+		$fleet1SaveRoll = $fleet1DefDie->roll();
+
+		if($fleet2AttackRoll2 < $fleet1SaveRoll) {
+			$fleet1['losses'] *= 0.75;
+		}
+
+	 	$sql = "UPDATE `fleets` SET size = size - ? WHERE id = ?;
+ 		UPDATE `fleets` SET size = size - ? WHERE id = ?;
+ 		INSERT INTO `battle_logs` (
+ 			location_id,
+ 			player1_id,
+ 			player2_id,
+ 			player1_roll,
+ 			player2_roll,
+ 			player1_bonus_roll,
+ 			player2_bonus_roll,
+ 			player1_bonus_roll2,
+ 			player2_bonus_roll2,
+ 			player1_losses,
+ 			player2_losses)
+ 		VALUES (?,?,?,?,?,?,?,?,?,?,?);";
  		$stmt = $this->dbh->prepare($sql);
-		$stmt->execute(array($losses, $loser['id'],$fleet1['location_id'],$fleet1['owner_id'],$fleet2['owner_id'],$fleet1['losses'],$fleet2['losses']));	
+		$stmt->execute(array(
+			$fleet1['losses'],
+			$fleet1['id'],
+			$fleet2['losses'],
+			$fleet2['id'],
+			$fleet1['location_id'],
+			$fleet1['owner_id'],
+			$fleet2['owner_id'],
+			$fleet1AttackRoll,
+			$fleet2AttackRoll,
+			$fleet1AttackRoll2,
+			$fleet2SaveRoll,
+			$fleet1SaveRoll,
+			$fleet2AttackRoll2,		
+			$fleet1['losses'],
+			$fleet2['losses']));	
 	}
 
 
@@ -249,5 +306,21 @@ class Cron_m extends Core_Model {
 		$stmt->execute(array());
 	}
 
+
+}
+
+class Dice {
+
+	private $min;
+	private $max;
+
+	public function __construct($min = 0, $max = 1) { 
+		$this->min = $min;
+		$this->max = $max; 
+	} 
+
+	public function roll() {
+		return rand($this->min,$this->max);
+	}
 
 }

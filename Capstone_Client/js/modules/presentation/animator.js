@@ -11,6 +11,7 @@ CORE.createModule('animator', function(c, config) {
         // 'map-update': updateMapData,
         'location-update': updateLocation,
         'data-updated': updateMap,
+        'inject-fleet': addFleetToMap,
         'fleet-data-updated': populateFleets
 
     };
@@ -69,7 +70,8 @@ CORE.createModule('animator', function(c, config) {
 
         defaultText = { // Default to be used when creating kinetic text objects
             fontSize: config.text.fontSize,
-            fontFamily: 'Georgia',
+            fontFamily: config.text.font,
+            fontVariant: 'small-caps',
             fill: config.colours.neutralWhite.hex
         };
 
@@ -220,7 +222,8 @@ CORE.createModule('animator', function(c, config) {
     }
 
     function fleetDragEnd(event) {
-
+        state.action = false;
+        
         if (fleetTarget) {
 
             scope.notify({
@@ -246,7 +249,7 @@ CORE.createModule('animator', function(c, config) {
             data: true
         });
 
-        state.action = false;
+        
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
@@ -504,21 +507,21 @@ CORE.createModule('animator', function(c, config) {
                 return;
             }
 
-            var x1, y1, x2, y2;
-
-            if (c.data.map.scale === 'system') {
-                x1 = fleet.position_x;
-                y1 = fleet.position_y;
-                x2 = fleet.destination_x;
-                y2 = fleet.destination_y;
-            } else if (c.data.map.scale === 'sector') {
-                x1 = fleet.location_system_x;
-                y1 = fleet.location_system_y;
-                x2 = fleet.destination_system_x;
-                y2 = fleet.destination_system_y;
-            }
-
             if (fleet.destination_id) {
+
+                var x1, y1, x2, y2;
+
+                if (c.data.map.scale === 'system') {
+                    x1 = fleet.position_x;
+                    y1 = fleet.position_y;
+                    x2 = fleet.destination_x;
+                    y2 = fleet.destination_y;
+                } else if (c.data.map.scale === 'sector') {
+                    x1 = fleet.location_system_x;
+                    y1 = fleet.location_system_y;
+                    x2 = fleet.destination_system_x;
+                    y2 = fleet.destination_system_y;
+                }
 
                 //Clear overlay for this fleet, will be recreated - Note, should be moved instead of replaced
                 fleet.overlay.forEach(function(e) {
@@ -528,7 +531,7 @@ CORE.createModule('animator', function(c, config) {
                 fleet.overlay = null;
 
                 var elapsedTime = time - fleet.departure_time * 1000;
-                var tripTime = fleet.arrival_time * 1000 - fleet.departure_time * 1000;
+                var tripTime = (fleet.arrival_time * 1000 - fleet.departure_time * 1000) + 3000; //add extra time to compensate for data update delay, pretending ship arrives later
 
                 if (elapsedTime > tripTime) {
                     x1 = x2;
@@ -564,50 +567,40 @@ CORE.createModule('animator', function(c, config) {
     }
 
     function addFleetToMap(fleet) {
-
-        fleet.scale = 'fleet';
-        var x1, y1, x2, y2;
-
-        if (c.data.map.scale === 'system') {
-            x1 = fleet.position_x;
-            y1 = fleet.position_y;
-            x2 = fleet.destination_x;
-            y2 = fleet.destination_y;
-        } else if (c.data.map.scale === 'sector') {
-            x1 = fleet.location_system_x;
-            y1 = fleet.location_system_y;
-            x2 = fleet.destination_system_x;
-            y2 = fleet.destination_system_y;
-        }
-
         if (fleet.destination_id) {
-
             if (c.data.map.scale === 'system' && fleet.destination_system !== c.data.map.id) {
                 // Don't show fleet in system if enroute to different system
                 return;
             }
-
-            var elapsedTime = time - fleet.departure_time;
-            var tripTime = fleet.arrival_time - fleet.departure_time;
-
-            if (elapsedTime < tripTime) {
-                var percentTravelled = elapsedTime / tripTime;
-                x1 = (x1 * 1) + ((x2 - x1) * 1) * percentTravelled;
-                y1 = (y1 * 1) + ((y2 - y1) * 1) * percentTravelled;
-            } else {
-                x1 = x2;
-                y1 = y2;
-            }
-
         }
 
-        var coords = scaleCoordinates(x1, y1);
-
+        fleet.scale = 'fleet';
+        var x1, y1, x2, y2;
         var owned = (fleet.owner_id === c.data.user.id);
 
-        // Draw users fleets on one side, enemy fleets on the other
-        // TODO - find a way to merge enemy fleets
+        var coords = {
+            x: 0,
+            y: 0
+        };
+
+        //Placement only important for stationationary fleets, movement simulation will position moving fleets
         if (!fleet.destination_id) {
+
+            if (c.data.map.scale === 'system') {
+                x1 = fleet.position_x;
+                y1 = fleet.position_y;
+                x2 = fleet.destination_x;
+                y2 = fleet.destination_y;
+            } else if (c.data.map.scale === 'sector') {
+                x1 = fleet.location_system_x;
+                y1 = fleet.location_system_y;
+                x2 = fleet.destination_system_x;
+                y2 = fleet.destination_system_y;
+            }
+
+            coords = scaleCoordinates(x1, y1);
+
+            // Draw users fleets on one side, enemy fleets on the other
             if (owned) {
                 coords.x += 10;
                 coords.y -= 15;
@@ -617,8 +610,8 @@ CORE.createModule('animator', function(c, config) {
             }
         }
 
-        var drawWidth = 45;
-        var drawHeight = 30;
+        var drawWidth = 30 + Math.sqrt(fleet.size) / 2;
+        var drawHeight = 20 + Math.sqrt(fleet.size) / 2;
 
         var kImage = new Kinetic.Image({
             x: coords.x, //center the image
@@ -765,8 +758,8 @@ CORE.createModule('animator', function(c, config) {
         }
 
         if (neutralRatio > 0) {
-             // grad.addColorStop(position, config.colours.neutralWhite.hex);
-            position += (neutralRatio/2);
+            // grad.addColorStop(position, config.colours.neutralWhite.hex);
+            position += (neutralRatio / 2);
             grad.addColorStop(position, config.colours.neutralWhite.hex);
             // grad.addColorStop(position, config.colours.neutralWhite.hex);
         }

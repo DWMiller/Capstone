@@ -44,6 +44,8 @@ CORE.createModule('fleets', function(c, config) {
     /************************************ API REQUESTS ************************************/
 
     function moveFleet(data) {
+        c.modules.animator.instance.state.action = false;
+
         var fleet = data.fleet;
         var target = data.target;
 
@@ -66,6 +68,7 @@ CORE.createModule('fleets', function(c, config) {
         }
 
         if (c.modules.commands.instance.options.fleetSplit && fleet.size > 1) {
+            c.modules.animator.instance.state.action = true;
             scope.notify({
                 type: 'show-widget-fleetSplitter',
                 data: data
@@ -118,12 +121,22 @@ CORE.createModule('fleets', function(c, config) {
     /************************************ GENERAL FUNCTIONS ************************************/
 
     function updateFleet(fleet) {
+        var found = false;
         c.data.map.fleets.forEach(function(fleet2, index) {
             //find matching fleet in local data
             if (fleet.id === fleet2.id) {
                 c.data.map.fleets[index] = fleet;
+                found = true;
             }
         });
+
+        if(!found) {
+            c.data.map.fleets.push(fleet);
+            scope.notify({
+                type: 'inject-fleet',
+                data: fleet
+            });
+        }
     }
 
     return {

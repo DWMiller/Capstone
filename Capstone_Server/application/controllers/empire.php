@@ -62,6 +62,53 @@ class Empire extends Core_Controller {
 		// }
 	}
 
+	function research() {
+		$args = func_get_args()[0];
+
+		$type = $args['type']; //armour, weapons , propulsion
+
+		$cost;
+		switch($type) {
+			case 'weapons':
+				$cost = 10 + ($this->User['tech_weapons']+1) * 10;
+				break;
+			case 'armour':
+				$cost = 10 + ($this->User['tech_armour']+1) * 10;
+				break;
+			case 'propulsion':
+				$cost = 10 + ($this->User['tech_propulsion']+1) * 10;
+				break;
+		}
+
+		if($this->User['knowledge'] < $cost) {
+			return;
+		}
+
+		$result;
+		switch($type) {
+			case 'weapons':
+				$result = $this->Users->researchWeapons($this->User['id']);	
+				$this->User['tech_weapons']++;			
+				break;
+			case 'armour':
+				$result = $this->Users->researchArmour($this->User['id']);
+				$this->User['tech_armour']++;
+				break;
+			case 'propulsion':
+				$result = $this->Users->researchPropulsion($this->User['id']);
+				$this->User['tech_propulsion']++;					
+				break;
+		}
+
+		$this->Users->removeKnowledge($this->User['id'],$cost);
+		$this->User['knowledge'] -= $cost;
+
+		$this->TPL['user-update'] = $this->filteredUserData();
+
+		$this->output->json_response($this->TPL);
+
+	}
+
 	function rename() {
 		$args = func_get_args()[0];
 		$location = new Location_m($args['location']);	

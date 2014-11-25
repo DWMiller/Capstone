@@ -1,7 +1,7 @@
 module.exports = {
 	js: {
 		files: ['js/**/*'],
-		tasks: ['newer:jshint', 'newer:concat', 'newer:uglify']
+		tasks: ['newer:jshint', 'newer:concat'] //'newer:uglify'
 	},
 	sass: {
 		files: ['sass/**/*'],

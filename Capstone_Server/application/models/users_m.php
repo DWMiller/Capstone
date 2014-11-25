@@ -103,6 +103,32 @@ class Users_m extends Core_Model {
     	$stmt->execute(array($amount,$id));
 	}
 
+	public function removeKnowledge($id,$amount) {
+		$sql = "UPDATE users SET knowledge = knowledge - ? WHERE id = ?";
+		$stmt = $this->dbh->prepare($sql);
+    	$stmt->execute(array($amount,$id));
+	}
+
+
+	public function researchPropulsion($id) {
+		$sql = "UPDATE users SET tech_propulsion = tech_propulsion + 1 WHERE id = ?";
+		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute(array($id));
+	}
+
+	public function researchWeapons($id) {
+			$sql = "UPDATE users SET tech_weapons = tech_weapons + 1 WHERE id = ?";
+			$stmt = $this->dbh->prepare($sql);
+	    	$stmt->execute(array($id));
+	}
+
+	public function researchArmour($id) {
+			$sql = "UPDATE users SET tech_armour = tech_armour + 1 WHERE id = ?";
+			$stmt = $this->dbh->prepare($sql);
+	    	$stmt->execute(array($id));
+	}
+
+
 	public function leaveQueue(&$user) {
 		$user['status'] = USER_IDLE;
 

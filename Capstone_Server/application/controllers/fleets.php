@@ -33,11 +33,11 @@ class Fleets extends Core_Controller {
 			if(!$fleet->data['destination_id']) {
 
 				if(isset($args['split']) && $args['splitSize'] < $fleet->data['size']) {
-					$fleet->splitMove($targetLocation, $args['splitSize']);
-					// $this->TPL['fleet-created'][] = $fleet->getFleetData($fleet->data['id']);
+					$newFleetId = $fleet->splitMove($targetLocation, $args['splitSize'],$this->User['tech_propulsion']);
+					$this->TPL['fleet-update'][] = $fleet->getFleetData($newFleetId);
 					$this->TPL['fleet-update'][] = $fleet->getFleetData($fleet->data['id']);
 				} else {
-					$fleet->move($targetLocation);
+					$fleet->move($targetLocation,$this->User['tech_propulsion']);
 					$this->TPL['fleet-update'][] = $fleet->getFleetData($fleet->data['id']);
 				}
 				

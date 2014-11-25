@@ -317,85 +317,52 @@ table {
 td, th {
   padding: 0; }
 
-/*! The MIT License (MIT)
+.slider {
+  width: 300px; }
 
-Copyright (c) 2014 Prince John Wesley <princejohnwesley@gmail.com>
+.slider > .dragger {
+  background: #8DCA09;
+  background: -webkit-linear-gradient(top, #8DCA09, #72A307);
+  background: -moz-linear-gradient(top, #8DCA09, #72A307);
+  background: linear-gradient(top, #8DCA09, #72A307);
+  -webkit-box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  border: 1px solid #496805;
+  width: 16px;
+  height: 16px; }
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+.slider > .dragger:hover {
+  background: -webkit-linear-gradient(top, #8DCA09, #8DCA09); }
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+.slider > .track, .slider > .highlight-track {
+  background: #ccc;
+  background: -webkit-linear-gradient(top, #bbb, #ddd);
+  background: -moz-linear-gradient(top, #bbb, #ddd);
+  background: linear-gradient(top, #bbb, #ddd);
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  height: 4px; }
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-**/
-.jcs {
-  position: relative;
-  border-style: solid;
-  border-radius: 100%;
-  border-color: hotpink;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  border-width: 5px;
-  cursor: pointer; }
-
-.jcs-value {
-  position: absolute;
-  border-style: none;
-  border-radius: 100%;
-  border: 2px solid #ecf8d4;
-  text-align: center;
-  pointer-events: none;
-  line-height: 4em;
-  color: white;
-  background-color: yellowgreen;
-  outline: none; }
-
-.jcs-indicator {
-  position: absolute;
-  border-radius: 100%;
-  background-color: deeppink;
-  border: 1px solid #b1b1b1;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  pointer-events: none; }
-
-.jcs-panel {
-  position: relative;
-  display: inline-block;
-  border-style: solid;
-  border-color: transparent;
-  cursor: pointer; }
-
-.jcs-value img {
-  border-radius: 100%;
-  background: transparent;
-  width: inherit;
-  height: inherit; }
-
-.noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none; }
+.slider > .highlight-track {
+  background-color: #8DCA09;
+  background: -webkit-linear-gradient(top, #8DCA09, #72A307);
+  background: -moz-linear-gradient(top, #8DCA09, #72A307);
+  background: linear-gradient(top, #8DCA09, #72A307);
+  border-color: #496805; }
 
 .panel, .back {
   z-index: 300; }
 
-.inlineBlock, #game-map, #module-user p, #module-details {
+.inlineBlock, #game-map, #module-details {
   display: inline-block;
   vertical-align: top; }
 
@@ -537,9 +504,11 @@ label * {
 
 @media only screen and (min-width: 50em) {
   #game-map {
-    width: 70%; } }
+    width: 65%; } }
 
-@media only screen and (min-width: 70em) { }
+@media only screen and (min-width: 70em) {
+  #game-map {
+    width: 75%; } }
 
 #module-user p + p {
   margin-left: 2em; }
@@ -561,9 +530,13 @@ label * {
     float: left;
     width: 75%;
     border-bottom-width: 4px;
-    border-bottom-style: groove; } }
+    border-bottom-style: groove; }
+    #module-user p {
+      display: inline; } }
 
-@media only screen and (min-width: 70em) { }
+@media only screen and (min-width: 70em) {
+  #module-user {
+    width: 80%; } }
 
 #module-details {
   overflow-y: auto; }
@@ -598,7 +571,9 @@ label * {
     #module-details button {
       width: 100%; } }
 
-@media only screen and (min-width: 70em) { }
+@media only screen and (min-width: 70em) {
+  #module-details {
+    width: 20%; } }
 
 #module-commandBar {
   line-height: 0; }
@@ -648,7 +623,7 @@ label * {
   #module-commandBar {
     float: left;
     font-size: larger;
-    width: 5%;
+    width: 10%;
     border-left-width: 4px;
     border-left-style: groove;
     border-right-width: 4px;
@@ -656,7 +631,9 @@ label * {
     border-bottom-width: 4px;
     border-bottom-style: groove; } }
 
-@media only screen and (min-width: 70em) { }
+@media only screen and (min-width: 70em) {
+  #module-commandBar {
+    width: 5%; } }
 
 #widget-fleetSplitter {
   box-sizing: content-box;
@@ -665,34 +642,24 @@ label * {
   top: 40%;
   left: 30%;
   padding-top: 1em;
-  width: 12em;
   border-radius: 10%;
   border: 2px groove white; }
-  #widget-fleetSplitter .jcs-panel {
-    height: 8em; }
-  #widget-fleetSplitter .jcs {
-    border-color: #00FF00;
-    border-width: 10px; }
-  #widget-fleetSplitter .jcs-value {
-    background-color: #0000FF;
-    cursor: pointer;
-    opacity: 0.7; }
-    #widget-fleetSplitter .jcs-value:hover {
-      opacity: 1; }
-  #widget-fleetSplitter .jcs-indicator {
-    background-color: #0000FF; }
+  #widget-fleetSplitter .slider {
+    display: block; }
+  #widget-fleetSplitter .widget-button, #widget-fleetSplitter .widget-label {
+    display: block;
+    line-height: 2em;
+    font-size: larger; }
   #widget-fleetSplitter .widget-button {
     cursor: pointer;
     background-color: #c2d4ff;
-    line-height: 2em;
     font-variant: small-caps;
     font-weight: bold;
-    font-size: larger;
     margin: auto;
-    width: 90%;
+    margin-bottom: 1em;
+    width: 6em;
     height: 2em;
     color: black;
-    border-radius: 5px;
-    margin-bottom: 1em; }
+    border-radius: 5px; }
     #widget-fleetSplitter .widget-button:hover {
       background-color: #3d77ff; }

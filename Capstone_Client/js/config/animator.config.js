@@ -58,6 +58,7 @@ CORE.extendConfig({
             }, 
         }, 
         text: {
+            font:'Verdana',
             fontSize : 16,
             lineSpacing : 4,
         }
