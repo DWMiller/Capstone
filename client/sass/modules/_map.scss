@@ -1,0 +1,16 @@
+#game-map {
+	@extend .inlineBlock;
+    line-height: 1;
+    width: $map-width-sm;
+}
+
+@media only screen and (max-width: $sm-brkp) {} @media only screen and (min-width: $md-brkp) {
+    #game-map {
+        width: $map-width-md;
+    }
+}
+@media only screen and (min-width: $lg-brkp) {
+    #game-map {
+        width: $map-width-lg;
+    }
+}

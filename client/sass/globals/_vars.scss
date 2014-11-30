@@ -1,0 +1,39 @@
+$baseFontSize: 16px;
+$baseLineHeight: 1.5;
+
+// Maximum page width, not super important, just acknolwedging that current styles may look shit beyond a certain point
+$max-width: 2000px;
+
+
+$md-brkp: 900px;
+$sm-brkp: $md-brkp - 1px;
+$lg-brkp: 1400px;
+
+$touch-height-min: 44px; // Minimum size to ensure touchable elemnts aren't too small for fingers
+$touch-width-min: 44px;
+$touch-margin: $baseLineHeight;
+
+$bg: url('../assets/images/stars_bg.png');
+
+$errorRed: rgb(199,25,25);
+
+/*******************************************************
+********************* Element Dimensions ***************
+*******************************************************/
+
+// $command-bar-width-sm: 
+$command-bar-width-md:9%;
+$command-bar-width-lg:7%;
+
+// $details-width-sm: 
+$details-width-md:25%;
+$details-width-lg:20%;
+
+$map-width-sm: 100%;
+$map-width-md: 100% - $command-bar-width-md - $details-width-md;
+$map-width-lg: 100% - $command-bar-width-lg - $details-width-lg;
+
+$user-width-sm: 100%;
+$user-width-md: 100% - $details-width-md;
+$user-width-lg: 100% - $details-width-lg;
+
