@@ -60,7 +60,7 @@ CORE.createModule('widgets', function(c) {
         scope.show(elements.fleetSplitterContainer[0]);
 
         elements.fleetSplitter.prop({
-            min: 1,
+            min: 0,
             max: (data.fleet.size * 1),
             value: Math.floor(data.fleet.size / 2),
         });

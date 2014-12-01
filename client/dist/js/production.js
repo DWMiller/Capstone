@@ -1420,6 +1420,21 @@ CORE.createModule('simulation', function(c) {
 // 	}
 
 // }()
+
+CORE.Helpers = function() {
+    'use strict';
+    return {
+        commafy: function(num) {
+            if(!num) {
+                return '0';
+            }
+
+            //http://snipplr.com/view/66256/format-numbers-in-javascript-with-group-digits/
+            return num.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
+        },
+    };
+}();
+
 CORE.createModule('nothing', function(c, config) {
     'use strict';
 
@@ -2271,8 +2286,9 @@ CORE.createModule('animator', function(c, config) {
             }
         }
 
-        var drawWidth = 30 + Math.sqrt(fleet.size) / 2;
-        var drawHeight = 20 + Math.sqrt(fleet.size) / 2;
+        var bigness = 2*Math.log(fleet.size+5);
+        var drawWidth = 45 + bigness;
+        var drawHeight = 30 + bigness;
 
         var kImage = new Kinetic.Image({
             x: coords.x, //center the image
@@ -2370,7 +2386,7 @@ CORE.createModule('animator', function(c, config) {
             var ownedShips = $.extend({}, defaultText, {
                 x: kImage.x - kImage.width / 2,
                 y: kImage.y - config.text.lineSpacing * 2,
-                text: system.ownedShipTotal,
+                text: c.Helpers.commafy(system.ownedShipTotal),
                 fill: config.colours.ownedGreen.hex
             });
             elements.layers.overlay.add(new Kinetic.Text(ownedShips));
@@ -2381,7 +2397,7 @@ CORE.createModule('animator', function(c, config) {
             var enemyShips = $.extend({}, defaultText, {
                 x: kImage.x + kImage.width,
                 y: kImage.y - config.text.lineSpacing * 2,
-                text: system.enemyShipTotal,
+                text: c.Helpers.commafy(system.enemyShipTotal),
                 fill: config.colours.enemyRed.hex
             });
             elements.layers.overlay.add(new Kinetic.Text(enemyShips));
@@ -2535,6 +2551,8 @@ CORE.createModule('animator', function(c, config) {
         elements.layers.overlay.add(new Kinetic.Text(labCount));
     }
 
+
+
     function addFleetOverlay(fleet, kImage) {
         var overlay = [];
         var owned = (fleet.owner_id === c.data.user.id);
@@ -2542,7 +2560,7 @@ CORE.createModule('animator', function(c, config) {
         var size = $.extend({}, defaultText, {
             x: owned ? (kImage.x + kImage.width) : (kImage.x - 30),
             y: kImage.y - 5,
-            text: fleet.size,
+            text: c.Helpers.commafy(fleet.size),
             fill: owned ? config.colours.ownedGreen.hex : config.colours.enemyRed.hex
         });
 
@@ -2571,7 +2589,7 @@ CORE.createModule('animator', function(c, config) {
                 lineJoin: 'round',
                 strokeWidth: 2,
                 // tension: 1,
-                dash: [10, 5]
+                dash: [6, 4]
             });
             elements.layers.overlay.add(line);
             overlay.push(line);
@@ -3434,7 +3452,7 @@ CORE.createModule('user', function(c) {
     /************************************ GENERAL FUNCTIONS ************************************/
 
     function refresh() {
-        $(scope.self()).html(c.Templates.userDetails(c.data.user));
+        $(scope.self()).html(c.Templates.userDetails(c.data.user).html());
     }
 
     // function openResearchMenu() {
@@ -3514,7 +3532,7 @@ CORE.createModule('widgets', function(c) {
         scope.show(elements.fleetSplitterContainer[0]);
 
         elements.fleetSplitter.prop({
-            min: 1,
+            min: 0,
             max: (data.fleet.size * 1),
             value: Math.floor(data.fleet.size / 2),
         });
@@ -3616,6 +3634,10 @@ CORE.createModule('fleets', function(c, config) {
 
     function moveFleet(data) {
         c.modules.animator.instance.state.action = false;
+
+        if(data.splitSize && data.splitSize < 1) {
+            return false;
+        }
 
         var fleet = data.fleet;
         var target = data.target;
@@ -3729,10 +3751,9 @@ CORE.createModule('game', function(c, config) {
     var scope;
 
     var listeners = {
-        'game-update': updateGame,
         'map-update': updateMapData,
         'map-click': objectSelected,
-        'map-data-outdated':requestUpdateNow
+        'map-data-outdated': requestUpdateNow
     };
 
     var updater;
@@ -3800,15 +3821,7 @@ CORE.createModule('game', function(c, config) {
             return;
         }
 
-        addHistory();
-
-        c.data.map.scale = object.scale;
-        c.data.map.id = object.id;
-        // c.data.map.size = config.mapScaleFactor[object.scale];
-
-        stopUpdater();
-        getMapData();
-        startUpdater();
+        navigate(object);
     }
 
     /**
@@ -3853,15 +3866,6 @@ CORE.createModule('game', function(c, config) {
 
     /************************************ RESPONSES ************************************/
 
-    function updateGame(data) {
-        // scope.notify({
-        //     type: 'data-set',
-        //     data: {
-        //         game: data.game
-        //     }
-        // });
-    }
-
     function updateMapData(data) {
 
         if (data.fleets) {
@@ -3880,17 +3884,20 @@ CORE.createModule('game', function(c, config) {
         }
 
         var systems = {};
-        c.data.map.sector.forEach(function(system, index) {
-            // map sectors to object properties based on id to simplify access later
-            // TODO - This should be done once when data is first retrieved
-            system.ownedShipTotal = 0;
-            system.enemyShipTotal = 0;
-            system.ownedLocationTotal = 0;
-            system.enemyLocationTotal = 0;
-            system.neutralLocationTotal = 0;
-            systems[system.id] = system;
 
-        });
+        if (c.data.map.sector) {
+            c.data.map.sector.forEach(function(system, index) {
+                // map sectors to object properties based on id to simplify access later
+                // TODO - This should be done once when data is first retrieved
+                system.ownedShipTotal = 0;
+                system.enemyShipTotal = 0;
+                system.ownedLocationTotal = 0;
+                system.enemyLocationTotal = 0;
+                system.neutralLocationTotal = 0;
+                systems[system.id] = system;
+
+            });
+        }
 
         if (data.systemLocations) {
             //For each fleet, find matching system in sector data
@@ -3920,7 +3927,6 @@ CORE.createModule('game', function(c, config) {
             type: 'data-updated',
             data: true
         });
-
 
     }
 
@@ -3953,14 +3959,35 @@ CORE.createModule('game', function(c, config) {
     }
 
     /**
+     * [navigate description]
+     * @return {[type]} [description]
+     */
+    function navigate(object) {
+        addHistory();
+
+        wipeMapData();
+        c.data.map.scale = object.scale;
+        c.data.map.id = object.id;
+        requestUpdateNow();
+    }
+
+
+    /**
      * Go up/back a layer in the map heirarchy
      * @return {[type]} [description]
      */
     function navigateBack() {
-        c.data.map.fleets = null;
+        wipeMapData();
         c.data.map = history.pop();
         requestUpdateNow();
     }
+
+    function wipeMapData() {
+        c.data.map.sector = null;
+        c.data.map.system = null;
+        c.data.map.fleets = null;
+    }
+
 
     return {
         properties: p_properties,
@@ -4082,32 +4109,29 @@ CORE.Templates = function() {
         userDetails: function(data) {
             var $container = $('<div>');
 
-            var $row = $('<p>');
-            $('<span>',{class:'label'}).text("Currency: ").appendTo($row);
-            $('<span>',{class:'value'}).text(data.resources).appendTo($row);
+            var $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text("Currency").appendTo($row);
+            $('<span>',{class:'value'}).text(CORE.Helpers.commafy(data.resources)).appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text("Research Points: ").appendTo($row);
-            $('<span>',{class:'value'}).text(data.knowledge).appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text("Research Points").appendTo($row);
+            $('<span>',{class:'value'}).text(CORE.Helpers.commafy(data.knowledge)).appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text('Armour Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_armour+' ').appendTo($row);
-            $('<button>',{class:'research-start', 'data-research': 'armour'}).text('+1 ('+data.tech_armour_cost+')').appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text('Armour Tech').appendTo($row);
+            $('<button>',{class:'value research-start', 'data-research': 'armour'}).text(data.tech_armour+ ' +1 ('+CORE.Helpers.commafy(data.tech_armour_cost)+')').appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text('Propulsion Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_propulsion+' ').appendTo($row);
-            $('<button>',{class:'research-start', 'data-research': 'propulsion'}).text('+1 ('+data.tech_propulsion_cost+')').appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text('Propulsion Tech').appendTo($row);
+            $('<button>',{class:'value research-start', 'data-research': 'propulsion'}).text(data.tech_propulsion+' +1 ('+CORE.Helpers.commafy(data.tech_propulsion_cost)+')').appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text('Weapons Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_weapons+' ').appendTo($row);
-            $('<button>',{class:'research-start', 'data-research': 'weapons'}).text('+1 ('+data.tech_weapons_cost+')').appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text('Weapons Tech').appendTo($row);
+            $('<button>',{class:'value research-start', 'data-research': 'weapons'}).text(data.tech_weapons+' +1 ('+CORE.Helpers.commafy(data.tech_weapons_cost)+')').appendTo($row);
             $container.append($row);           
 
             // $row = $('<button>').html("Research").addClass('widget-research').appendTo($row);

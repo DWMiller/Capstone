@@ -51,6 +51,22 @@ label * {
     right: 0;
 }
 
+.input-group {
+    margin: 0;
+    display:inline-block;
+    vertical-align: top;
+
+    .label, .value {
+        display:block;
+    }
+
+    .label {
+        font-weight: bolder;
+        margin-right: 0.5em;
+        font-variant: small-caps;
+    }    
+}
+
 .blink_me {
     // -webkit-animation-name: blinker;
     // -webkit-animation-duration: 1s;

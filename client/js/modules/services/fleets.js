@@ -46,6 +46,10 @@ CORE.createModule('fleets', function(c, config) {
     function moveFleet(data) {
         c.modules.animator.instance.state.action = false;
 
+        if(data.splitSize && data.splitSize < 1) {
+            return false;
+        }
+
         var fleet = data.fleet;
         var target = data.target;
 

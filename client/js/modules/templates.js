@@ -110,32 +110,29 @@ CORE.Templates = function() {
         userDetails: function(data) {
             var $container = $('<div>');
 
-            var $row = $('<p>');
-            $('<span>',{class:'label'}).text("Currency: ").appendTo($row);
-            $('<span>',{class:'value'}).text(data.resources).appendTo($row);
+            var $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text("Currency").appendTo($row);
+            $('<span>',{class:'value'}).text(CORE.Helpers.commafy(data.resources)).appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text("Research Points: ").appendTo($row);
-            $('<span>',{class:'value'}).text(data.knowledge).appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text("Research Points").appendTo($row);
+            $('<span>',{class:'value'}).text(CORE.Helpers.commafy(data.knowledge)).appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text('Armour Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_armour+' ').appendTo($row);
-            $('<button>',{class:'research-start', 'data-research': 'armour'}).text('+1 ('+data.tech_armour_cost+')').appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text('Armour Tech').appendTo($row);
+            $('<button>',{class:'value research-start', 'data-research': 'armour'}).text(data.tech_armour+ ' +1 ('+CORE.Helpers.commafy(data.tech_armour_cost)+')').appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text('Propulsion Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_propulsion+' ').appendTo($row);
-            $('<button>',{class:'research-start', 'data-research': 'propulsion'}).text('+1 ('+data.tech_propulsion_cost+')').appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text('Propulsion Tech').appendTo($row);
+            $('<button>',{class:'value research-start', 'data-research': 'propulsion'}).text(data.tech_propulsion+' +1 ('+CORE.Helpers.commafy(data.tech_propulsion_cost)+')').appendTo($row);
             $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text('Weapons Tech: ').appendTo($row);
-            $('<span>',{class:'value'}).text(data.tech_weapons+' ').appendTo($row);
-            $('<button>',{class:'research-start', 'data-research': 'weapons'}).text('+1 ('+data.tech_weapons_cost+')').appendTo($row);
+            $row = $('<p>').addClass('input-group');
+            $('<span>',{class:'label'}).text('Weapons Tech').appendTo($row);
+            $('<button>',{class:'value research-start', 'data-research': 'weapons'}).text(data.tech_weapons+' +1 ('+CORE.Helpers.commafy(data.tech_weapons_cost)+')').appendTo($row);
             $container.append($row);           
 
             // $row = $('<button>').html("Research").addClass('widget-research').appendTo($row);

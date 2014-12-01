@@ -1,33 +1,26 @@
 #module-user {
     // position:absolute;
     // top:0;   
+    line-height:1;
 
-    p+p {
-        margin-left: 2em;
-    }
-    .label {
-        font-weight: bolder;
-        margin-right: 0.5em;
-        font-variant: small-caps;
-    }
-    .value {}
 }
 @media only screen and (max-width: $sm-brkp) {
     #module-user {
         width: $user-width-sm;
-        p {
-            display: block;
-        }
-        p+p {
-            margin: 0;
-        }
+        // p {
+        //     display: block;
+        // }
+        // p+p {
+        //     margin: 0;
+        // }
     }
 }
 @media only screen and (min-width: $md-brkp) {
     #module-user {
-        p {
-            display:inline;
-        }
+        // p {
+        //  margin-left: 2em;
+        //     display:inline;
+        // }
 
         float: left;
         // height:5em;

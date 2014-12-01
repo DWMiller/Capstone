@@ -5,17 +5,18 @@
     top: 40%;
     left: 30%;
     padding-top: 1em;
-    // width: 12em;
+    width: 18em;
     border-radius: 10%;
     border: 2px groove white;
 
     .slider {
-        display:block;
+        width: 90%;
+        // display:block;
     }
+
     .widget-button,.widget-label {
         // @extend .inlineBlock;
-        display:block;
-        
+        display:block;        
         line-height: 2em;
         font-size: larger;
     }

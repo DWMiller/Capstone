@@ -8,10 +8,9 @@ CORE.createModule('game', function(c, config) {
     var scope;
 
     var listeners = {
-        'game-update': updateGame,
         'map-update': updateMapData,
         'map-click': objectSelected,
-        'map-data-outdated':requestUpdateNow
+        'map-data-outdated': requestUpdateNow
     };
 
     var updater;
@@ -79,15 +78,7 @@ CORE.createModule('game', function(c, config) {
             return;
         }
 
-        addHistory();
-
-        c.data.map.scale = object.scale;
-        c.data.map.id = object.id;
-        // c.data.map.size = config.mapScaleFactor[object.scale];
-
-        stopUpdater();
-        getMapData();
-        startUpdater();
+        navigate(object);
     }
 
     /**
@@ -132,15 +123,6 @@ CORE.createModule('game', function(c, config) {
 
     /************************************ RESPONSES ************************************/
 
-    function updateGame(data) {
-        // scope.notify({
-        //     type: 'data-set',
-        //     data: {
-        //         game: data.game
-        //     }
-        // });
-    }
-
     function updateMapData(data) {
 
         if (data.fleets) {
@@ -159,17 +141,20 @@ CORE.createModule('game', function(c, config) {
         }
 
         var systems = {};
-        c.data.map.sector.forEach(function(system, index) {
-            // map sectors to object properties based on id to simplify access later
-            // TODO - This should be done once when data is first retrieved
-            system.ownedShipTotal = 0;
-            system.enemyShipTotal = 0;
-            system.ownedLocationTotal = 0;
-            system.enemyLocationTotal = 0;
-            system.neutralLocationTotal = 0;
-            systems[system.id] = system;
 
-        });
+        if (c.data.map.sector) {
+            c.data.map.sector.forEach(function(system, index) {
+                // map sectors to object properties based on id to simplify access later
+                // TODO - This should be done once when data is first retrieved
+                system.ownedShipTotal = 0;
+                system.enemyShipTotal = 0;
+                system.ownedLocationTotal = 0;
+                system.enemyLocationTotal = 0;
+                system.neutralLocationTotal = 0;
+                systems[system.id] = system;
+
+            });
+        }
 
         if (data.systemLocations) {
             //For each fleet, find matching system in sector data
@@ -199,7 +184,6 @@ CORE.createModule('game', function(c, config) {
             type: 'data-updated',
             data: true
         });
-
 
     }
 
@@ -232,14 +216,35 @@ CORE.createModule('game', function(c, config) {
     }
 
     /**
+     * [navigate description]
+     * @return {[type]} [description]
+     */
+    function navigate(object) {
+        addHistory();
+
+        wipeMapData();
+        c.data.map.scale = object.scale;
+        c.data.map.id = object.id;
+        requestUpdateNow();
+    }
+
+
+    /**
      * Go up/back a layer in the map heirarchy
      * @return {[type]} [description]
      */
     function navigateBack() {
-        c.data.map.fleets = null;
+        wipeMapData();
         c.data.map = history.pop();
         requestUpdateNow();
     }
+
+    function wipeMapData() {
+        c.data.map.sector = null;
+        c.data.map.system = null;
+        c.data.map.fleets = null;
+    }
+
 
     return {
         properties: p_properties,

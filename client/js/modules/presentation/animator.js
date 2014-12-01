@@ -612,8 +612,9 @@ CORE.createModule('animator', function(c, config) {
             }
         }
 
-        var drawWidth = 30 + Math.sqrt(fleet.size) / 2;
-        var drawHeight = 20 + Math.sqrt(fleet.size) / 2;
+        var bigness = 2*Math.log(fleet.size+5);
+        var drawWidth = 45 + bigness;
+        var drawHeight = 30 + bigness;
 
         var kImage = new Kinetic.Image({
             x: coords.x, //center the image
@@ -711,7 +712,7 @@ CORE.createModule('animator', function(c, config) {
             var ownedShips = $.extend({}, defaultText, {
                 x: kImage.x - kImage.width / 2,
                 y: kImage.y - config.text.lineSpacing * 2,
-                text: system.ownedShipTotal,
+                text: c.Helpers.commafy(system.ownedShipTotal),
                 fill: config.colours.ownedGreen.hex
             });
             elements.layers.overlay.add(new Kinetic.Text(ownedShips));
@@ -722,7 +723,7 @@ CORE.createModule('animator', function(c, config) {
             var enemyShips = $.extend({}, defaultText, {
                 x: kImage.x + kImage.width,
                 y: kImage.y - config.text.lineSpacing * 2,
-                text: system.enemyShipTotal,
+                text: c.Helpers.commafy(system.enemyShipTotal),
                 fill: config.colours.enemyRed.hex
             });
             elements.layers.overlay.add(new Kinetic.Text(enemyShips));
@@ -876,6 +877,8 @@ CORE.createModule('animator', function(c, config) {
         elements.layers.overlay.add(new Kinetic.Text(labCount));
     }
 
+
+
     function addFleetOverlay(fleet, kImage) {
         var overlay = [];
         var owned = (fleet.owner_id === c.data.user.id);
@@ -883,7 +886,7 @@ CORE.createModule('animator', function(c, config) {
         var size = $.extend({}, defaultText, {
             x: owned ? (kImage.x + kImage.width) : (kImage.x - 30),
             y: kImage.y - 5,
-            text: fleet.size,
+            text: c.Helpers.commafy(fleet.size),
             fill: owned ? config.colours.ownedGreen.hex : config.colours.enemyRed.hex
         });
 
@@ -912,7 +915,7 @@ CORE.createModule('animator', function(c, config) {
                 lineJoin: 'round',
                 strokeWidth: 2,
                 // tension: 1,
-                dash: [10, 5]
+                dash: [6, 4]
             });
             elements.layers.overlay.add(line);
             overlay.push(line);
