@@ -362,11 +362,13 @@ button {
 *, *:before, *:after {
   box-sizing: border-box; }
 
+html {
+  font-size: 16px; }
+
 html, body, #main-container {
   height: 100%;
   background-image: url('../assets/images/stars_bg.png');
   line-height: 1.5;
-  font-size: 16px;
   height: 100%;
   color: white; }
 
@@ -437,7 +439,9 @@ label * {
   100% {
     opacity: 1; } }
 
-@media only screen and (max-width: 899px) { }
+@media only screen and (max-width: 899px) {
+  html {
+    font-size: 12px; } }
 
 /* Desktops and laptops ----------- */
 @media only screen and (min-width: 900px) {
@@ -450,6 +454,85 @@ label * {
 /* Large screens ----------- */
 @media only screen and (min-width: 1400px) { }
 
+/**
+ * Components are style sets dealing with a specific type of element that may
+ * be used throughout the application
+ */
+/*******************************************************
+********************* Base Module Styles ***************
+*******************************************************/
+.upgrade-btn {
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
+  opacity: 1;
+  position: relative;
+  min-height: 75px;
+  min-width: 100px;
+  overflow: hidden;
+  background: black;
+  background-repeat: no-repeat;
+  background-size: 80px;
+  background-position: center;
+  border: 1px solid white;
+  -webkit-box-shadow: rgba(255, 255, 255, 0.247059) 3px 3px 5px 0px;
+  -moz-box-shadow: rgba(255, 255, 255, 0.247059) 3px 3px 5px 0px;
+  box-shadow: rgba(255, 255, 255, 0.247059) 3px 3px 5px 0px; }
+  .upgrade-btn .level {
+    position: absolute;
+    top: 0;
+    left: 5px;
+    font-size: small; }
+  .upgrade-btn .cost {
+    position: absolute;
+    width: 100%;
+    font-variant: small-caps;
+    background: black;
+    color: white;
+    border-top-width: 2px;
+    border-top-style: ridge;
+    border-color: #00bbff;
+    bottom: 0px;
+    font-size: small; }
+  .upgrade-btn:active {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none; }
+
+/*******************************************************
+********************* Small Screen Only ****************
+*******************************************************/
+@media only screen and (max-width: 899px) {
+  .upgrade-btn .cost {
+    left: 0px; } }
+
+/*******************************************************
+********************* Minimum Medium Screen ************
+*******************************************************/
+@media only screen and (min-width: 900px) {
+  .upgrade-btn .cost {
+    width: auto;
+    padding: 3px;
+    border-radius: 5px 0 0 0;
+    border-top-width: 2px;
+    border-left-width: 2px;
+    border-top-style: ridge;
+    border-left-style: ridge;
+    border-color: #00bbff;
+    bottom: 1px;
+    right: 1px; } }
+
+/*******************************************************
+********************* Minimum Large Screen *************
+*******************************************************/
+@media only screen and (min-width: 1400px) {
+  .upgrade-btn {
+    max-width: 150px; } }
+
+/**
+ * Modules are style sets dealing with specific sections of the content 
+ */
 @media only screen and (max-width: 899px) { }
 
 @media only screen and (min-width: 900px) {
@@ -469,7 +552,7 @@ label * {
 
 #game-map {
   line-height: 1;
-  width: 100%; }
+  width: 85%; }
 
 @media only screen and (max-width: 899px) { }
 
@@ -481,43 +564,80 @@ label * {
   #game-map {
     width: 73%; } }
 
+/*******************************************************
+********************* Base Module Styles ***************
+*******************************************************/
 #module-user {
-  line-height: 1; }
+  line-height: 1;
+  float: left; }
+  #module-user .upgrade-btn {
+    height: 50px; }
+    #module-user .upgrade-btn:hover {
+      opacity: 0.8; }
+    #module-user .upgrade-btn.research-armour {
+      background-image: url('../assets/images/map/shield.png'); }
+    #module-user .upgrade-btn.research-weapons {
+      background-image: url('../assets/images/map/swords.png'); }
+    #module-user .upgrade-btn.research-propulsion {
+      background-image: url('../assets/images/map/rocket.png'); }
+  #module-user .upgrade-btn + .upgrade-btn {
+    margin-left: 0.25em; }
 
+/*******************************************************
+********************* Small Screen Only ****************
+*******************************************************/
 @media only screen and (max-width: 899px) {
   #module-user {
-    width: 100%; } }
+    width: 85%; } }
 
+/*******************************************************
+********************* Minimum Medium Screen ************
+*******************************************************/
 @media only screen and (min-width: 900px) {
   #module-user {
-    float: left;
     width: 75%;
     border-bottom-width: 4px;
     border-bottom-style: groove; } }
 
+/*******************************************************
+********************* Minimum Large Screen *************
+*******************************************************/
 @media only screen and (min-width: 1400px) {
   #module-user {
     width: 80%; } }
 
 #module-details {
-  overflow-y: auto; }
+  height: 100%;
+  overflow-y: auto;
+  float: right; }
+  #module-details header {
+    font-variant: small-caps; }
+  #module-details .module-contents {
+    margin: 0 0.5em; }
+  #module-details .owned .upgrade-btn:hover {
+    opacity: 0.8; }
+  #module-details .upgrade-btn {
+    height: 100px;
+    width: 100%; }
+    #module-details .upgrade-btn.structure-mine {
+      background-image: url('../assets/images/map/mine.png'); }
+    #module-details .upgrade-btn.structure-shipyard {
+      background-image: url('../assets/images/map/anchor.png'); }
+    #module-details .upgrade-btn.structure-lab {
+      background-image: url('../assets/images/map/beaker.png'); }
 
 @media only screen and (max-width: 899px) {
   #module-details {
-    display: none; } }
+    width: 15%; }
+    #module-details .upgrade-btn {
+      margin-bottom: 0.25em; } }
 
 @media only screen and (min-width: 900px) {
   #module-details {
-    float: right;
     font-size: larger;
     width: 25%;
-    height: 100%;
     border-left-width: 4px;
     border-left-style: groove; }
-    #module-details header {
-      font-variant: small-caps; }
-    #module-details .module-contents {
-      margin: 0 1em; }
     #module-details .label {
       display: inline-block;
       font-variant: small-caps;
@@ -530,11 +650,17 @@ label * {
       width: 50%;
       text-align: left; }
     #module-details button {
-      width: 100%; } }
+      width: 100%; }
+    #module-details .upgrade-btn {
+      margin: 0.25em; } }
 
 @media only screen and (min-width: 1400px) {
   #module-details {
-    width: 20%; } }
+    width: 20%; }
+    #module-details .module-contents {
+      margin: 0 1em; }
+    #module-details .upgrade-btn {
+      border-radius: 5px; } }
 
 #module-commandBar {
   line-height: 0; }

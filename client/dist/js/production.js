@@ -1349,77 +1349,6 @@ CORE.createModule('simulation', function(c) {
 
 });
 
-// // Controls game processes
-// // 
-// game.modules.engine = function()
-// {
-// 	var properties = {
-// 		name: 'engine'
-// 	}
-
-// 	var config = game.config[properties.name];
-
-
-// 	function p_initialize()
-// 	{
-// 		console.log(properties.name+' initialized');
-// 	}
-
-// 	function FlyFleetFly()
-// 	{
-// 		var lastx;
-// 		if(game.modules.data.fleets) {
-// 			for (index in game.modules.data.fleets) {
-// 				var object = game.modules.data.fleets[index];
-// 				object.position_x = object.position_x +=1;	
-// 				lastx = object.position_x;
-// 			}
-// 		}
-
-
-// 		if(lastx < 100) {
-// 			setTimeout(FlyFleetFly,config.SIM_INTERVAL);
-// 		} else {
-// 			setTimeout(FlyBack,config.SIM_INTERVAL);
-// 		}
-// 	}
-
-// 	function FlyBack()
-// 	{
-// 		var lastx;
-// 		if(game.modules.data.fleets) {
-// 			for (index in game.modules.data.fleets) {
-// 				var object = game.modules.data.fleets[index];
-// 				object.position_x = object.position_x -=1;	
-// 				lastx = object.position_x;
-// 			}
-// 		}
-
-// 		if(lastx < 0) {
-// 			setTimeout(FlyFleetFly,config.SIM_INTERVAL);
-// 		} else {
-// 			setTimeout(FlyBack,config.SIM_INTERVAL);
-// 		}
-// 	}
-
-// 	function jiggle()
-// 	{
-// 			if(game.modules.data.map.sector) {
-// 				for (index in game.modules.data.map.sector) {
-// 					var object = game.modules.data.map.sector[index];
-// 					object.position_y = +object.position_y + Math.random()*2-1;
-// 					object.position_x = +object.position_x + Math.random()*2-1;	
-// 				}
-// 			}
-
-// 			setTimeout(jiggle,config.SIM_INTERVAL);
-// 	}
-
-// 	return{
-// 		initialize:p_initialize,
-// 	}
-
-// }()
 
 CORE.Helpers = function() {
     'use strict';
@@ -1756,9 +1685,6 @@ CORE.createModule('animator', function(c, config) {
         animator = requestAnimationFrame(animate);
 
         scope.show();
-
-
-
     }
 
     function p_destroy() {
@@ -1892,6 +1818,7 @@ CORE.createModule('animator', function(c, config) {
         lastDragCheck = time;
 
         var kImg = event.target;
+
         processFleetIntersections(kImg);
     }
 
@@ -1922,12 +1849,12 @@ CORE.createModule('animator', function(c, config) {
             type: 'details-clear',
             data: true
         });
-
-
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
     function processFleetIntersections(kFleet) {
+
+
 
         var fleet = kFleet.data;
 
@@ -1937,21 +1864,32 @@ CORE.createModule('animator', function(c, config) {
         // only need to check collisions against 
         // all objects once collision with last collided object has stopped
         // otherwise just check if still colliding with last object
-        if (fleetTarget) {
-            var stillColliding = doObjectsCollide(kFleet, fleetTarget);
-            if (stillColliding) {
-                return;
-            }
+
+        if (fleetTarget && doObjectsCollide(kFleet, fleetTarget)) {
+            return;
         }
 
-        elements.layers.map.getChildren().each(function(kLocation) {
-            var location = kLocation.data;
+        // fleetTarget = null;
 
-            if (location.id === fleet.location_id) {
-                return;
+        elements.layers.map.getChildren().each(function(kLocation) {
+            if (kLocation.kFocus) {
+                kLocation.kFocus.remove();
             }
 
+            var location = kLocation.data;
+
+
+            if (location.scale === 'location' && location.id === fleet.location_id) {
+                return;
+            } 
+       
+            if (location.scale === 'system' && location.wormhole_id === fleet.location_id) {
+                return;
+            } 
+
             if (doObjectsCollide(kLocation, kFleet)) {
+
+                highlight(kLocation);
 
                 if (!fleetTarget || fleetTarget.data !== location) {
                     changed = true;
@@ -1962,7 +1900,6 @@ CORE.createModule('animator', function(c, config) {
                 return;
             }
         });
-
 
         if (!collisionFound) {
             fleetTarget = null;
@@ -1978,8 +1915,22 @@ CORE.createModule('animator', function(c, config) {
                     data: fleetTarget.data
                 });
             }
-
         }
+    }
+
+    function highlight(kImage) {
+        kImage.kFocus = new Kinetic.Circle({
+            x: kImage.attrs.x + kImage.getWidth() / 2,
+            y: kImage.attrs.y + kImage.getHeight() / 2,
+            radius: kImage.getWidth(),
+            // fill: 'blue',
+            opacity: 0.4,
+            stroke: 'blue',
+            strokeWidth: 3
+        });
+
+        elements.layers.overlay.add(kImage.kFocus);
+
     }
 
     function doObjectsCollide(a, b) { // a and b are your objects
@@ -2051,7 +2002,6 @@ CORE.createModule('animator', function(c, config) {
         imageResources[key].src = config.imagePath + fileName;
     }
 
-
     function loadSprites() {
         var w, h;
         w = 84;
@@ -2065,7 +2015,7 @@ CORE.createModule('animator', function(c, config) {
             // height: 20 * config.drawScaleFactor.system,
             animations: {
                 idle: [
-                    // x, y, width, height (4 frames)
+                    // x, y, width, height
                     0, 0, w, h,
                     w, 0, w, h,
                     w * 2, 0, w, h,
@@ -2286,7 +2236,7 @@ CORE.createModule('animator', function(c, config) {
             }
         }
 
-        var bigness = 2*Math.log(fleet.size+5);
+        var bigness = 2 * Math.log(fleet.size + 5);
         var drawWidth = 45 + bigness;
         var drawHeight = 30 + bigness;
 
@@ -2774,14 +2724,14 @@ CORE.createModule('details', function(c) {
     function bindEvents() {
         scope.listen(listeners);
         // scope.addEvent(elements.close, 'click', hide);
-        $(elements.contents).on('click', '.upgrade-structure', upgradeStructure);
+        $(elements.contents).on('click', '.upgrade-btn', upgradeStructure);
         $(elements.contents).on('click', '.location-rename', renameLocation);
     }
 
     function unbindEvents() {
         scope.ignore(Object.keys(listeners));
         // scope.removeEvent(elements.close, 'click', hide);
-        $(elements.contents).off('click', '.upgrade-structure', upgradeStructure);
+        $(elements.contents).off('click', '.upgrade-btn', upgradeStructure);
         $(elements.contents).off('click', '.location-rename', renameLocation);
     }
 
@@ -4000,91 +3950,149 @@ CORE.createModule('game', function(c, config) {
 CORE.Templates = function() {
     'use strict';
 
-    // var vals = {
-    //     'MINE_BASE' : 1,
-    //     'SHIPYARD_BASE' : 1.5,
-    //     'LAB_BASE' : 2
-    // };
-
     return {
         location: function(data) {
-            var structureCount = data.mines*1+data.shipyards*1+data.labs*1;
+            var structureCount = data.mines * 1 + data.shipyards * 1 + data.labs * 1;
 
             var owned = (data.owner_id === CORE.data.user.id);
             var $container = $('<div>');
 
+            if (owned) {
+                $container.addClass('owned');
+            }
+
             var $row = $('<p>');
-            $('<span>',{class:'label'}).text('Type:').appendTo($row);
-            $('<span>',{class:'value'}).text(CORE.data.language.map[data.type]).appendTo($row);
+            $('<span>', {
+                class: 'label'
+            }).text('Type:').appendTo($row);
+            $('<span>', {
+                class: 'value'
+            }).text(CORE.data.language.map[data.type]).appendTo($row);
             $container.append($row);
-            
+
             // $row = $('<p>');
             // $('<span>',{class:'label'}).text(CORE.data.language.name).appendTo($row);
             // $('<span>',{class:'value'}).text(data.name).appendTo($row);
             // $container.append($row);
 
+            // $row = $('<p>');
+            // $('<span>', {
+            //     class: 'label'
+            // }).text("Position:").appendTo($row);
+            // $('<span>', {
+            //     class: 'value'
+            // }).text("( " + data.position_x + ", " + data.position_y + " )").appendTo($row);
+            // $container.append($row);
+
             $row = $('<p>');
-            $('<span>',{class:'label'}).text("Position:").appendTo($row);
-            $('<span>',{class:'value'}).text("( " + data.position_x + ", " + data.position_y + " )").appendTo($row);
+            $('<span>', {
+                class: 'label'
+            }).text("Resources:").appendTo($row);
+            $('<span>', {
+                class: 'value'
+            }).text(data.resources).appendTo($row);
             $container.append($row);
-            
+
             $row = $('<p>');
-            $('<span>',{class:'label'}).text("Resources:").appendTo($row);
-            $('<span>',{class:'value'}).text(data.resources).appendTo($row);
-            $container.append($row);
-            
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text("Size:").appendTo($row);
-            $('<span>',{class:'value'}).text(data.size).appendTo($row);
+            $('<span>', {
+                class: 'label'
+            }).text("Size:").appendTo($row);
+            $('<span>', {
+                class: 'value'
+            }).text(data.size).appendTo($row);
             $container.append($row);
 
             $('<hr>').appendTo($container);
-            
+
             // $row = $('<p>');
             // $('<span>',{class:'label'}).text("Owner:").appendTo($row);
             // $('<span>',{class:'value'}).text(data.owner_id||'Unclaimed').appendTo($row);
             // $container.append($row);                                    
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text(CORE.data.language.structure.mines+": ").appendTo($row);
-            $('<span>',{class:'value'}).text(data.mines).appendTo($row);
-            if(owned && data.resources > 0) {
-                $('<button>',{class:'upgrade-structure', 'data-structure': 'mine'}).text('Upgrade - ' + data['upgrade-cost-mine']).appendTo($row);
-            }
-            $container.append($row);           
+            // $row = $('<p>');
+            // $('<span>',{class:'label'}).text(CORE.data.language.structure.mines+": ").appendTo($row);
+            // $('<span>',{class:'value'}).text(data.mines).appendTo($row);
+            // if(owned && data.resources > 0) {
+            //     $('<button>',{class:'upgrade-structure', 'data-structure': 'mine'}).text('Upgrade - ' + data['upgrade-cost-mine']).appendTo($row);
+            // }
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text(CORE.data.language.structure.shipyards+": ").appendTo($row);
-            $('<span>',{class:'value'}).text(data.shipyards).appendTo($row);
-            if(owned) {
-                $('<button>',{class:'upgrade-structure', 'data-structure': 'shipyard'}).text('Upgrade - ' + data['upgrade-cost-shipyard']).appendTo($row);
-            }
-            $container.append($row);   
-            
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text(CORE.data.language.structure.labs+": ").appendTo($row);
-            $('<span>',{class:'value'}).text(data.labs).appendTo($row);
-            if(owned) {
-                $('<button>',{class:'upgrade-structure', 'data-structure': 'lab'}).text('Upgrade - ' + data['upgrade-cost-lab']).appendTo($row);
-            }
-            $container.append($row);     
+            $('<h3>').text('Planet Infrastructure').appendTo($container);
 
-            if(owned) {
+            $row = $('<p>', {
+                class: 'upgrade-btn structure-mine',
+                'data-structure': 'mine',
+                title: CORE.data.language.structure.mines
+            });
+            $('<span>', {
+                class: 'level'
+            }).text(data.mines).appendTo($row);
+
+            if (owned && data.resources > 0) {
+                $('<span>', {
+                    class: 'cost'
+                }).text('Cost: ' + CORE.Helpers.commafy(data['upgrade-cost-mine'])).appendTo($row);
+            }
+
+            $container.append($row);
+
+            $row = $('<p>', {
+                class: 'upgrade-btn structure-shipyard',
+                'data-structure': 'shipyard',
+                title: CORE.data.language.structure.shipyards
+            });
+            $('<span>', {
+                class: 'level'
+            }).text(data.shipyards).appendTo($row);
+            if (owned && data.resources > 0) {
+                $('<span>', {
+                    class: 'cost'
+                }).text('Cost: ' + CORE.Helpers.commafy(data['upgrade-cost-shipyard'])).appendTo($row);
+            }
+
+            $container.append($row);
+
+            $row = $('<p>', {
+                class: 'upgrade-btn structure-lab',
+                'data-structure': 'lab',
+                title: CORE.data.language.structure.labs
+            });
+            $('<span>', {
+                class: 'level'
+            }).text(data.labs).appendTo($row);
+            if (owned && data.resources > 0) {
+                $('<span>', {
+                    class: 'cost'
+                }).text('Cost: ' + CORE.Helpers.commafy(data['upgrade-cost-lab'])).appendTo($row);
+            }
+
+            $container.append($row);
+
+
+            if (owned) {
                 $row = $('<p>');
-                $('<input>',{type:'text', value: data.name}).appendTo($row);
-                $('<button>',{class:'location-rename'}).text('Rename').appendTo($row);
-                $container.append($row);   
+                $('<input>', {
+                    type: 'text',
+                    value: data.name
+                }).appendTo($row);
+                $('<button>', {
+                    class: 'location-rename'
+                }).text('Rename').appendTo($row);
+                $container.append($row);
             }
 
-            return $container;                      
+            return $container;
         },
 
         system: function(data) {
             var $container = $('<div>');
 
             var $row = $('<p>');
-            $('<span>',{class:'label'}).text("Type:").appendTo($row);
-            $('<span>',{class:'value'}).text(CORE.data.language.map[data.type]).appendTo($row);
+            $('<span>', {
+                class: 'label'
+            }).text("Type:").appendTo($row);
+            $('<span>', {
+                class: 'value'
+            }).text(CORE.data.language.map[data.type]).appendTo($row);
             $container.append($row);
 
             // $row = $('<p>');
@@ -4092,14 +4100,22 @@ CORE.Templates = function() {
             // $('<span>',{class:'value'}).text(data.name).appendTo($row);
             // $container.append($row);
 
-            $row = $('<p>');
-            $('<span>',{class:'label'}).text("Position:").appendTo($row);
-            $('<span>',{class:'value'}).text("( " + data.position_x + ", " + data.position_y + " )").appendTo($row);
-            $container.append($row);
+            // $row = $('<p>');
+            // $('<span>', {
+            //     class: 'label'
+            // }).text("Position:").appendTo($row);
+            // $('<span>', {
+            //     class: 'value'
+            // }).text("( " + data.position_x + ", " + data.position_y + " )").appendTo($row);
+            // $container.append($row);
 
-             $row = $('<p>');
-            $('<span>',{class:'label'}).text("Size:").appendTo($row);
-            $('<span>',{class:'value'}).text(data.size).appendTo($row);
+            $row = $('<p>');
+            $('<span>', {
+                class: 'label'
+            }).text("Size:").appendTo($row);
+            $('<span>', {
+                class: 'value'
+            }).text(data.size).appendTo($row);
             $container.append($row);
 
             $('<hr>').appendTo($container);
@@ -4110,44 +4126,81 @@ CORE.Templates = function() {
             var $container = $('<div>');
 
             var $row = $('<p>').addClass('input-group');
-            $('<span>',{class:'label'}).text("Currency").appendTo($row);
-            $('<span>',{class:'value'}).text(CORE.Helpers.commafy(data.resources)).appendTo($row);
+            $('<span>', {
+                class: 'label'
+            }).text("Currency").appendTo($row);
+            $('<span>', {
+                class: 'value'
+            }).text(CORE.Helpers.commafy(data.resources)).appendTo($row);
+            $('<span>', {
+                class: 'label'
+            }).text("Research Points").appendTo($row);
+            $('<span>', {
+                class: 'value'
+            }).text(CORE.Helpers.commafy(data.knowledge)).appendTo($row);
+
             $container.append($row);
 
-            $row = $('<p>').addClass('input-group');
-            $('<span>',{class:'label'}).text("Research Points").appendTo($row);
-            $('<span>',{class:'value'}).text(CORE.Helpers.commafy(data.knowledge)).appendTo($row);
+            // Add icon/button for upgrading armour tech
+
+            $row = $('<p>', {
+                class: 'upgrade-btn research-start research-armour',
+                'data-research': 'armour',
+                'title': 'Armour research - reduces ship losses in combat '
+            });
+            $('<span>', {
+                class: 'level'
+            }).text(data.tech_armour).appendTo($row);
+            $('<span>', {
+                class: 'cost'
+            }).text('Cost: ' + CORE.Helpers.commafy(data.tech_armour_cost)).appendTo($row);
+
+            $container.append($row);
+            
+            // Add icon/button for upgrading propulsion tech
+
+            $row = $('<p>', {
+                class: 'upgrade-btn research-start research-propulsion',
+                'data-research': 'propulsion',
+                'title': 'Propulsion research - increases fleet movement speed '
+            });
+            $('<span>', {
+                class: 'level'
+            }).text(data.tech_propulsion).appendTo($row);
+            $('<span>', {
+                class: 'cost'
+            }).text('Cost: ' + CORE.Helpers.commafy(data.tech_propulsion_cost)).appendTo($row);
+
             $container.append($row);
 
-            $row = $('<p>').addClass('input-group');
-            $('<span>',{class:'label'}).text('Armour Tech').appendTo($row);
-            $('<button>',{class:'value research-start', 'data-research': 'armour'}).text(data.tech_armour+ ' +1 ('+CORE.Helpers.commafy(data.tech_armour_cost)+')').appendTo($row);
+
+            // Add icon/button for upgrading weapons tech
+
+            $row = $('<p>', {
+                class: 'upgrade-btn research-start research-weapons',
+                'data-research': 'weapons',
+                'title': 'Weapons research - kill more ships in combat '
+            });
+            $('<span>', {
+                class: 'level'
+            }).text(data.tech_weapons).appendTo($row);
+            $('<span>', {
+                class: 'cost'
+            }).text('Cost: ' + CORE.Helpers.commafy(data.tech_weapons_cost)).appendTo($row);
+
             $container.append($row);
-
-            $row = $('<p>').addClass('input-group');
-            $('<span>',{class:'label'}).text('Propulsion Tech').appendTo($row);
-            $('<button>',{class:'value research-start', 'data-research': 'propulsion'}).text(data.tech_propulsion+' +1 ('+CORE.Helpers.commafy(data.tech_propulsion_cost)+')').appendTo($row);
-            $container.append($row);
-
-            $row = $('<p>').addClass('input-group');
-            $('<span>',{class:'label'}).text('Weapons Tech').appendTo($row);
-            $('<button>',{class:'value research-start', 'data-research': 'weapons'}).text(data.tech_weapons+' +1 ('+CORE.Helpers.commafy(data.tech_weapons_cost)+')').appendTo($row);
-            $container.append($row);           
-
-            // $row = $('<button>').html("Research").addClass('widget-research').appendTo($row);
-            // $container.append($row);    
 
             return $container;
         },
 
-        gameDetails: function(gameDetails) {
-            var str = '';
-            for (var prop in gameDetails) {
-                str += '<p>';
-                str += prop + ': ' + gameDetails[prop];
-                str += '</p>';
-            }
-            return str;
-        }
+        // gameDetails: function(gameDetails) {
+        //     var str = '';
+        //     for (var prop in gameDetails) {
+        //         str += '<p>';
+        //         str += prop + ': ' + gameDetails[prop];
+        //         str += '</p>';
+        //     }
+        //     return str;
+        // }
     };
 }();

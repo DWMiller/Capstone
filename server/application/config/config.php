@@ -11,9 +11,9 @@ function myAutoLoader ($className) {
           '/application/models/',
           '/application/generation/');
         
-        foreach($locations as $location)
-        {
-            $file = ROOT . $location.$classFile;
+        foreach($locations as $location){
+            $file = ROOT.$location.$classFile;
+            
             if(file_exists($file)){
                 require_once($file);
                 return;

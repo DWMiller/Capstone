@@ -42,14 +42,14 @@ CORE.createModule('details', function(c) {
     function bindEvents() {
         scope.listen(listeners);
         // scope.addEvent(elements.close, 'click', hide);
-        $(elements.contents).on('click', '.upgrade-structure', upgradeStructure);
+        $(elements.contents).on('click', '.upgrade-btn', upgradeStructure);
         $(elements.contents).on('click', '.location-rename', renameLocation);
     }
 
     function unbindEvents() {
         scope.ignore(Object.keys(listeners));
         // scope.removeEvent(elements.close, 'click', hide);
-        $(elements.contents).off('click', '.upgrade-structure', upgradeStructure);
+        $(elements.contents).off('click', '.upgrade-btn', upgradeStructure);
         $(elements.contents).off('click', '.location-rename', renameLocation);
     }
 

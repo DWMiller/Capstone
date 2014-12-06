@@ -9,6 +9,17 @@
 @import 'globals/mediumSize';
 @import 'globals/largeSize';
 
+/**
+ * Components are style sets dealing with a specific type of element that may
+ * be used throughout the application
+ */
+
+@import 'components/upgradeButton';
+
+/**
+ * Modules are style sets dealing with specific sections of the content 
+ */
+
 @import 'modules/auth';
 
 @import 'modules/game';

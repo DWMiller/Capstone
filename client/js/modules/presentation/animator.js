@@ -82,9 +82,6 @@ CORE.createModule('animator', function(c, config) {
         animator = requestAnimationFrame(animate);
 
         scope.show();
-
-
-
     }
 
     function p_destroy() {
@@ -218,6 +215,7 @@ CORE.createModule('animator', function(c, config) {
         lastDragCheck = time;
 
         var kImg = event.target;
+
         processFleetIntersections(kImg);
     }
 
@@ -248,12 +246,12 @@ CORE.createModule('animator', function(c, config) {
             type: 'details-clear',
             data: true
         });
-
-
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
     function processFleetIntersections(kFleet) {
+
+
 
         var fleet = kFleet.data;
 
@@ -263,21 +261,32 @@ CORE.createModule('animator', function(c, config) {
         // only need to check collisions against 
         // all objects once collision with last collided object has stopped
         // otherwise just check if still colliding with last object
-        if (fleetTarget) {
-            var stillColliding = doObjectsCollide(kFleet, fleetTarget);
-            if (stillColliding) {
-                return;
-            }
+
+        if (fleetTarget && doObjectsCollide(kFleet, fleetTarget)) {
+            return;
         }
 
-        elements.layers.map.getChildren().each(function(kLocation) {
-            var location = kLocation.data;
+        // fleetTarget = null;
 
-            if (location.id === fleet.location_id) {
-                return;
+        elements.layers.map.getChildren().each(function(kLocation) {
+            if (kLocation.kFocus) {
+                kLocation.kFocus.remove();
             }
 
+            var location = kLocation.data;
+
+
+            if (location.scale === 'location' && location.id === fleet.location_id) {
+                return;
+            } 
+       
+            if (location.scale === 'system' && location.wormhole_id === fleet.location_id) {
+                return;
+            } 
+
             if (doObjectsCollide(kLocation, kFleet)) {
+
+                highlight(kLocation);
 
                 if (!fleetTarget || fleetTarget.data !== location) {
                     changed = true;
@@ -288,7 +297,6 @@ CORE.createModule('animator', function(c, config) {
                 return;
             }
         });
-
 
         if (!collisionFound) {
             fleetTarget = null;
@@ -304,8 +312,22 @@ CORE.createModule('animator', function(c, config) {
                     data: fleetTarget.data
                 });
             }
-
         }
+    }
+
+    function highlight(kImage) {
+        kImage.kFocus = new Kinetic.Circle({
+            x: kImage.attrs.x + kImage.getWidth() / 2,
+            y: kImage.attrs.y + kImage.getHeight() / 2,
+            radius: kImage.getWidth(),
+            // fill: 'blue',
+            opacity: 0.4,
+            stroke: 'blue',
+            strokeWidth: 3
+        });
+
+        elements.layers.overlay.add(kImage.kFocus);
+
     }
 
     function doObjectsCollide(a, b) { // a and b are your objects
@@ -377,7 +399,6 @@ CORE.createModule('animator', function(c, config) {
         imageResources[key].src = config.imagePath + fileName;
     }
 
-
     function loadSprites() {
         var w, h;
         w = 84;
@@ -391,7 +412,7 @@ CORE.createModule('animator', function(c, config) {
             // height: 20 * config.drawScaleFactor.system,
             animations: {
                 idle: [
-                    // x, y, width, height (4 frames)
+                    // x, y, width, height
                     0, 0, w, h,
                     w, 0, w, h,
                     w * 2, 0, w, h,
@@ -612,7 +633,7 @@ CORE.createModule('animator', function(c, config) {
             }
         }
 
-        var bigness = 2*Math.log(fleet.size+5);
+        var bigness = 2 * Math.log(fleet.size + 5);
         var drawWidth = 45 + bigness;
         var drawHeight = 30 + bigness;
 

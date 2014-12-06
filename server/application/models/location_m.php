@@ -1,6 +1,6 @@
 <?php
 
-class Location_m extends Core_Model {
+class Location_m extends ORM {
 
 	//db reference vars
 	public $data = array(
@@ -20,18 +20,21 @@ class Location_m extends Core_Model {
 
 	private $structureCount;
 
-	public function __construct($locationID, $data = NULL){ 
-		 parent::__construct(); 
-
-		 if($data === NULL) {
-		 	$data = $this->getLocationData($locationID);
-		 }  
-
-		$this->data = $data;
+	public function __construct($locationId, $data = NULL){ 
+		parent::__construct($locationId, $data);
 
 		$this->structureCount = $this->data['shipyards']+$this->data['mines']+$this->data['labs'];
 		$this->calcUpgradeCosts();
 	} 
+
+	/**
+	 * Overriding abstract method in ORM
+	 * Default means of grabbing database data for an instance of this class
+	 * @return mixed[] [description]
+	 */
+	protected function getData($id) {
+    	return $this->getLocationData($id);
+	}
 
 	public function isOwner($user) {
 		return ($this->data['owner_id'] == $user['id']);

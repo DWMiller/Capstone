@@ -14,8 +14,7 @@ class Userauth_m extends Core_Model {
 		  $this->users = new Users_m;
 	 } 
 		
-	public function login($email,$password)
-	{
+	public function login($email,$password) {
 		//If user has active and valid session, return user data without trying needing to login again
 		$user = $this->loggedIn();
 		if ($this->user) {return $this->user;}

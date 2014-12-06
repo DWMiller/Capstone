@@ -1,26 +1,49 @@
 #module-details {
     @extend .inlineBlock;
+    header {
+        font-variant: small-caps;
+    }
+    height: 100%;
     overflow-y: auto;
+    float: right;
+    .module-contents {
+        margin: 0 0.5em;
+    }
+    .owned {
+        .upgrade-btn {
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+    .upgrade-btn {
+        height: 100px;
+        width: 100%;
+        &.structure-mine {
+            background-image: url('../assets/images/map/mine.png');
+        }
+        &.structure-shipyard {
+            background-image: url('../assets/images/map/anchor.png');
+        }
+        &.structure-lab {
+            background-image: url('../assets/images/map/beaker.png');
+        }
+    }
 }
 @media only screen and (max-width: $sm-brkp) {
     #module-details {
-        display: none;
+        width: $details-width-sm;
+        .upgrade-btn {
+            margin-bottom: 0.25em;
+        }
     }
 }
 @media only screen and (min-width: $md-brkp) {
     #module-details {
-        float: right;
         font-size: larger;
         width: $details-width-md;
-        height: 100%;
         border-left-width: 4px;
         border-left-style: groove;
-        header {
-            font-variant: small-caps;
-        }
-        .module-contents {
-            margin: 0 1em;
-        }
         .label {
             display: inline-block;
             font-variant: small-caps;
@@ -37,10 +60,19 @@
         button {
             width: 100%;
         }
+        .upgrade-btn {
+            margin: 0.25em;
+        }
     }
 }
 @media only screen and (min-width: $lg-brkp) {
     #module-details {
         width: $details-width-lg;
+        .module-contents {
+            margin: 0 1em;
+        }
+        .upgrade-btn {
+            border-radius: 5px;
+        }
     }
 }

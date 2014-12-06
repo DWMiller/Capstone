@@ -1,7 +1,8 @@
 <?php
 
-class Fleet_m extends Core_Model {
+class Fleet_m extends ORM {
 
+	//DB properties
 	public $data = array(
 		'id' => NULL,
 		'owner_id' => NULL,
@@ -13,16 +14,18 @@ class Fleet_m extends Core_Model {
 		'battle_id' => NULL
 	);
 
-	public function __construct($fleetID, $data = NULL){ 
-		 parent::__construct(); 
-
-		 if($data === NULL) {
-		 	$data = $this->getFleetData($fleetID);
-		 }  
-		 
-		$this->data = $data;
+	public function __construct($fleetId, $data = NULL){ 
+		parent::__construct($fleetId, $data);
 	} 
 
+	/**
+	 * Overriding abstract method in ORM
+	 * Default means of grabbing database data for an instance of this class
+	 * @return mixed[] [description]
+	 */
+	protected function getData($id) {
+    	return $this->getFleetData($id);
+	}
 
 	public function move($location, $propulsionTech) {
 		if($this->data['location_system'] == $location->data['location_system']) {

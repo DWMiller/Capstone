@@ -1,9 +1,34 @@
-#module-user {
-    // position:absolute;
-    // top:0;   
-    line-height:1;
+/*******************************************************
+********************* Base Module Styles ***************
+*******************************************************/
 
+#module-user {
+    line-height: 1;
+    float: left;
+    .upgrade-btn {
+        height: 50px;
+        &:hover {
+            opacity: 0.8;
+        }
+        &.research-armour {
+            background-image: url('../assets/images/map/shield.png');
+        }
+        &.research-weapons {
+            background-image: url('../assets/images/map/swords.png');
+        }
+        &.research-propulsion {
+            background-image: url('../assets/images/map/rocket.png');
+        }
+    }
+
+    .upgrade-btn+.upgrade-btn{
+        margin-left:0.25em;
+    }
 }
+/*******************************************************
+********************* Small Screen Only ****************
+*******************************************************/
+
 @media only screen and (max-width: $sm-brkp) {
     #module-user {
         width: $user-width-sm;
@@ -15,20 +40,26 @@
         // }
     }
 }
+/*******************************************************
+********************* Minimum Medium Screen ************
+*******************************************************/
+
 @media only screen and (min-width: $md-brkp) {
     #module-user {
         // p {
         //  margin-left: 2em;
         //     display:inline;
         // }
-
-        float: left;
         // height:5em;
         width: $user-width-md;
         border-bottom-width: 4px;
         border-bottom-style: groove;
     }
 }
+/*******************************************************
+********************* Minimum Large Screen *************
+*******************************************************/
+
 @media only screen and (min-width: $lg-brkp) {
     #module-user {
         width: $user-width-lg;

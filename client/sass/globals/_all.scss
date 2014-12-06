@@ -1,11 +1,18 @@
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
+
+html {
+    font-size: $baseFontSize;
+}
+
+
 html, body, #main-container {
     height: 100%;
     background-image: $bg;
     line-height: $baseLineHeight;
-    font-size: $baseFontSize;
+    
     height: 100%;
     color: white;
 }

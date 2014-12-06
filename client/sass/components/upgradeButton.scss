@@ -1,0 +1,87 @@
+/*******************************************************
+********************* Base Module Styles ***************
+*******************************************************/
+
+.upgrade-btn {
+    cursor: pointer;
+    
+    display: inline-block;
+    vertical-align: top;
+    margin: 0;
+    opacity: 1;
+    position: relative;
+    min-height: 75px; 
+    min-width: 100px; 
+    overflow: hidden;
+    background: black;
+    background-repeat: no-repeat;
+    background-size: 80px;
+    background-position: center;
+    border: 1px solid white;
+    -webkit-box-shadow: rgba(255, 255, 255, 0.247059) 3px 3px 5px 0px;
+    -moz-box-shadow: rgba(255, 255, 255, 0.247059) 3px 3px 5px 0px;
+    box-shadow: rgba(255, 255, 255, 0.247059) 3px 3px 5px 0px;
+    .level {
+        position: absolute;
+        top: 0;
+        left: 5px;
+        font-size: small;
+    }
+    .cost {
+        position: absolute;
+        width: 100%;
+        font-variant: small-caps;
+        background: black;
+        color: white;
+        border-top-width: 2px;
+        border-top-style: ridge;
+        border-color: rgb(0, 187, 255);
+        bottom: 0px;
+        font-size: small;
+    }
+    &:active {
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+    }
+}
+/*******************************************************
+********************* Small Screen Only ****************
+*******************************************************/
+
+@media only screen and (max-width: $sm-brkp) {
+    .upgrade-btn {
+        .cost {
+            left: 0px;
+        }
+    }
+}
+/*******************************************************
+********************* Minimum Medium Screen ************
+*******************************************************/
+
+@media only screen and (min-width: $md-brkp) {
+    .upgrade-btn {
+        .cost {
+            width: auto;
+            padding: 3px;
+            border-radius: 5px 0 0 0;
+            border-top-width: 2px;
+            border-left-width: 2px;
+            border-top-style: ridge;
+            border-left-style: ridge;
+            border-color: rgb(0, 187, 255);
+            bottom: 1px;
+            right: 1px;
+        }
+    }
+}
+/*******************************************************
+********************* Minimum Large Screen *************
+*******************************************************/
+
+@media only screen and (min-width: $lg-brkp) {
+    .upgrade-btn {
+        max-width: 150px;
+    }
+}
