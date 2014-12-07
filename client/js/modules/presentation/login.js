@@ -66,7 +66,7 @@ CORE.createModule('login', function(c) {
             data: {
                 api: {
                     login: {
-                        default: {
+                        login: {
                             email: elements.email.value,
                             password: elements.password.value
                         }

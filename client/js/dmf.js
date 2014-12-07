@@ -15,6 +15,7 @@ var CORE = function() {
         config: {},
         data: {},
         events: {},
+        templates: {},
         /**
          * Triggers starter logic for all game modules
          * @return {[type]} [description]

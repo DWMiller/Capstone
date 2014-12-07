@@ -78,7 +78,7 @@ CORE.createModule('user', function(c) {
     /************************************ GENERAL FUNCTIONS ************************************/
 
     function refresh() {
-        $(scope.self()).html(c.Templates.userDetails(c.data.user).html());
+        $(scope.self()).html(c.templates.userDetails(c.data.user).html());
     }
 
     // function openResearchMenu() {

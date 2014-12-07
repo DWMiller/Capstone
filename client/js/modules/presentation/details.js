@@ -119,7 +119,7 @@ CORE.createModule('details', function(c) {
 
         $(elements.header).text(data.name);
 
-        var content = c.Templates[data.scale](data);
+        var content = c.templates[data.scale](data);
 
         $(elements.contents).html(content);
 

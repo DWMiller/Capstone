@@ -58,7 +58,7 @@ CORE.createModule('register', function(c) {
             data: {
                 api: {
                     register: {
-                        default: {
+                        register: {
                             email: elements.email.value,
                             password: elements.password.value
                         }
