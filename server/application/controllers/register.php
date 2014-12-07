@@ -12,7 +12,7 @@
 		  $this->users = new Users_m;
 	}
 
-	public function index () {
+	public function register () {
 		$args = func_get_args();
 		$args = $args[0];
 

@@ -11,7 +11,7 @@
 		$this->users = new Users_m;		  
 	}
 
-	function index () {
+	function login () {
 		$args = func_get_args();
 		$args = $args[0];
 

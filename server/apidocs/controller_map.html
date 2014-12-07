@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Space Game API Documentation</title>
+	<link rel="stylesheet" href="css/styles.css">
+	
+</head>
+<body>
+	<section>
+		<h1>Controller: map</h1>
+        <ul>
+            <li>universe</li>
+            <li>galaxy</li>
+            <li>sector</li>
+            <li>system</li>
+        </ul>
+
+		<div id="response"></div>
+
+	</section>
+	<aside id="api-list"></aside>
+	<script src="js/script.js"></script>
+	<script>
+
+	var response = document.getElementById('response');
+
+	getAndInsert('includes/responses/response_map_update.html',response);
+
+
+		
+
+	</script>	
+
+</body>
+</html>

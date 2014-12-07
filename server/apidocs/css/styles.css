@@ -1,0 +1,31 @@
+html {
+	font-size:16px;
+}
+
+body {
+    margin: 0;
+    background-color: #D7FFFF;
+}
+
+section,aside {
+	box-sizing: border-box;
+	padding:1em;
+}
+
+section {
+	width:80%;
+	float:left;
+}
+
+aside {
+    background-color: rgba(0, 0, 0, 0.1);
+    float: right;
+    width:20%;
+
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+ul {
+	list-style-type: none;
+}
