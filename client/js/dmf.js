@@ -1,4 +1,4 @@
-
+//This is the framework, developed independently of the capstone, move along.
 
 /**
  * [CORE description]

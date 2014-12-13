@@ -1,19 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-	<section>
-		<h1>Controller: fleets</h1>
-        <ul>
-            <li>move</li>
-        </ul>		
-	</section>
-	<aside id="api-list"></aside>
 
-	<script src="js/script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <section class="controller">
+
+        <h1>Controller: fleets</h1>
+        <p>This is an API endpoint which handles requests relating to fleet management</p>
+
+        <h2>Default Method: None</h2>
+
+        <h2>Methods</h2>
+
+        <article class="method">
+            <h3>move</h3>
+            <p>Handle a request to move one or more fleets to a single destination</p>
+            <strong>Arguments</strong>
+            <ul>
+                <li><strong>fleet:</strong> Integer/Interger[] - a fleet id or array of fleet IDs</li>
+                <li><strong>target:</strong> Integer - the destination location id</li>
+            </ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>fleet-update</li>
+                <li>fleet-movement-error</li>
+            </ul>
+
+        </article>
+    </section>
+
+
+    <aside id="api-list"></aside>
+
+    <script src="js/script.js"></script>
 </body>
+
 </html>

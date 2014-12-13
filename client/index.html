@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!-- /
+
+This is the primary (and only) html page for this application. It contains all
+static content for the game
+
+Initialization of JavaScript logic is at the bottom.
+ -->
+
 <html>
 
 <head>
@@ -66,6 +74,7 @@
 
         </div>
 
+        <!-- The logout button -->
         <div id="page-logout" class="module ui overlay panel bottom hidden">
             <form id="form-logout" class="">
                 <button id="form-logout-logout" class="localize" data-localize="logout" name="logout">Logout</button>
@@ -90,6 +99,7 @@
                 <!-- <button class="close">Close</button> -->
             </div>
 
+            <!-- The command bar, that thing on the left when playing the game -->
             <div id="module-commandBar" class="ui overlay">
                 <div id="command-groupMove" data-command="groupMove" class="command-btn" title="While this command is active, all fleets on the screen will move together when any fleet is moved.">
                     <span class="command-label">Group Move</span>
@@ -103,25 +113,30 @@
                 </div>
             </div>
 
+            <!-- This is where the map will go, kineticJS will manage this, see the animations.js module -->
             <div id="game-map" class="">
 
             </div>
 
+            <!-- The widget that popups up when splitting a fleet, normally hidden from view  -->
             <div id="widget-fleetSplitter" class="ui hidden">
-                 <input type="range" min="10" max="50" class="slider"></input>  
-                 <span class="widget-label"></span>
-                <div class="widget-button">Send</div>              
+                <input type="range" min="10" max="50" class="slider"></input>
+                <span class="widget-label"></span>
+                <div class="widget-button">Send</div>
             </div>
 
+            <!-- Not used, added for possible future features  -->
             <div id="module-infoFeed" class="ui overlay hidden">
 
             </div>
 
+            <!-- Not used, added for possible future features  -->
             <div id="module-playerStats" class="ui overlay hidden">
 
             </div>
         </div>
 
+        <!-- The admin stuff stashed at the bottom of the page when logged in as an admin  -->
         <div id="module-admin" class="module ui hidden">
 
             <ol>

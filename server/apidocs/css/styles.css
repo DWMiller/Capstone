@@ -29,3 +29,10 @@ aside {
 ul {
 	list-style-type: none;
 }
+
+.method {
+    background-color: rgb(82, 203, 255);
+    padding:1em;
+    margin-bottom:1em;
+    border-radius: 10px;
+}

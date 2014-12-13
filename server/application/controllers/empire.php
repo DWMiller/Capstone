@@ -1,5 +1,8 @@
 <?php 	
-
+/*=============================================================================
+		This is an API endpoint which handles requests relating to user 
+	management of their assets, such as planet management and research.
+/*===========================================================================*/
 class Empire extends Core_Controller {
 	private $Users;
 
@@ -9,12 +12,17 @@ class Empire extends Core_Controller {
 		$this->requireAuthentication();
 	}
 	
+	/**
+	 * Handles a request to upgrade one type of infrastructure on one planet
+	 * @return void
+	 */
 	function upgrade() {
 		$args = func_get_args();
 		$args = $args[0];
 
-		$location = new Location_m($args['location']);
+		$location = new Location_m($args['location']); // an ORM class, get the database data for this location
 
+		// Ensure user actually owns this location
 		if(!$location->isOwner($this->User)) {
 			$this->addError('Invalid Request', 'This location does not belong to you.');
 			$this->TPL['structure-upgrade-failure'] = $this->errors;
@@ -38,12 +46,14 @@ class Empire extends Core_Controller {
 				break;
 		}
 
+		// Ensure user can afford the upgrade
 		if($this->User['resources'] < $cost) {
 			$this->addError('Insufficient Funds', '');
 			$this->TPL['structure-upgrade-failure'] = $this->errors;
 			$this->output->json_response($this->TPL);
 		}
 
+		//trigger the upgrade
 		switch($type) {
 			case 'shipyard':
 				$result = $location->upgradeShipYard(1);
@@ -56,17 +66,21 @@ class Empire extends Core_Controller {
 				break;
 		}
 
+		//Deduct resources from user and send updated user and location data to client
+
 		$this->Users->removeResources($this->User['id'],$cost);
 		$this->User['resources'] -= $cost;
 		$location->calcUpgradeCosts();
 
-		// if($result) {
-			$this->TPL['user-update'] = output_filters::userData($this->User);
-			$this->TPL['location-update'] = $location->data;
-			$this->output->json_response($this->TPL);
-		// }
+		$this->TPL['user-update'] = output_filters::userData($this->User);
+		$this->TPL['location-update'] = $location->data;
+		$this->output->json_response($this->TPL);
 	}
 
+	/**
+	 * Handles a request too upgrade one research category on a user
+	 * @return void
+	 */
 	function research() {
 		$args = func_get_args();
 		$args = $args[0];
@@ -115,6 +129,10 @@ class Empire extends Core_Controller {
 
 	}
 
+	/**
+	 * Handles a request to change the name of a planet
+	 * @return void
+	 */
 	function rename() {
 		$args = func_get_args();
 		$args = $args[0];

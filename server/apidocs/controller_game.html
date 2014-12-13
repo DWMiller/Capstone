@@ -1,21 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-	<section>
-		<h1>Controller: game</h1>
-        <ul>
-            <li>join_queue</li>
-            <li>leave_queue</li>
-            <li>update</li>
-        </ul>		
-	</section>
-	<aside id="api-list"></aside>
 
-	<script src="js/script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+        <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <section class="controller">
+
+        <h1>Controller: game</h1>
+        <p>This is an API endpoint which handles requests relating generic game functionality. At this time, that only includes lobby functionality</p>
+
+        <h2>Default Method: None</h2>
+
+        <h2>Methods</h2>
+
+        <article class="method">
+            <h3>join_queue</h3>
+            <p>Sign the user up for the next available game</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>queue-update</li>
+            </ul>
+        </article>
+
+        <article class="method">
+            <h3>leave_queue</h3>
+            <p>Sign the user up for the next available game</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>queue-update</li>
+            </ul>
+        </article>
+
+
+        <article class="method">
+            <h3>update</h3>
+            <p>Checks for any game updates of relevance to the player</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>queue-update</li>
+            </ul>
+        </article>                
+
+    </section>
+
+    <aside id="api-list"></aside>
+
+    <script src="js/script.js"></script>
 </body>
+
 </html>

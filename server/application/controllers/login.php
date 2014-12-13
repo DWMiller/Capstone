@@ -1,8 +1,8 @@
 <?php 
 
-/**
- * 
- */
+/*=============================================================================
+		This is an API endpoint which handles authentication related requests.
+/*===========================================================================*/
  class Login extends Core_Controller {
 	private $users;
 
@@ -11,6 +11,10 @@
 		$this->users = new Users_m;		  
 	}
 
+	/**
+	 * [login description]
+	 * @return [type] [description]
+	 */
 	function login () {
 		$args = func_get_args();
 		$args = $args[0];

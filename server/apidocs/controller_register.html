@@ -1,19 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-	<section>
-		<h1>Controller: register</h1>
-        <ul>
-            <li>register</li>
-        </ul>		
-	</section>
-	<aside id="api-list"></aside>
 
-	<script src="js/script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <section class="controller">
+        <h1>Controller: register</h1>
+        <p>Handles the registration of new accounts</p>
+
+        <h2>Default Method: None</h2>
+
+        <h2>Methods</h2>
+
+        <article class="method">
+            <h3>register</h3>
+            <p>A request to create a new account</p>
+
+            <strong>Arguments</strong>
+            <ul>
+                <li><strong>email:</strong> String - a valid email</li>
+                <li><strong>password:</strong> String - password</li>
+            </ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>register-failure</li>
+                <li>register-success</li>
+            </ul>
+        </article>
+    </section>
+    <aside id="api-list"></aside>
+
+    <script src="js/script.js"></script>
 </body>
+
 </html>

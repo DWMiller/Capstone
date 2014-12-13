@@ -1,5 +1,7 @@
 <?php 	
-
+/*=============================================================================
+	This is an API endpoint which handles requests for map data
+/*===========================================================================*/
 class Map extends Core_Controller {
 		
 	private $map;	
@@ -19,24 +21,18 @@ class Map extends Core_Controller {
 		$this->done();
 	}
 
-	function universe () {
-		$args = func_get_args();
-		$args = $args[0];
-		$this->done();
-	}
-
-	function galaxy () {
-		$args = func_get_args();
-		$args = $args[0];
-		$this->done();
-	}
-
+	/**
+	 * Request for all data in a given sector. For this application
+	 * this amounts to a request for the entirety of game map data.
+	 * @return void
+	 */
 	function sector () {	
 		$args = func_get_args();
 		$args = $args[0];
 
 		$this->TPL['map-update']['systems'] = $this->map->getSystems($args['id']);
 
+		//Get the fleets located on wormholes, as these will be visible on the sector view
 		$fleets = Fleet_m::getWormholeFleets($args['id']);
 
 		if($fleets) {
@@ -64,6 +60,10 @@ class Map extends Core_Controller {
 		$this->done();
 	}
 
+	/**
+	 * A request for all data on a given star system
+	 * @return [type] [description]
+	 */
 	function system () {
 		$args = func_get_args();
 		$args = $args[0];
@@ -72,9 +72,6 @@ class Map extends Core_Controller {
 
 		foreach ($locations as $key => $location) {
 			$location = new Location_m($location['id'], $location);
-			// $location->data['upgrade-cost-mine'] = $location->getMineUpgradeCost();
-			// $location->data['upgrade-cost-shipyard'] = $location->getShipyardUpgradeCost();
-			// $location->data['upgrade-cost-lab'] = $location->getLabUpgradeCost();
 			$locations[$key] = $location->data;
 		}
 

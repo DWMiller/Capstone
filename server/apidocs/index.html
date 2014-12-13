@@ -10,11 +10,31 @@
 <body>
     <section>
         <h1>Index</h1>
+        <p>
+            Below is the only example of the actual format to be used in API requests
+            <br>
+            All other pages will list request formats in simple, nested lists with fields labelled as controller/method/arguments
+            <br>
+            Select controllers on the menu to the right to view details on regarding those controllers.
+        </p>
         <pre>
         <script>
-			document.write(JSON.stringify({api:{controller:{method:{field1:"value",field2: "value"}}}}, null, 4));
+			document.write(JSON.stringify({api:{controller:{method:{arg1:"value",arg2: "value"}}}}, null, 4));
         </script>
 		</pre>
+        <p>
+            All request objects must be wrapped in an api object, as demonstrated above.
+            <br>
+            A controller is always required.
+            <br>
+            A method is required unless a default for the chosen controller provided. 
+            <br>
+            When relying on a default method, arguments are not supported.
+            <br>
+            Arguments are optional, subject the requirements of each individual method.
+
+
+        </p>
     </section>
     <aside id="api-list"></aside>
 

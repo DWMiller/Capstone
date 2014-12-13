@@ -1,36 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
-	
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+        <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+
 </head>
+
 <body>
-	<section>
-		<h1>Controller: map</h1>
-        <ul>
-            <li>universe</li>
-            <li>galaxy</li>
-            <li>sector</li>
-            <li>system</li>
-        </ul>
 
-		<div id="response"></div>
+    <section class="controller">
+        <h1>Controller: map</h1>
+        <p>This is an API endpoint which handles requests for map data</p>
 
-	</section>
-	<aside id="api-list"></aside>
-	<script src="js/script.js"></script>
-	<script>
+        <h2>Default Method</h2>
 
-	var response = document.getElementById('response');
+        <article class="method">
+            <p>Gets user details</p>
+            <strong>Responses</strong>
+            <ul>
+                <li>user-update</li>
+            </ul>
+        </article>
 
-	getAndInsert('includes/responses/response_map_update.html',response);
+        <h2>Methods</h2>
 
+        <article class="method">
+            <h3>sector</h3>
+            <p>Request for all data in a given sector. For this application this amounts to a request for the entirety of game map data.</p>
 
-		
+            <strong>Arguments</strong>
+            <ul>
+                <li><strong>id:</strong> Int - id of the sector, can only be 1 at this time</li>
+            </ul>
 
-	</script>	
+            <strong>Responses</strong>
+            <ul>
+                <li>map-update</li>
+                <li>user-update</li>
+            </ul>
+        </article>
+
+        <article class="method">
+            <h3>system</h3>
+            <p> A request for all data on a given star system</p>
+
+            <strong>Arguments</strong>
+            <ul>
+                <li><strong>id:</strong> Int - id of the system</li>
+            </ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>map-update</li>
+                <li>user-update</li>
+            </ul>
+        </article>
+    </section>
+
+    <aside id="api-list"></aside>
+    <script src="js/script.js"></script>
+    <script>
+    var response = document.getElementById('response');
+
+    getAndInsert('includes/responses/response_map_update.html', response);
+    </script>
 
 </body>
+
 </html>

@@ -1,22 +1,25 @@
 <?php 	
-
+/*=============================================================================
+		This is an API endpoint which handles requests relating generic game 
+	functionality. At this time, that only includes lobby functionality.
+/*===========================================================================*/
 class Game extends Core_Controller {
-	private $game;
+	private $game; // Not actually used, delete later
 	private $users;
 
 	function __construct() {
 		parent::__construct();
-		$this->game = new Game_m;
+		$this->game = new Game_m; // Not actually used, delete later
 		$this->users = new Users_m;	
 
 		$this->requireAuthentication();
 	}
 	
-	function index () {
-		// $game = $this->game->getCurrentGame();
-		// $this->TPL['game-update']['game'] = $game;
-		// $this->done();
-	}
+	// function index () {
+	// 	// $game = $this->game->getCurrentGame();
+	// 	// $this->TPL['game-update']['game'] = $game;
+	// 	// $this->done();
+	// }
 
 	/**
 	 * Sign the user up for the next available game

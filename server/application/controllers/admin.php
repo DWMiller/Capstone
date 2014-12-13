@@ -1,24 +1,33 @@
 <?php 	
+/*=============================================================================
+      The endpoint for administrator api requests. Contains methods for the 
+  ending and starting of games.
+
+/*===========================================================================*/
 
 class Admin extends Core_Controller {
 
 	private $admin;
-	private $map;
+	private $map; 
 
 	function __construct() {
 		parent::__construct();
+
+		// Load up the admin model, providing access to all the sql queries and 
+		// map generation functions
 		$this->admin = new Admin_m;
 
-		$this->requireAuthentication();
-		$this->requireAdmin();
+		$this->requireAuthentication(); //User must be logged in
+		$this->requireAdmin(); // User must be an admin
 
-		$this->map = new Map_m;
+		//Probably not required here, but I'm documenting this on the last day
+		//prior to submission and don't want to risk commenting out code
+		$this->map = new Map_m; 
 	}
 	
-
-
 	public function new_game() {
 		//Comment out when live
+		//For testing purposes, this queues all registered players for the next game
 		$this->admin->queueAllPlayers();
 		
 		$playerCount = $this->admin->activateQueuedPlayers();

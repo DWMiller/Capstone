@@ -1,21 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-	<section>
-		<h1>Controller: admin</h1>
+    <section class="controller">
 
-        <ul>
-            <li>new_game</li>
-            <li>end_game</li>
-        </ul>		
-	</section>
-	<aside id="api-list"></aside>
+        <h1>Controller: admin</h1>
+        <p>The endpoint for administrator api requests. Contains methods for the ending and starting of games.</p>
 
-	<script src="js/script.js"></script>
+        <h2>Default Method: None</h2>
+
+        <h2>Methods</h2>
+
+        <article class="method">
+            <h3>new_game</h3>
+            <p>Will create a new game</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>game-start-failure</li>
+                <li>game-start-success</li>
+            </ul>
+
+        </article>
+        <article class="method">
+            <h3>end_game</h3>
+            <p>Will end the current game</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>None</ul>            
+        </article>
+
+    </section>
+    <aside id="api-list"></aside>
+
+    <script src="js/script.js"></script>
 </body>
+
 </html>

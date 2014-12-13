@@ -1,21 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-	<section>
-		<h1>Controller: empire</h1>
-        <ul>
-            <li>upgrade</li>
-            <li>research</li>
-            <li>rename</li>
-        </ul>		
-	</section>
-	<aside id="api-list"></aside>
 
-	<script src="js/script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <section class="controller">
+        <h1>Controller: empire</h1>
+
+        <p>This is an API endpoint which handles requests relating to user management of their assets, such as planet management and research.</p>
+
+        <h2>Default Method: None</h2>
+
+        <h2>Methods</h2>
+
+        <article class="method">
+            <h3>upgrade</h3>
+            <p>Handles a request to upgrade one type of infrastructure on one planet</p>
+            <strong>Arguments</strong>
+            <ul>
+                <li><strong>location:</strong> Integer - the location id</li>
+                <li><strong>type:</strong> String "mine/shipyard/lab" - infrastructure to upgrade</li>
+            </ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>structure-upgrade-failure</li>
+                <li>user-update</li>
+                <li>location-update</li>
+            </ul>
+        </article>
+
+        <article class="method">
+            <h3>research</h3>
+            <p>Handles a request too upgrade one research category on a user</p>
+            <strong>Arguments</strong>
+            <ul>
+                <li><strong>type:</strong> String "armour/weapons/propulsion" - research to upgrade</li>
+            </ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>user-update</li>
+            </ul>
+        </article>
+
+        <article class="method">
+            <h3>rename</h3>
+            <p>Handles a request to change the name of a planet</p>
+            <strong>Arguments</strong>
+            <ul>
+               <li><strong>location:</strong> Integer - the location id</li>
+               <li><strong>name:</strong> String - the new name</li>
+            </ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>location-rename-failure</li>
+                <li>location-update</li>
+            </ul>
+        </article>
+    </section>
+    <aside id="api-list"></aside>
+
+    <script src="js/script.js"></script>
 </body>
+
 </html>

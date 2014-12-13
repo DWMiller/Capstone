@@ -1,20 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-	<section>
-		<h1>Controller: login</h1>
-        <ul>
-            <li>login</li>
-            <li>logout</li>
-        </ul>		
-	</section>
-	<aside id="api-list"></aside>
 
-	<script src="js/script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+        <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <section class="controller">
+        <h1>Controller: login</h1>
+        <p>This is an API endpoint which handles authentication related requests.</p>
+
+        <h2>Default Method: None</h2>
+
+        <h2>Methods</h2>
+
+        <article class="method">
+            <h3>login</h3>
+            <p>Attempt to login</p>
+
+            <strong>Arguments</strong>
+            <ul>
+                <li><strong>email:</strong> String - a valid email</li>
+                <li><strong>password:</strong> String - password</li>
+            </ul>
+
+            <strong>Responses</strong>
+            <ul>
+                <li>login-failure</li>
+                <li>login-success</li>
+            </ul>
+        </article>
+
+        <article class="method">
+            <h3>logout</h3>
+            <p>Wipes logged in user's session details on the server</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>None</ul>
+        </article>
+    </section>
+
+    <aside id="api-list"></aside>
+
+    <script src="js/script.js"></script>
 </body>
+
 </html>

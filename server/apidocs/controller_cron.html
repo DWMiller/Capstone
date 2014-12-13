@@ -1,21 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Space Game API Documentation</title>
-	<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-	<section>
-		<h1>Controller: cron</h1>
-        <ul>
-            <li>executeturn</li>
-            <li>executecombatturn</li>
-            <li>executemaintainence</li>
-        </ul>		
-	</section>
-	<aside id="api-list"></aside>
 
-	<script src="js/script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Space Game API Documentation</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <section class="controller">
+        <h1>Controller: cron</h1>
+        <p>This is an API endpoint that actually should be part of the API. These API requests are triggered by an admin user on the client and are responsible for progressing the game.</p>
+
+        <p>However, this a compromise due to the USBWebServer method of deployment. In practice, these commands should be run automatically on a timer by the server. In a live environment, this is relatively simple. In a portable one, it is not reasonably possible.</p>
+
+        <h2>Default Method: None</h2>
+
+        <h2>Methods</h2>
+
+        <article class="method">
+            <h3>executeturn</h3>
+            <p>Execute a game turn, responsible mainly for generating resources</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>None</ul>
+        </article>
+
+        <article class="method">
+            <h3>executeCombatTurn</h3>
+            <p>Execute a combat turn, responsible for progressing/resolving fleet combat</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>None</ul>
+        </article>
+        
+        <article class="method">
+            <h3>executeMaintainence</h3>
+            <p>Executes functions needing to be run at a very high frequency in order to simulate real time activity, such as fleet arrivals.</p>
+            <strong>Arguments</strong>
+            <ul>None</ul>
+
+            <strong>Responses</strong>
+            <ul>None</ul>
+        </article>
+
+
+    </section>
+    <aside id="api-list"></aside>
+
+    <script src="js/script.js"></script>
 </body>
+
 </html>

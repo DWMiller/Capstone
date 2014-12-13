@@ -1,8 +1,8 @@
 <?php 
 
-/**
- * 
- */
+/*=============================================================================
+	Handles the registration of new accounts
+/*===========================================================================*/
  class Register extends Core_Controller {
  	
  	private $users;
@@ -12,6 +12,10 @@
 		  $this->users = new Users_m;
 	}
 
+	/**
+	 * A request to create a new account
+	 * @return [type] [description]
+	 */
 	public function register () {
 		$args = func_get_args();
 		$args = $args[0];
