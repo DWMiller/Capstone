@@ -23,4 +23,4 @@ files are generally similar enough to standard CSS to be read as such.
 
         vendors
     	=======================================================================    	    	    	
-    		Contains 3rd part style sheets.
+    		Contains 3rd party style sheets.

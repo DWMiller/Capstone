@@ -2,21 +2,21 @@ CORE.createModule('login', function(c) {
     'use strict';
 
     var p_properties = {
-        id: 'login'
+        id: 'login',
+        selector: 'page-auth',
+        listeners: {
+            'login-success': loginSuccess,
+            'login-failure': loginFailure,
+            'register-success': login
+        }
     };
 
     var scope, elements;
 
-    var listeners = {
-        'login-success': loginSuccess,
-        'login-failure': loginFailure,
-        'register-success': login
-    };
-
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'page-auth');
+        scope = sb;
 
         elements = {
             email: scope.find('#form-auth-email'),
@@ -41,17 +41,13 @@ CORE.createModule('login', function(c) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-
-        scope.addEvent(elements.login, 'click', login);
-        scope.addEvent(elements.password_mask, 'click', togglePasswordMask);
-
+        c.dom.listen(elements.login, 'click', login);
+        c.dom.listen(elements.password_mask, 'click', togglePasswordMask);
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        scope.removeEvent(elements.login, 'click', login);
-        scope.removeEvent(elements.password_mask, 'click', togglePasswordMask);
+        c.dom.ignore(elements.login, 'click', login);
+        c.dom.ignore(elements.password_mask, 'click', togglePasswordMask);
     }
 
     /************************************ POSTS ************************************/
@@ -61,7 +57,7 @@ CORE.createModule('login', function(c) {
             event.preventDefault();
         }
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -79,20 +75,18 @@ CORE.createModule('login', function(c) {
     /************************************ RESPONSES ************************************/
 
     function loginSuccess(data) {
-        scope.notify({
-            type: 'data-set',
-            data: {
-                user: data.user,
-                'user-locations': data.locations
-            }
+
+        c.extend(c.data, {
+            user: data.user,
+            'user-locations': data.locations
         });
 
-        scope.notify({
+        c.notify({
             type: 'session-set',
             data: data.user.session
         });
 
-        scope.notify({
+        c.notify({
             type: 'state-authenticated',
             data: {}
         });

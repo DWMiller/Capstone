@@ -2,21 +2,20 @@ CORE.createModule('lobby', function(c, config) {
     'use strict';
 
     var p_properties = {
-        id: 'lobby'
+        id: 'lobby',
+        selector: 'module-lobby',
+        listeners: {
+            'queue-update': updateQueue
+        }
     };
 
     var scope, elements;
-
-    var listeners = {
-        'queue-update': updateQueue
-    };
-
 
     var gameChecker;
 
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-lobby');
+        scope = sb;
 
         elements = {
             'queue-join': scope.find('#queue-join'),
@@ -47,15 +46,13 @@ CORE.createModule('lobby', function(c, config) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-        scope.addEvent(elements.join, 'click', joinQueue);
-        scope.addEvent(elements.leave, 'click', leaveQueue);
+        c.dom.listen(elements.join, 'click', joinQueue);
+        c.dom.listen(elements.leave, 'click', leaveQueue);
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        scope.removeEvent(elements.join, 'click', joinQueue);
-        scope.removeEvent(elements.leave, 'click', leaveQueue);
+        c.dom.ignore(elements.join, 'click', joinQueue);
+        c.dom.ignore(elements.leave, 'click', leaveQueue);
     }
 
     /************************************ POSTS ************************************/
@@ -65,7 +62,7 @@ CORE.createModule('lobby', function(c, config) {
             event.preventDefault();
         }
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -84,7 +81,7 @@ CORE.createModule('lobby', function(c, config) {
             event.preventDefault();
         }
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -99,7 +96,7 @@ CORE.createModule('lobby', function(c, config) {
     }
 
     function requestQueueUpdate() {
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -156,7 +153,7 @@ CORE.createModule('lobby', function(c, config) {
         scope.hide(elements['queue-join']);
         scope.hide(elements['queue-leave']);
 
-        scope.notify({
+        c.notify({
             type: 'state-play',
             data: {}
         });

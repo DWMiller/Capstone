@@ -1,0 +1,38 @@
+{
+    "login": "login",
+    "register": "register",
+    "email": "email",
+    "password": "password",
+    "hide_password": "Hide password",
+    "show_password": "Show password",
+    "logout": "logout",
+    "back": "back",
+    "name": "Name",
+    "signup": "sign me up!",
+    "leave_queue": "leave queue",
+    "errors": {
+        "NO_GAME": "There is no game currently running, and the next game has not yet been scheduled"
+    },
+    "map": {
+        "terran": "Terran",
+        "desert": "Desert",
+        "gasGiant": "Gas Giant",
+        "ice": "Ice",
+        "molten": "Molten",
+        "volcanic": "Volcanic",
+        "asteroid": "Asteroid",
+        "fleet": "fleet",
+        "blueGiant": "Blue Giant",
+        "blueHyperGiant": "Blue Hypergiant",
+        "blueStar": "Blue Star",
+        "whiteDwarf": "White Dwarf",
+        "yellowStar": "Yellow Star",
+        "redDwarf": "Red Dwarf",
+        "redGiant": "Red Giant"
+    },
+    "structure": {
+        "mines": "Industry",
+        "shipyards": "Military",
+        "labs": "Research"
+    }
+}

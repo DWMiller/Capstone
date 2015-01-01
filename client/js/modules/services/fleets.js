@@ -3,50 +3,20 @@ CORE.createModule('fleets', function(c, config) {
 
     var p_properties = {
         id: 'fleets',
+        listeners: {
+            'fleet-update': fleetUpdate_Response,
+            'fleet-move': moveFleet,
+        }
     };
-
-    var scope;
-
-    var listeners = {
-        'fleet-update': fleetUpdate_Response,
-        'fleet-move': moveFleet,
-    };
-
-    var elements = {};
 
     /************************************ MODULE INITIALIZATION ************************************/
-
-    function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id);
-
-        // elements.back = scope.find('#map-back');
-
-        bindEvents();
-        // scope.show();
-    }
-
-    function p_destroy() {
-        // scope.hide();
-        unbindEvents();
-        elements = {};
-        scope = null;
-
-    }
-
-    function bindEvents() {
-        scope.listen(listeners);
-    }
-
-    function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-    }
 
     /************************************ API REQUESTS ************************************/
 
     function moveFleet(data) {
         c.modules.animator.instance.state.action = false;
 
-        if(data.splitSize && data.splitSize < 1) {
+        if (data.splitSize && data.splitSize < 1) {
             return false;
         }
 
@@ -73,7 +43,7 @@ CORE.createModule('fleets', function(c, config) {
 
         if (c.modules.commands.instance.options.fleetSplit && fleet.size > 1) {
             c.modules.animator.instance.state.action = true;
-            scope.notify({
+            c.notify({
                 type: 'show-widget-fleetSplitter',
                 data: data
             });
@@ -86,12 +56,12 @@ CORE.createModule('fleets', function(c, config) {
             target: destID
         };
 
-        if(typeof data.split !== 'undefined') {
+        if (typeof data.split !== 'undefined') {
             moveRequest.split = data.split;
             moveRequest.splitSize = data.splitSize;
         }
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -108,19 +78,16 @@ CORE.createModule('fleets', function(c, config) {
     function fleetUpdate_Response(data) {
         data.forEach(updateFleet);
 
-        scope.notify({
+        c.notify({
             type: 'fleet-data-updated',
             data: true
         });
 
     }
 
-
     /************************************ FRAMEWORK LISTENERS ************************************/
 
-
     /************************************ UI Event Handlers ************************************/
-
 
     /************************************ GENERAL FUNCTIONS ************************************/
 
@@ -134,9 +101,9 @@ CORE.createModule('fleets', function(c, config) {
             }
         });
 
-        if(!found) {
+        if (!found) {
             c.data.map.fleets.push(fleet);
-            scope.notify({
+            c.notify({
                 type: 'inject-fleet',
                 data: fleet
             });
@@ -144,10 +111,7 @@ CORE.createModule('fleets', function(c, config) {
     }
 
     return {
-
         properties: p_properties,
-        initialize: p_initialize,
-        destroy: p_destroy,
     };
 
 });

@@ -3,18 +3,16 @@ CORE.createModule('animator', function(c, config) {
 
     var p_properties = {
         id: 'animator',
+        selector:'module-game',
+        listeners: {
+            'location-update': updateLocation,
+            'data-updated': updateMap,
+            'inject-fleet': addFleetToMap,
+            'fleet-data-updated': populateFleets
+        }
     };
 
     var scope;
-
-    var listeners = {
-        // 'map-update': updateMapData,
-        'location-update': updateLocation,
-        'data-updated': updateMap,
-        'inject-fleet': addFleetToMap,
-        'fleet-data-updated': populateFleets
-
-    };
 
     var elements = {
         stage: null,
@@ -54,7 +52,7 @@ CORE.createModule('animator', function(c, config) {
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-game');
+        scope = sb;
         elements.mapWrapper = $("#game-map");
         elements.user = $('#module-user');
 
@@ -94,10 +92,6 @@ CORE.createModule('animator', function(c, config) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-
-        // scope.addEvent(elements.back, 'click', backButtonClick);
-
         elements.layers.map.on('click touchstart', layerClickHandler);
 
         // Need pointer cursor on image hover, 
@@ -112,9 +106,6 @@ CORE.createModule('animator', function(c, config) {
 
     function unbindEvents() {
         elements.layers.map.off('click touchstart', layerClickHandler);
-        // scope.removeEvent(elements.layers.fleets, 'click', layerClickHandler);
-
-        scope.ignore(Object.keys(listeners));
 
         elements.layers.map.off('mouseover touchstart', imageMouseon);
         elements.layers.map.off('mouseout touchend', imageMouseout);
@@ -123,10 +114,7 @@ CORE.createModule('animator', function(c, config) {
         elements.layers.fleets.off('dragend', fleetDragEnd);
     }
 
-
     /************************************ API REQUESTS ************************************/
-
-
 
     /************************************ API RESPONSES ************************************/
 
@@ -145,15 +133,13 @@ CORE.createModule('animator', function(c, config) {
 
         data.scale = 'location';
 
-        scope.notify({
+        c.notify({
             type: 'map-focus',
             data: data
         });
 
         populate();
     }
-
-
 
     /************************************ FRAMEWORK LISTENERS ************************************/
 
@@ -179,7 +165,7 @@ CORE.createModule('animator', function(c, config) {
             item = event.target.data;
         }
 
-        scope.notify({
+        c.notify({
             type: 'map-focus',
             data: item
         });
@@ -193,7 +179,7 @@ CORE.createModule('animator', function(c, config) {
     function layerClickHandler(event) {
         var object = event.target.data;
 
-        scope.notify({
+        c.notify({
             type: 'map-click',
             data: object
         });
@@ -224,7 +210,7 @@ CORE.createModule('animator', function(c, config) {
 
         if (fleetTarget) {
 
-            scope.notify({
+            c.notify({
                 type: 'fleet-move',
                 data: {
                     fleet: activeFleet.data,
@@ -242,7 +228,7 @@ CORE.createModule('animator', function(c, config) {
             // startUpdater();
         }
 
-        scope.notify({
+        c.notify({
             type: 'details-clear',
             data: true
         });
@@ -250,8 +236,6 @@ CORE.createModule('animator', function(c, config) {
 
     /************************************ GENERAL FUNCTIONS ************************************/
     function processFleetIntersections(kFleet) {
-
-
 
         var fleet = kFleet.data;
 
@@ -275,14 +259,13 @@ CORE.createModule('animator', function(c, config) {
 
             var location = kLocation.data;
 
-
             if (location.scale === 'location' && location.id === fleet.location_id) {
                 return;
-            } 
-       
+            }
+
             if (location.scale === 'system' && location.wormhole_id === fleet.location_id) {
                 return;
-            } 
+            }
 
             if (doObjectsCollide(kLocation, kFleet)) {
 
@@ -300,14 +283,14 @@ CORE.createModule('animator', function(c, config) {
 
         if (!collisionFound) {
             fleetTarget = null;
-            scope.notify({
+            c.notify({
                 type: 'details-hide',
                 data: true
             });
         } else {
             fleetTarget.data.fleetMove = true;
             if (changed) {
-                scope.notify({
+                c.notify({
                     type: 'details-show',
                     data: fleetTarget.data
                 });
@@ -469,8 +452,6 @@ CORE.createModule('animator', function(c, config) {
         //     c.data.map.fleets.forEach(addFleetToMap);
         // }
 
-
-
         elements.stage.add(elements.layers.map);
         // elements.stage.add(elements.layers.fleets);
         elements.stage.add(elements.layers.overlay);
@@ -559,7 +540,7 @@ CORE.createModule('animator', function(c, config) {
                     y1 = y2;
                     fleet.arrived = true;
 
-                    scope.notify({
+                    c.notify({
                         type: 'map-data-outdated',
                         data: true
                     });
@@ -585,7 +566,6 @@ CORE.createModule('animator', function(c, config) {
         //     var fleet = img.data;
         //     fleet.overlay = addFleetOverlay(fleet, img.attrs);
         // });
-
 
     }
 
@@ -750,7 +730,6 @@ CORE.createModule('animator', function(c, config) {
             elements.layers.overlay.add(new Kinetic.Text(enemyShips));
         }
 
-
         var name = $.extend({}, defaultText, {
             x: kImage.x,
             y: kImage.y + kImage.height + config.text.lineSpacing,
@@ -897,8 +876,6 @@ CORE.createModule('animator', function(c, config) {
         elements.layers.overlay.add(new Kinetic.Image(labIcon));
         elements.layers.overlay.add(new Kinetic.Text(labCount));
     }
-
-
 
     function addFleetOverlay(fleet, kImage) {
         var overlay = [];

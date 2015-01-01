@@ -2,17 +2,17 @@ CORE.createModule('logout', function(c) {
     'use strict';
 
     var p_properties = {
-        id: 'logout'
+        id: 'logout',
+        selector: 'page-logout',
+        listeners:{}
     };
 
     var scope, elements;
 
-    var listeners = {};
-
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'page-logout');
+        scope = sb;
 
         elements = {
             logout: scope.find('#form-logout-logout')
@@ -32,20 +32,18 @@ CORE.createModule('logout', function(c) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-        scope.addEvent(elements.logout, 'click', logout);
+        c.dom.listen(elements.logout, 'click', logout);
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        scope.removeEvent(elements.logout, 'click', logout);
+        c.dom.ignore(elements.logout, 'click', logout);
     }
 
     /************************************ POSTS ************************************/
 
     function logout(event) {
         event.preventDefault();
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -58,12 +56,12 @@ CORE.createModule('logout', function(c) {
             }
             
         });
-        scope.notify({
+        c.notify({
             type: 'session-clear',
             data: {}
         });
 
-        scope.notify({
+        c.notify({
             type: 'state-restart',
             data: {}
         });

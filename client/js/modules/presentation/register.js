@@ -2,22 +2,22 @@ CORE.createModule('register', function(c) {
     'use strict';
 
     var p_properties = {
-        id: 'register'
+        id: 'register',
+        selector: 'page-auth',
+        listeners: {
+            'register-failure': registerFailure
+        }
     };
 
     var scope, elements;
 
-    var listeners = {
-        'register-failure': registerFailure
-    };
-
-/************************************ MODULE INITIALIZATION ************************************/
-/************************************ POSTS ************************************/
-/************************************ RESPONSES ************************************/
-/************************************ GENERAL FUNCTIONS ************************************/
+    /************************************ MODULE INITIALIZATION ************************************/
+    /************************************ POSTS ************************************/
+    /************************************ RESPONSES ************************************/
+    /************************************ GENERAL FUNCTIONS ************************************/
 
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'page-auth');
+        scope = sb;
 
         elements = {
             email: scope.find('#form-auth-email'),
@@ -39,13 +39,11 @@ CORE.createModule('register', function(c) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-        scope.addEvent(elements.register, 'click', register);
+        c.dom.listen(elements.register, 'click', register);
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        scope.removeEvent(elements.register, 'click', register);
+        c.dom.ignore(elements.register, 'click', register);
     }
 
     function register(event) {
@@ -53,7 +51,7 @@ CORE.createModule('register', function(c) {
             event.preventDefault();
         }
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -70,10 +68,10 @@ CORE.createModule('register', function(c) {
 
     function registerFailure(errors) {
         var errorStr = '';
-       
+
         errors.forEach(function(error) {
-            errorStr += '<h2>'+error.title+'</h2>';
-            errorStr += '<p>'+error.msg+'</p>';
+            errorStr += '<h2>' + error.title + '</h2>';
+            errorStr += '<p>' + error.msg + '</p>';
 
         });
 

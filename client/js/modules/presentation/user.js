@@ -2,18 +2,19 @@ CORE.createModule('user', function(c) {
     'use strict';
 
     var p_properties = {
-        id: 'user'
+        id: 'user',
+        selector: 'module-user',
+        listeners: {
+            'user-update': updateUser
+        }
+
     };
 
     var scope, elements;
 
-    var listeners = {
-        'user-update': updateUser
-    };
-
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-user');
+        scope = sb;
 
         elements = {
             // header: scope.find('.module-header'),
@@ -37,14 +38,10 @@ CORE.createModule('user', function(c) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-        // $(scope.self()).on('click', '.widget-research', openResearchMenu);
         $(scope.self()).on('click', '.research-start', triggerResearch);
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        // $(scope.self()).off('click', '.widget-research', openResearchMenu);
         $(scope.self()).off('click', '.research-start', triggerResearch);
     }
 
@@ -53,8 +50,8 @@ CORE.createModule('user', function(c) {
     function triggerResearch(e) {
         var button = $(e.currentTarget);
         var researchType = button.data('research');
-        
-        scope.notify({
+
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -82,7 +79,7 @@ CORE.createModule('user', function(c) {
     }
 
     // function openResearchMenu() {
-    //     scope.notify({
+    //     c.notify({
     //         type: 'show-widget-research',
     //         data: true
     //     });        

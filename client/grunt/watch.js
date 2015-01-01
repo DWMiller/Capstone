@@ -8,7 +8,7 @@ module.exports = {
 		tasks: ['sass']		
 	},
 	copy: {
-		files: ['assets/**/*,js/localization/**/*'],
+		files: ['assets/**/*'],
 		tasks: ['newer:copy']				
 	},
 	html: {

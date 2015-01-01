@@ -2,30 +2,26 @@ CORE.createModule('widgets', function(c) {
     'use strict';
 
     var p_properties = {
-        id: 'widgets'
+        id: 'widgets',
+        selector: 'module-game',
+        listeners: {
+            'show-widget-fleetSplitter': fleetSplitter,
+        }
     };
 
     var scope, elements = {};
-
-    var listeners = {
-        'show-widget-fleetSplitter': fleetSplitter,
-        // 'show-widget-research': research
-    };
 
     var widgetData = {
         fleetSplitter: null
     };
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-game');
+        scope = sb;
 
         elements.fleetSplitterContainer = $('#widget-fleetSplitter');
         elements.fleetSplitter = elements.fleetSplitterContainer.find('.slider');
         elements.fleetSplitConfirm = $('#widget-fleetSplitter .widget-button');
         elements.fleetSplitterLabel = $('#widget-fleetSplitter .widget-label');
-
-        // elements.researchContainer = $('#widget-research');
-
 
         bindEvents();
     }
@@ -37,22 +33,18 @@ CORE.createModule('widgets', function(c) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
         elements.fleetSplitConfirm.on('click', confirmFleetSplit);
         elements.fleetSplitterContainer.on('input', '.slider', updateFleetSplitterLabel);
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
         elements.fleetSplitConfirm.off('click', confirmFleetSplit);
         elements.fleetSplitterContainer.off('input', '.slider', updateFleetSplitterLabel);
     }
 
     /************************************ POSTS ************************************/
 
-
     /************************************ RESPONSES ************************************/
-
 
     /************************************ Fleet Splitter ************************************/
 
@@ -81,14 +73,13 @@ CORE.createModule('widgets', function(c) {
         elements.fleetSplitterLabel.html(value + " Ships Selected");
     }
 
-
     function confirmFleetSplit() {
         widgetData.fleetSplitter.split = true;
         widgetData.fleetSplitter.splitSize = elements.fleetSplitter.val();
 
         c.modules.commands.instance.toggleCommand('fleetSplit', false);
 
-        scope.notify({
+        c.notify({
             type: 'fleet-move',
             data: widgetData.fleetSplitter
         });
@@ -101,11 +92,6 @@ CORE.createModule('widgets', function(c) {
     // function research() {
     //   scope.show(elements.research[0]);  
     // }
-    
-
-
-
-
 
     return {
         properties: p_properties,

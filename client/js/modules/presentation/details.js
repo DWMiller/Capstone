@@ -2,30 +2,28 @@ CORE.createModule('details', function(c) {
     'use strict';
 
     var p_properties = {
-        id: 'details'
+        id: 'details',
+        selector: 'module-details',
+        listeners: {
+            'details-show': showDetails,
+            'location-update': locationUpdate,
+            'map-focus': showDetails,
+            'details-hide': hide,
+            'details-clear': clear
+        }
     };
 
     var scope, elements;
-
-    var listeners = {
-        'details-show': showDetails,
-        'location-update': locationUpdate,
-        'map-focus': showDetails,
-        'details-hide': hide,
-        'details-clear': clear
-
-    };
 
     var currentData;
 
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-details');
+        scope = sb;
 
         elements = {
             header: scope.find('.module-header'),
             contents: scope.find('.module-contents'),
-            // close: scope.find('.close')
         };
 
         bindEvents();
@@ -40,15 +38,11 @@ CORE.createModule('details', function(c) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-        // scope.addEvent(elements.close, 'click', hide);
         $(elements.contents).on('click', '.upgrade-btn', upgradeStructure);
         $(elements.contents).on('click', '.location-rename', renameLocation);
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        // scope.removeEvent(elements.close, 'click', hide);
         $(elements.contents).off('click', '.upgrade-btn', upgradeStructure);
         $(elements.contents).off('click', '.location-rename', renameLocation);
     }
@@ -59,7 +53,7 @@ CORE.createModule('details', function(c) {
         var $this = $(event.target);
         var type = $this.attr('data-structure');
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -78,7 +72,7 @@ CORE.createModule('details', function(c) {
         var $this = $(event.currentTarget);
         var name = $this.prev('input').val();
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -105,16 +99,15 @@ CORE.createModule('details', function(c) {
         showDetails();
     }
 
-
     function showDetails(data) {
-        if(typeof data === 'undefined') {
+        if (typeof data === 'undefined') {
             return;
         }
 
         var oldData = currentData;
 
         hide();
-         //instead of using passed data (a kineticjs object's data property, try to connect with core data storage)
+        //instead of using passed data (a kineticjs object's data property, try to connect with core data storage)
         currentData = data;
 
         $(elements.header).text(data.name);
@@ -123,16 +116,16 @@ CORE.createModule('details', function(c) {
 
         $(elements.contents).html(content);
 
-        if(data.fleetMove) {
+        if (data.fleetMove) {
             $(elements.contents).append('<h3 class="blink_me">Release fleet to issue a movement command to this location</h3>');
         }
 
         // Use transition effect if new object, instant update if same object as already selected
-        if(oldData && oldData.id === data.id) {
+        if (oldData && oldData.id === data.id) {
             $(elements.contents).show();
         } else {
-            $(elements.contents).fadeIn(600);        
-        } 
+            $(elements.contents).fadeIn(600);
+        }
     }
 
     function hide() {

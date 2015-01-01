@@ -3,11 +3,11 @@ CORE.createModule('commands', function(c, config) {
 
     var p_properties = {
         id: 'commands',
+        selector:'module-commandBar',
+        listeners: {}
     };
 
     var scope;
-
-    var listeners = {};
 
     var elements = {};
 
@@ -23,7 +23,7 @@ CORE.createModule('commands', function(c, config) {
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-commandBar');
+        scope = sb;
 
         for (var command in commands) {
             elements[command] = $('#command-'+command);
@@ -41,8 +41,6 @@ CORE.createModule('commands', function(c, config) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-
         $(scope.self()).on('click', '.command-btn', commandButtonClick);
 
         $(document).on('keydown', keyPressHandler);
@@ -50,8 +48,6 @@ CORE.createModule('commands', function(c, config) {
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-
         $(scope.self()).off('click', '.command-btn', commandButtonClick);
         $(document).off('keydown', keyPressHandler);
         $(document).off('keyup', keyPressHandler);

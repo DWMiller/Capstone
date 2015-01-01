@@ -2,16 +2,16 @@ CORE.createModule('game', function(c, config) {
     'use strict';
 
     var p_properties = {
-        id: 'game'
+        id: 'game',
+        selector: 'module-game',
+        listeners: {
+            'map-update': updateMapData,
+            'map-click': objectSelected,
+            'map-data-outdated': requestUpdateNow
+        }
     };
 
     var scope;
-
-    var listeners = {
-        'map-update': updateMapData,
-        'map-click': objectSelected,
-        'map-data-outdated': requestUpdateNow
-    };
 
     var updater;
     var history = [];
@@ -19,26 +19,20 @@ CORE.createModule('game', function(c, config) {
     /************************************ MODULE INITIALIZATION ************************************/
 
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-game');
+        scope = sb;
         bindEvents();
 
         startUpdater();
 
-        scope.notify({
-            type: 'data-set',
-            data: {
-                map: {
-                    scale: config.defaultData.scale,
-                    // size: 100,
-                    id: config.defaultData.id,
-                    // sector: null,
-                    // system: null,
-                    // location: null
-                }
+        c.extend(c.data, {
+            map: {
+                scale: config.defaultData.scale,
+                id: config.defaultData.id,
             }
         });
 
         getMapData();
+
         scope.show();
     }
 
@@ -50,16 +44,14 @@ CORE.createModule('game', function(c, config) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
         // Great for performance, annoying for presentation
         // $(window).on('focus', windowFocusOn);
         // $(window).on('blur', windowFocusOut);        
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        $(window).off('focus', windowFocusOn);
-        $(window).off('blur', windowFocusOut);
+        // $(window).off('focus', windowFocusOn);
+        // $(window).off('blur', windowFocusOut);
     }
 
     /********************************* UI Handlers ********************************/
@@ -86,7 +78,7 @@ CORE.createModule('game', function(c, config) {
      * @return {[type]} [description]
      */
     function objectFocused(object) {
-        scope.notify({
+        c.notify({
             type: 'details-show',
             data: object
         });
@@ -115,7 +107,7 @@ CORE.createModule('game', function(c, config) {
             id: mapData.id
         };
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: data
         });
@@ -180,7 +172,7 @@ CORE.createModule('game', function(c, config) {
             });
         }
 
-        scope.notify({
+        c.notify({
             type: 'data-updated',
             data: true
         });
@@ -228,7 +220,6 @@ CORE.createModule('game', function(c, config) {
         requestUpdateNow();
     }
 
-
     /**
      * Go up/back a layer in the map heirarchy
      * @return {[type]} [description]
@@ -244,7 +235,6 @@ CORE.createModule('game', function(c, config) {
         c.data.map.system = null;
         c.data.map.fleets = null;
     }
-
 
     return {
         properties: p_properties,

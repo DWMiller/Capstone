@@ -2,12 +2,12 @@ CORE.createModule('admin', function(c) {
     'use strict';
 
     var p_properties = {
-        id: 'admin'
+        id: 'admin',
+        selector: 'module-admin',
+        listeners:{}
     };
 
     var scope, elements;
-
-    var listeners = {};
 
     var turnUpdater, maintainenceUpdater,combatTurnUpdater;
 
@@ -17,7 +17,7 @@ CORE.createModule('admin', function(c) {
     /************************************ GENERAL FUNCTIONS ************************************/
 
     function p_initialize(sb) {
-        scope = sb.create(c, p_properties.id, 'module-admin');
+        scope = sb;
 
         elements = {
             game_end: scope.find('#admin-game_end'),
@@ -50,18 +50,16 @@ CORE.createModule('admin', function(c) {
     }
 
     function bindEvents() {
-        scope.listen(listeners);
-        scope.addEvent(elements.game_end, 'click', endCurrentGame);
-        scope.addEvent(elements.game_start, 'click', startNewGame);
-        scope.addEvent(elements.stop, 'click', stop);
+        c.dom.listen(elements.game_end, 'click', endCurrentGame);
+        c.dom.listen(elements.game_start, 'click', startNewGame);
+        c.dom.listen(elements.stop, 'click', stop);
 
     }
 
     function unbindEvents() {
-        scope.ignore(Object.keys(listeners));
-        scope.removeEvent(elements.game_end, 'click', endCurrentGame);
-        scope.removeEvent(elements.game_start, 'click', startNewGame);
-        scope.removeEvent(elements.stop, 'click', stop);
+        c.dom.ignore(elements.game_end, 'click', endCurrentGame);
+        c.dom.ignore(elements.game_start, 'click', startNewGame);
+        c.dom.ignore(elements.stop, 'click', stop);
 
     }
 
@@ -78,7 +76,7 @@ CORE.createModule('admin', function(c) {
             event.preventDefault();
         }
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -97,7 +95,7 @@ CORE.createModule('admin', function(c) {
             event.preventDefault();
         }
 
-        scope.notify({
+        c.notify({
             type: 'server-post',
             data: {
                 api: {
@@ -115,7 +113,7 @@ CORE.createModule('admin', function(c) {
 
     function triggerTurn() {
         if (c.data.user.status == 3) {
-            scope.notify({
+            c.notify({
                 type: 'server-post',
                 data: {
                     api: {
@@ -132,7 +130,7 @@ CORE.createModule('admin', function(c) {
 
     function triggerCombatTurn() {
         if (c.data.user.status == 3) {
-            scope.notify({
+            c.notify({
                 type: 'server-post',
                 data: {
                     api: {
@@ -149,7 +147,7 @@ CORE.createModule('admin', function(c) {
 
     function triggerMaintainence() {
         if (c.data.user.status == 3) {
-            scope.notify({
+            c.notify({
                 type: 'server-post',
                 data: {
                     api: {
