@@ -1,4 +1,4 @@
-CORE.createModule('login', function(c) {
+dmf.createModule('login', function(c) {
     'use strict';
 
     var p_properties = {
@@ -19,11 +19,11 @@ CORE.createModule('login', function(c) {
         scope = sb;
 
         elements = {
-            email: scope.find('#form-auth-email'),
-            password: scope.find('#form-auth-password'),
-            login: scope.find('#form-auth-login'),
-            password_mask: scope.find('#form-auth-password_mask'),
-            msg: scope.find('#auth-msg')
+            email: document.getElementById('form-auth-email'),
+            password: document.getElementById('form-auth-password'),
+            login: document.getElementById('form-auth-login'),
+            password_mask: document.getElementById('form-auth-password_mask'),
+            msg: document.getElementById('auth-msg')
         };
 
         togglePasswordMask();
@@ -75,21 +75,15 @@ CORE.createModule('login', function(c) {
     /************************************ RESPONSES ************************************/
 
     function loginSuccess(data) {
-
-        c.extend(c.data, {
-            user: data.user,
-            'user-locations': data.locations
-        });
+        c.data.user = data.user;
+        c.data['user-locations'] = data.locations;
 
         c.notify({
             type: 'session-set',
             data: data.user.session
         });
 
-        c.notify({
-            type: 'state-authenticated',
-            data: {}
-        });
+        c.notify('state-authenticated');
 
         //Maybe shouldn't be here, but login success handler in other modules will first prior to user data being set above
         if (c.data.user.is_admin === "1") {

@@ -1,4 +1,4 @@
-CORE.extendConfig({
+dmf.extendConfig({
 	language: {
 		default_language: 'en',
 		path:'js/game/localization/',

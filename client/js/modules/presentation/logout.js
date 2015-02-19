@@ -1,4 +1,4 @@
-CORE.createModule('logout', function(c) {
+dmf.createModule('logout', function(c) {
     'use strict';
 
     var p_properties = {
@@ -15,7 +15,7 @@ CORE.createModule('logout', function(c) {
         scope = sb;
 
         elements = {
-            logout: scope.find('#form-logout-logout')
+            logout: document.getElementById('form-logout-logout')
         };
 
         bindEvents();
@@ -53,26 +53,15 @@ CORE.createModule('logout', function(c) {
                         }
                     }
                 }
-            }
-            
-        });
-        c.notify({
-            type: 'session-clear',
-            data: {}
+            }        
         });
 
-        c.notify({
-            type: 'state-restart',
-            data: {}
-        });
+        c.notify('session-clear');
+        c.notify('state-restart');
     }
 
     /************************************ RESPONSES ************************************/
     /************************************ GENERAL FUNCTIONS ************************************/
-
-
-
-
 
     return {
         properties: p_properties,

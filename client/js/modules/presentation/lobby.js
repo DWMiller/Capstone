@@ -1,4 +1,4 @@
-CORE.createModule('lobby', function(c, config) {
+dmf.createModule('lobby', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -18,12 +18,10 @@ CORE.createModule('lobby', function(c, config) {
         scope = sb;
 
         elements = {
-            'queue-join': scope.find('#queue-join'),
-            'queue-leave': scope.find('#queue-leave'),
-            // 'queue-play': scope.find('#queue-play'),
-            join: scope.find('#queue-join-submit'),
-            leave: scope.find('#queue-leave-submit'),
-            // play: scope.find('#queue-play-submit')
+            'queue-join': document.getElementById('queue-join'),
+            'queue-leave': document.getElementById('queue-leave'),
+            join: document.getElementById('queue-join-submit'),
+            leave: document.getElementById('queue-leave-submit'),
         };
 
         bindEvents();
@@ -31,12 +29,9 @@ CORE.createModule('lobby', function(c, config) {
 
         requestQueueUpdate();
         gameChecker = setInterval(requestQueueUpdate, config.UPDATE_INTERVAL);
-
-        // updateChoices();
     }
 
     function p_destroy() {
-        console.log('test');
         clearInterval(gameChecker);
 
         scope.hide();
@@ -153,10 +148,7 @@ CORE.createModule('lobby', function(c, config) {
         scope.hide(elements['queue-join']);
         scope.hide(elements['queue-leave']);
 
-        c.notify({
-            type: 'state-play',
-            data: {}
-        });
+        c.notify('state-play');
     }
 
     return {

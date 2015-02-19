@@ -1,11 +1,11 @@
 module.exports = {
 	js: {
 		files: ['js/**/*'],
-		tasks: ['newer:jshint', 'newer:concat']
+		tasks: ['newer:jshint', 'newer:concat','version']
 	},
 	sass: {
 		files: ['sass/**/*'],
-		tasks: ['sass']		
+		tasks: ['sass','version']		
 	},
 	copy: {
 		files: ['assets/**/*'],
@@ -13,7 +13,7 @@ module.exports = {
 	},
 	html: {
 		files: ['index.html'],
-		tasks: ['newer:htmlmin']				
+		tasks: ['newer:htmlmin','version']				
 	},
 
 	grunt: {

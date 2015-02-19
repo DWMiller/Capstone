@@ -1,4 +1,4 @@
-CORE.extendConfig({
+dmf.extendConfig({
     animator: {
         // DRAW_INTERVAL: 100, //how often the map redraws
         // UPDATE_INTERVAL: 3000, // Rate at which new map data is requested from server  

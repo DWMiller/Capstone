@@ -1,4 +1,4 @@
-CORE.templates.location = function(data) {
+dmf.templates.location = function(data) {
     var structureCount = data.mines * 1 + data.shipyards * 1 + data.labs * 1;
 
     var owned = (data.owner_id === CORE.data.user.id);

@@ -4,7 +4,7 @@
  * Provided as a location for general config settings if an individual file is not appropriate or not preferred.
  * @type {Object}
  */
-CORE.extendConfig({
+dmf.extendConfig({
     lobby: {
         UPDATE_INTERVAL: 5000,
     },

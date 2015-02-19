@@ -1,4 +1,4 @@
-CORE.createModule('admin', function(c) {
+dmf.createModule('admin', function(c) {
     'use strict';
 
     var p_properties = {
@@ -20,9 +20,9 @@ CORE.createModule('admin', function(c) {
         scope = sb;
 
         elements = {
-            game_end: scope.find('#admin-game_end'),
-            game_start: scope.find('#admin-game_start'),
-            stop: scope.find('#admin-module-stop'),
+            game_end: document.getElementById('admin-game_end'),
+            game_start: document.getElementById('admin-game_start'),
+            stop: document.getElementById('admin-module-stop'),
         };
 
         scope.show();

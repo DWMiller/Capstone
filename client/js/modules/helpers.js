@@ -1,5 +1,5 @@
 
-CORE.Helpers = function() {
+dmf.Helpers = function() {
     'use strict';
     return {
         commafy: function(num) {

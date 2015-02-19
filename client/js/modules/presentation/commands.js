@@ -1,4 +1,4 @@
-CORE.createModule('commands', function(c, config) {
+dmf.createModule('commands', function(c, config) {
     'use strict';
 
     var p_properties = {

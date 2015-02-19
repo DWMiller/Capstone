@@ -1,4 +1,4 @@
-CORE.createModule('animator', function(c, config) {
+dmf.createModule('animator', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -228,10 +228,7 @@ CORE.createModule('animator', function(c, config) {
             // startUpdater();
         }
 
-        c.notify({
-            type: 'details-clear',
-            data: true
-        });
+        c.notify('details-clear');
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
@@ -283,10 +280,7 @@ CORE.createModule('animator', function(c, config) {
 
         if (!collisionFound) {
             fleetTarget = null;
-            c.notify({
-                type: 'details-hide',
-                data: true
-            });
+            c.notify('details-hide');
         } else {
             fleetTarget.data.fleetMove = true;
             if (changed) {
@@ -448,9 +442,6 @@ CORE.createModule('animator', function(c, config) {
             c.data.map.system.forEach(addLocationToMap);
         }
 
-        // if (c.data.map.fleets) {
-        //     c.data.map.fleets.forEach(addFleetToMap);
-        // }
 
         elements.stage.add(elements.layers.map);
         // elements.stage.add(elements.layers.fleets);
@@ -540,10 +531,7 @@ CORE.createModule('animator', function(c, config) {
                     y1 = y2;
                     fleet.arrived = true;
 
-                    c.notify({
-                        type: 'map-data-outdated',
-                        data: true
-                    });
+                    c.notify('map-data-outdated');
 
                     return;
                 } else {
@@ -560,13 +548,6 @@ CORE.createModule('animator', function(c, config) {
                 fleet.overlay = addFleetOverlay(fleet, img.attrs);
             }
         });
-
-        // Add fresh overlays to all fleets
-        // elements.layers.fleets.getChildren().each(function(img) {
-        //     var fleet = img.data;
-        //     fleet.overlay = addFleetOverlay(fleet, img.attrs);
-        // });
-
     }
 
     function addFleetToMap(fleet) {

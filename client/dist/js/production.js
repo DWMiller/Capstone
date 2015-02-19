@@ -61,6 +61,8 @@ var dmf = function() {
         data: {},
         events: {},
         templates: {},
+        classes: {},
+        fn: {},
         /**
          * Triggers starter logic for all game modules
          * @return {[type]} [description]
@@ -90,25 +92,18 @@ var dmf = function() {
             }
         },
         extendConfig: function(moduleConfig) {
-            $.extend(true, this.config, moduleConfig);
+            this.extend(this.config, moduleConfig);
         },
         createModule: function(moduleID, creator) {
-            var temp;
             if (typeof moduleID === 'string' && typeof creator === 'function') {
 
-                temp = creator(this);
-                // if (temp.initialize && typeof temp.initialize === 'function' && temp.destroy && typeof temp.destroy === 'function') {
-                temp = null;
                 moduleData[moduleID] = {
                     create: creator,
                     config: this.config[moduleID],
                     instance: null
                 };
-                this.log(1, "Module '" + moduleID + "' Registration : SUCCESS");
-                // } else {
-                //     this.log(2, "Module '" + moduleID + "' Registration : FAILED : instance has no initialize or destroy functions");
-                // }
 
+                this.log(1, "Module '" + moduleID + "' Registration : SUCCESS");
             } else {
                 this.log(2, "Module '" + moduleID + "' Registration : FAILED : one or more arguments are of incorrect type");
             }
@@ -130,15 +125,22 @@ var dmf = function() {
                 // Modules do not require an initializing function, use it if exists
                 if (mod.instance.initialize && typeof mod.instance.initialize === 'function') {
                     mod.instance.initialize(this.Sandbox.create(this, mod.instance.properties));
-                } 
+                }
 
                 if (mod.instance.properties.listeners) {
                     this.registerEvents(mod.instance.properties.listeners, moduleID);
-                    console.log("Events Registered - " + moduleID)
                 }
 
                 this.log(1, "Start Module '" + moduleID + "': SUCCESS");
             }
+        },
+        /**
+         * Starts multiple modules
+         * @param  {String[]} modules An array of the module ids to start
+         * @return {[type]}         [description]
+         */
+        startModules: function(modules) {
+            modules.forEach(this.startModule, this);
         },
         startAllModules: function() {
             var moduleID;
@@ -149,32 +151,31 @@ var dmf = function() {
             }
         },
         stopModule: function(moduleID) {
-            var data;
-            if ((data = moduleData[moduleID]) && data.instance) {
+            var data = moduleData[moduleID];
 
-                if (data.instance.properties.listeners) {
-                    console.log("Events Ignored - " + moduleID)
-                    this.removeEvents(Object.keys(data.instance.properties.listeners), moduleID);
-                }
-
-                // Modules do not require a destroy function, use it if exists
-                if (data.instance.destroy && typeof data.instance.destroy === 'function') {
-                    data.instance.destroy();
-                } else {
-                    // define scope/sandbox here if initialization function is not present
-                    if (data.instance.scope) {
-                        data.instance.scope = null;
-                    }
-                    // this.dispose(data.instance);
-                }
-
-                data.instance = null;
-                delete data.instance;
-
-                this.log(1, "Stop Module '" + moduleID + "': SUCCESS");
-            } else {
+            if (!data || !data.instance) {
                 this.log(2, "Stop Module '" + moduleID + "': FAILED : module does not exist or has not been started");
+                return;
             }
+
+
+            if (data.instance.properties.listeners) {
+                this.removeEvents(Object.keys(data.instance.properties.listeners), moduleID);
+            }
+
+            // Modules do not require a destroy function, use it if exists
+            if (data.instance.destroy && typeof data.instance.destroy === 'function') {
+                data.instance.destroy();
+            }
+
+            data.instance = null;
+            delete data.instance;
+
+            this.log(1, "Stop Module '" + moduleID + "': SUCCESS");
+
+        },
+        stopModules: function(modules) {
+            modules.forEach(this.stopModule, this);
         },
         stopAllModules: function() {
             var moduleID;
@@ -184,44 +185,45 @@ var dmf = function() {
                 }
             }
         },
-        registerEvents: function(evts, mod) {
-            if (this.is_obj(evts) && mod) {
-                for (var eventKey in evts) {
-                    if (!this.events[eventKey]) {
-                        this.events[eventKey] = {};
-                    }
-                    this.events[eventKey][mod] = evts[eventKey];
+        /**
+         * Binds framework events to a module
+         * @param  {[type]} evts Object containing event/function pairs to bind
+         * @param  {string} mod  [description]
+         * @return {[type]}      [description]
+         */
+        registerEvents: function(evts, moduleId) {
+            if (!this.is_obj(evts) || !moduleId) {
+                this.log(1, "Error registering events for: " + moduleId);
+            }
+
+            for (var eventKey in evts) {
+                // Add event to event list if not yet added
+                if (!this.events[eventKey]) {
+                    this.events[eventKey] = {};
                 }
-            } else {
-                this.log(1, "Error registering events for: " + mod);
-            }
-        },
-        notify: function(evt) {
-            if (this.is_obj(evt) && evt.type) {
-                this.triggerEvent(evt);
-            }
-        },
-        //listen & ignore should be here, but moduleID is not available and would need to be passed from the module
-        // listen: function(evts) {
-        //     this.registerEvents(evts, moduleID);
-        // },
-        // ignore: function(evts) {
-        //     if (!this.is_arr(evts)) {
-        //         var e = evts;
-        //         evts = [e];
-        //     }
 
-        // this.removeEvents(evts, moduleID);
-        // },
+                this.events[eventKey][moduleId] = evts[eventKey];
+            }
 
-        triggerEvent: function(evt) {
-            var bindings = this.events[evt.type];
+        },
+        notify: function(event) {
+            // Allows shorthand, trigged via event name only without requiring data
+            if (typeof event === 'string') {
+                event = {
+                    type: event,
+                    data: {}
+                };
+            }
+
+            var bindings = this.events[event.type];
+
             if (!bindings) {
                 return;
             }
 
-            for (var binding in bindings) {
-                bindings[binding](evt.data);
+            var moduleId;
+            for (moduleId in bindings) {
+                bindings[moduleId](event.data);
             }
         },
         /**
@@ -231,30 +233,26 @@ var dmf = function() {
          * @return {[type]}      [description]
          */
         removeEvents: function(evts, mod) {
+            // Should be a named function, but mod would not be available
             evts.forEach(function(event, index, array) {
                 delete dmf.events[event][mod];
             });
         },
-        log: function(severity, message) {
-            if (debug) {
 
-                if (!this.is_arr(message)) {
-                    message = [message];
-                }
-
-                for (var i = 0; i < message.length; i++) {
-                    console[(severity === 1) ? 'log' : (severity === 2) ? 'warn' : 'error'](JSON.stringify(message[i], null, 4));
-                };
+        log: function(severity, messages) {
+            if (!debug) {
+                return;
             }
-        },
-        changeLanguage: function(lang) {
-            var event = {
-                type: 'language-change',
-                data: {
-                    language: lang
-                }
+
+            // If message is not an array, make it an array so we can traverse it
+            if (!this.is_arr(messages)) {
+                messages = [messages];
+            }
+
+            for (var i = 0; i < messages.length; i++) {
+                console[(severity === 1) ? 'log' : (severity === 2) ? 'warn' : 'error'](JSON.stringify(messages[i], null, 4));
             };
-            this.triggerEvent(event);
+
         },
         is_arr: function(arr) {
             return jQuery.isArray(arr);
@@ -263,15 +261,8 @@ var dmf = function() {
             return jQuery.isPlainObject(obj);
         },
         extend: function(targetObject, extendObject) {
-                jQuery.extend(true, targetObject, extendObject);
-            }
-            // dispose: function(obj) {
-            //     for (var o in obj)
-            //         if (isNaN(parseInt(o))) {
-            //             this.dispose(obj[o]);
-            //         }
-            //     delete obj; 
-            // }
+            jQuery.extend(true, targetObject, extendObject);
+        }
     };
 }()
 
@@ -352,12 +343,15 @@ dmf.Sandbox = {
         var CONTAINER = document.getElementById(module_selector) || core.container;
         return {
             self: function() {
+                core.log(2,'Sandbox:self() deprecated, sandbox being removed');
                 return CONTAINER;
             },
             find: function(selector) {
+                core.log(2,'Sandbox:find() deprecated, sandbox being removed');
                 return core.dom.find(selector, CONTAINER);
             },            
             hide: function(element) {
+                core.log(2,'Sandbox:hide() deprecated, sandbox being removed');
                 if (typeof element === 'undefined') {
                     element = CONTAINER;
                 }
@@ -366,6 +360,7 @@ dmf.Sandbox = {
                 core.dom.addClass(element, 'hidden');
             },
             show: function(element) {
+                core.log(2,'Sandbox:show() deprecated, sandbox being removed');
                 if (typeof element === 'undefined') {
                     element = CONTAINER;
                 }
@@ -386,6 +381,7 @@ dmf.Sandbox = {
 dmf.extendConfig({
 	'system-server': {
 		endpoint: 'http://127.0.0.1:8080/',
+		timeout: 7000
 	},	
 	'system-localize': {
 		default_language: 'en',
@@ -402,15 +398,11 @@ dmf.createModule('system-controller', function(c) {
     };
 
     function initialize(scope) {
-        c.startModule('system-server');
-        c.startModule('system-data');
-        c.startModule('system-localize');
+        c.startModules(['system-server', 'system-data', 'system-localize']);
     }
 
     function destroy() {
-        c.stopModule('system-server');
-        c.stopModule('system-data');
-        c.stopModule('system-localize');
+        c.stopModules(['system-server', 'system-data', 'system-localize']);
     }
 
     return {
@@ -473,6 +465,23 @@ dmf.createModule('system-controller', function(c) {
 dmf.createModule('system-localize', function(c, config) {
     'use strict';
 
+        // Usage exampe for other modules 
+        /**
+         * here for testing purposes temporarily
+         * @param  {[type]} lang [description]
+         * @return {[type]}      [description]
+         */
+        // changeLanguage: function(lang) {
+        //     this.notify({
+        //         type: 'language-change',
+        //         data: {
+        //             language: lang
+        //         }
+        //     });
+        // },
+
+
+
     var properties = {
         id: 'system-localize',
         listeners:{
@@ -528,13 +537,6 @@ dmf.createModule('system-localize', function(c, config) {
             language: p_languages[language]
         });
 
-        // c.notify({
-        //     type: 'data-set',
-        //     data: {
-        //         language: p_languages[language]
-        //     }
-        // });
-
         translate();
     }
 
@@ -583,7 +585,7 @@ dmf.createModule('system-localize', function(c, config) {
     };
 });
 
-dmf.createModule('system-server', function(c,config) {
+dmf.createModule('system-server', function(c, config) {
     'use strict';
 
     var properties = {
@@ -616,6 +618,7 @@ dmf.createModule('system-server', function(c,config) {
 
         var settings = {
             url: config.endpoint,
+            timeout: config.timeout,
             data: JSON.stringify(data),
             type: 'POST',
             dataType: 'json',
@@ -632,9 +635,19 @@ dmf.createModule('system-server', function(c,config) {
                         data: result[obj]
                     });
                 }
+
+                c.notify({
+                    type: 'server-response',
+                    data: result
+                });   
             })
-            .fail(function() {
+            .fail(function(fail) {
                 //console.log("error");
+                c.notify({
+                    type: 'server-fail',
+                    data: fail
+                });                
+                
             })
             .always(function(result) {
                 // console.log("complete");
@@ -657,7 +670,7 @@ dmf.createModule('system-server', function(c,config) {
 
 });
 
-CORE.extendConfig({
+dmf.extendConfig({
     animator: {
         // DRAW_INTERVAL: 100, //how often the map redraws
         // UPDATE_INTERVAL: 3000, // Rate at which new map data is requested from server  
@@ -730,7 +743,7 @@ CORE.extendConfig({
  * Provided as a location for general config settings if an individual file is not appropriate or not preferred.
  * @type {Object}
  */
-CORE.extendConfig({
+dmf.extendConfig({
     lobby: {
         UPDATE_INTERVAL: 5000,
     },
@@ -743,25 +756,25 @@ CORE.extendConfig({
     }
 });
 
-CORE.extendConfig({
+dmf.extendConfig({
 	engine: {
 		SIM_INTERVAL:17  // rate at which client updates local data to simulate expected changes	
 	}	
 });
 
-CORE.extendConfig({
+dmf.extendConfig({
 	language: {
 		default_language: 'en',
 		path:'js/game/localization/',
 		ext: '.lang.json'		
 	}
 });
-CORE.extendConfig({
+dmf.extendConfig({
 	'system-server': {
 		endpoint: '../../server/main.php'	
 	}
 });
-CORE.templates.location = function(data) {
+dmf.templates.location = function(data) {
     var structureCount = data.mines * 1 + data.shipyards * 1 + data.labs * 1;
 
     var owned = (data.owner_id === CORE.data.user.id);
@@ -893,7 +906,7 @@ CORE.templates.location = function(data) {
     return $container;
 }
 
-CORE.templates.system = function(data) {
+dmf.templates.system = function(data) {
     var $container = $('<div>');
 
     var $row = $('<p>');
@@ -932,7 +945,7 @@ CORE.templates.system = function(data) {
     return $container;
 }
 
-CORE.templates.userDetails = function(data) {
+dmf.templates.userDetails = function(data) {
     var $container = $('<div>');
 
     var $row = $('<p>').addClass('input-group');
@@ -941,13 +954,13 @@ CORE.templates.userDetails = function(data) {
     }).text("Currency").appendTo($row);
     $('<span>', {
         class: 'value'
-    }).text(CORE.Helpers.commafy(data.resources)).appendTo($row);
+    }).text(dmf.Helpers.commafy(data.resources)).appendTo($row);
     $('<span>', {
         class: 'label'
     }).text("Research Points").appendTo($row);
     $('<span>', {
         class: 'value'
-    }).text(CORE.Helpers.commafy(data.knowledge)).appendTo($row);
+    }).text(dmf.Helpers.commafy(data.knowledge)).appendTo($row);
 
     $container.append($row);
 
@@ -963,7 +976,7 @@ CORE.templates.userDetails = function(data) {
     }).text(data.tech_armour).appendTo($row);
     $('<span>', {
         class: 'cost'
-    }).text('Cost: ' + CORE.Helpers.commafy(data.tech_armour_cost)).appendTo($row);
+    }).text('Cost: ' + dmf.Helpers.commafy(data.tech_armour_cost)).appendTo($row);
 
     $container.append($row);
 
@@ -979,7 +992,7 @@ CORE.templates.userDetails = function(data) {
     }).text(data.tech_propulsion).appendTo($row);
     $('<span>', {
         class: 'cost'
-    }).text('Cost: ' + CORE.Helpers.commafy(data.tech_propulsion_cost)).appendTo($row);
+    }).text('Cost: ' + dmf.Helpers.commafy(data.tech_propulsion_cost)).appendTo($row);
 
     $container.append($row);
 
@@ -996,7 +1009,7 @@ CORE.templates.userDetails = function(data) {
     }).text(data.tech_weapons).appendTo($row);
     $('<span>', {
         class: 'cost'
-    }).text('Cost: ' + CORE.Helpers.commafy(data.tech_weapons_cost)).appendTo($row);
+    }).text('Cost: ' + dmf.Helpers.commafy(data.tech_weapons_cost)).appendTo($row);
 
     $container.append($row);
 
@@ -1004,85 +1017,87 @@ CORE.templates.userDetails = function(data) {
 }
 
 CORE.createModule('controller', function(c) {
-    'use strict';
+        'use strict';
 
-    var p_properties = {
-        id: 'controller',
-        listeners: {
-            'state-startup': startup,
-            'state-authenticated': authenticated,
-            'state-play': play,
-            'state-shutdown': shutdown,
-            'state-restart': restart
+        var p_properties = {
+            id: 'controller',
+            listeners: {
+                'state-startup': startup,
+                'state-authenticated': authenticated,
+                'state-play': play,
+                'state-shutdown': shutdown,
+                'state-restart': restart
+            }
+        };
+
+        function p_initialize(sb) {
+            startup();
         }
-    };
 
-    function p_initialize(sb) {
-        startup();
-    }
+        function p_destroy() {
+            c.stopAllModules();
+        }
 
-    function p_destroy() {
-        c.stopAllModules();
-    }
-
-    function startup() {
-        console.log('STATE: Startup');
-        c.startModule('login');
-        c.startModule('register');
+        function startup() {
+            console.log('STATE: Startup');
+            c.startModules(['login', 'register']);
     }
 
     function authenticated() {
         console.log('STATE: Authenticated');
-        c.startModule('logout');
-        c.startModule('lobby');
-        c.stopModule('login');
-        c.stopModule('register');
-    }
+        c.startModules(['logout', 'lobby']);
+        c.stopModules(['login', 'register']);
+}
 
-    function play() {
-        console.log('STATE: Playing Game');
-        c.stopModule('lobby');
-        c.startModule('game');
-        c.startModule('commands');
-        c.startModule('fleets');
-        c.startModule('animator');
-        c.startModule('widgets');
-        c.startModule('details');
-        c.startModule('user');
-    }
+function play() {
+    console.log('STATE: Playing Game');
 
-    function shutdown() {
-        console.log('STATE: Shutting Down');
-        c.stopModule('lobby');
-        c.stopModule('login');
-        c.stopModule('logout');
-        c.stopModule('register');
-        c.stopModule('game');
-        c.stopModule('commands');
-        c.stopModule('fleets');
-        c.stopModule('animator');
-        c.stopModule('widgets');
-        c.stopModule('details');
-        c.stopModule('admin');
-        c.stopModule('user');
-        c.stopModule('admin');
-    }
+    c.stopModule('lobby');
 
-    function restart() {
-        shutdown();
-        startup();
-    }
+    c.startModules(['game',
+        'commands',
+        'fleets',
+        'animator',
+        'widgets',
+        'details',
+        'user'
+    ]);
+}
 
-    return {
-        properties: p_properties,
-        initialize: p_initialize,
-        destroy: p_destroy,
-    };
+function shutdown() {
+    console.log('STATE: Shutting Down');
+
+    c.stopModules(['lobby',
+        'login',
+        'logout',
+        'register',
+        'game',
+        'commands',
+        'fleets',
+        'animator',
+        'widgets',
+        'details',
+        'admin',
+        'user',
+        'admin'
+    ]);
+}
+
+function restart() {
+    shutdown();
+    startup();
+}
+
+return {
+    properties: p_properties,
+    initialize: p_initialize,
+    destroy: p_destroy,
+};
 
 });
 
 
-CORE.Helpers = function() {
+dmf.Helpers = function() {
     'use strict';
     return {
         commafy: function(num) {
@@ -1096,7 +1111,7 @@ CORE.Helpers = function() {
     };
 }();
 
-CORE.createModule('admin', function(c) {
+dmf.createModule('admin', function(c) {
     'use strict';
 
     var p_properties = {
@@ -1118,9 +1133,9 @@ CORE.createModule('admin', function(c) {
         scope = sb;
 
         elements = {
-            game_end: scope.find('#admin-game_end'),
-            game_start: scope.find('#admin-game_start'),
-            stop: scope.find('#admin-module-stop'),
+            game_end: document.getElementById('admin-game_end'),
+            game_start: document.getElementById('admin-game_start'),
+            stop: document.getElementById('admin-module-stop'),
         };
 
         scope.show();
@@ -1268,7 +1283,7 @@ CORE.createModule('admin', function(c) {
 
 });
 
-CORE.createModule('animator', function(c, config) {
+dmf.createModule('animator', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -1498,10 +1513,7 @@ CORE.createModule('animator', function(c, config) {
             // startUpdater();
         }
 
-        c.notify({
-            type: 'details-clear',
-            data: true
-        });
+        c.notify('details-clear');
     }
 
     /************************************ GENERAL FUNCTIONS ************************************/
@@ -1553,10 +1565,7 @@ CORE.createModule('animator', function(c, config) {
 
         if (!collisionFound) {
             fleetTarget = null;
-            c.notify({
-                type: 'details-hide',
-                data: true
-            });
+            c.notify('details-hide');
         } else {
             fleetTarget.data.fleetMove = true;
             if (changed) {
@@ -1718,9 +1727,6 @@ CORE.createModule('animator', function(c, config) {
             c.data.map.system.forEach(addLocationToMap);
         }
 
-        // if (c.data.map.fleets) {
-        //     c.data.map.fleets.forEach(addFleetToMap);
-        // }
 
         elements.stage.add(elements.layers.map);
         // elements.stage.add(elements.layers.fleets);
@@ -1810,10 +1816,7 @@ CORE.createModule('animator', function(c, config) {
                     y1 = y2;
                     fleet.arrived = true;
 
-                    c.notify({
-                        type: 'map-data-outdated',
-                        data: true
-                    });
+                    c.notify('map-data-outdated');
 
                     return;
                 } else {
@@ -1830,13 +1833,6 @@ CORE.createModule('animator', function(c, config) {
                 fleet.overlay = addFleetOverlay(fleet, img.attrs);
             }
         });
-
-        // Add fresh overlays to all fleets
-        // elements.layers.fleets.getChildren().each(function(img) {
-        //     var fleet = img.data;
-        //     fleet.overlay = addFleetOverlay(fleet, img.attrs);
-        // });
-
     }
 
     function addFleetToMap(fleet) {
@@ -2216,7 +2212,7 @@ CORE.createModule('animator', function(c, config) {
 
 });
 
-CORE.createModule('commands', function(c, config) {
+dmf.createModule('commands', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -2320,7 +2316,7 @@ CORE.createModule('commands', function(c, config) {
 
 });
 
-CORE.createModule('details', function(c) {
+dmf.createModule('details', function(c) {
     'use strict';
 
     var p_properties = {
@@ -2456,7 +2452,7 @@ CORE.createModule('details', function(c) {
 
     function clear() {
         currentData = null;
-        $(elements.contents).html('');
+        elements.contents.innerHTML = '';
         hide();
     }
 
@@ -2468,7 +2464,7 @@ CORE.createModule('details', function(c) {
 
 });
 
-CORE.createModule('lobby', function(c, config) {
+dmf.createModule('lobby', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -2488,12 +2484,10 @@ CORE.createModule('lobby', function(c, config) {
         scope = sb;
 
         elements = {
-            'queue-join': scope.find('#queue-join'),
-            'queue-leave': scope.find('#queue-leave'),
-            // 'queue-play': scope.find('#queue-play'),
-            join: scope.find('#queue-join-submit'),
-            leave: scope.find('#queue-leave-submit'),
-            // play: scope.find('#queue-play-submit')
+            'queue-join': document.getElementById('queue-join'),
+            'queue-leave': document.getElementById('queue-leave'),
+            join: document.getElementById('queue-join-submit'),
+            leave: document.getElementById('queue-leave-submit'),
         };
 
         bindEvents();
@@ -2501,12 +2495,9 @@ CORE.createModule('lobby', function(c, config) {
 
         requestQueueUpdate();
         gameChecker = setInterval(requestQueueUpdate, config.UPDATE_INTERVAL);
-
-        // updateChoices();
     }
 
     function p_destroy() {
-        console.log('test');
         clearInterval(gameChecker);
 
         scope.hide();
@@ -2623,10 +2614,7 @@ CORE.createModule('lobby', function(c, config) {
         scope.hide(elements['queue-join']);
         scope.hide(elements['queue-leave']);
 
-        c.notify({
-            type: 'state-play',
-            data: {}
-        });
+        c.notify('state-play');
     }
 
     return {
@@ -2637,7 +2625,7 @@ CORE.createModule('lobby', function(c, config) {
 
 });
 
-CORE.createModule('login', function(c) {
+dmf.createModule('login', function(c) {
     'use strict';
 
     var p_properties = {
@@ -2658,11 +2646,11 @@ CORE.createModule('login', function(c) {
         scope = sb;
 
         elements = {
-            email: scope.find('#form-auth-email'),
-            password: scope.find('#form-auth-password'),
-            login: scope.find('#form-auth-login'),
-            password_mask: scope.find('#form-auth-password_mask'),
-            msg: scope.find('#auth-msg')
+            email: document.getElementById('form-auth-email'),
+            password: document.getElementById('form-auth-password'),
+            login: document.getElementById('form-auth-login'),
+            password_mask: document.getElementById('form-auth-password_mask'),
+            msg: document.getElementById('auth-msg')
         };
 
         togglePasswordMask();
@@ -2714,21 +2702,15 @@ CORE.createModule('login', function(c) {
     /************************************ RESPONSES ************************************/
 
     function loginSuccess(data) {
-
-        c.extend(c.data, {
-            user: data.user,
-            'user-locations': data.locations
-        });
+        c.data.user = data.user;
+        c.data['user-locations'] = data.locations;
 
         c.notify({
             type: 'session-set',
             data: data.user.session
         });
 
-        c.notify({
-            type: 'state-authenticated',
-            data: {}
-        });
+        c.notify('state-authenticated');
 
         //Maybe shouldn't be here, but login success handler in other modules will first prior to user data being set above
         if (c.data.user.is_admin === "1") {
@@ -2770,7 +2752,7 @@ CORE.createModule('login', function(c) {
 
 });
 
-CORE.createModule('logout', function(c) {
+dmf.createModule('logout', function(c) {
     'use strict';
 
     var p_properties = {
@@ -2787,7 +2769,7 @@ CORE.createModule('logout', function(c) {
         scope = sb;
 
         elements = {
-            logout: scope.find('#form-logout-logout')
+            logout: document.getElementById('form-logout-logout')
         };
 
         bindEvents();
@@ -2825,26 +2807,15 @@ CORE.createModule('logout', function(c) {
                         }
                     }
                 }
-            }
-            
-        });
-        c.notify({
-            type: 'session-clear',
-            data: {}
+            }        
         });
 
-        c.notify({
-            type: 'state-restart',
-            data: {}
-        });
+        c.notify('session-clear');
+        c.notify('state-restart');
     }
 
     /************************************ RESPONSES ************************************/
     /************************************ GENERAL FUNCTIONS ************************************/
-
-
-
-
 
     return {
         properties: p_properties,
@@ -2854,7 +2825,7 @@ CORE.createModule('logout', function(c) {
 
 });
 
-CORE.createModule('register', function(c) {
+dmf.createModule('register', function(c) {
     'use strict';
 
     var p_properties = {
@@ -2876,10 +2847,10 @@ CORE.createModule('register', function(c) {
         scope = sb;
 
         elements = {
-            email: scope.find('#form-auth-email'),
-            password: scope.find('#form-auth-password'),
-            register: scope.find('#form-auth-register'),
-            msg: scope.find('#auth-msg')
+            email: document.getElementById('form-auth-email'),
+            password: document.getElementById('form-auth-password'),
+            register: document.getElementById('form-auth-register'),
+            msg: document.getElementById('auth-msg')
         };
 
         bindEvents();
@@ -2942,7 +2913,7 @@ CORE.createModule('register', function(c) {
 
 });
 
-CORE.createModule('user', function(c) {
+dmf.createModule('user', function(c) {
     'use strict';
 
     var p_properties = {
@@ -2954,17 +2925,11 @@ CORE.createModule('user', function(c) {
 
     };
 
-    var scope, elements;
+    var scope;
 
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
         scope = sb;
-
-        elements = {
-            // header: scope.find('.module-header'),
-            // contents: scope.find('.module-contents'),
-
-        };
 
         bindEvents();
         scope.show();
@@ -2978,7 +2943,6 @@ CORE.createModule('user', function(c) {
         scope.hide();
         unbindEvents();
         scope = null;
-        elements = {};
     }
 
     function bindEvents() {
@@ -3022,13 +2986,6 @@ CORE.createModule('user', function(c) {
         $(scope.self()).html(c.templates.userDetails(c.data.user).html());
     }
 
-    // function openResearchMenu() {
-    //     c.notify({
-    //         type: 'show-widget-research',
-    //         data: true
-    //     });        
-    // }
-
     return {
         properties: p_properties,
         initialize: p_initialize,
@@ -3037,7 +2994,7 @@ CORE.createModule('user', function(c) {
 
 });
 
-CORE.createModule('widgets', function(c) {
+dmf.createModule('widgets', function(c) {
     'use strict';
 
     var p_properties = {
@@ -3128,10 +3085,6 @@ CORE.createModule('widgets', function(c) {
 
     /************************************ Research ************************************/
 
-    // function research() {
-    //   scope.show(elements.research[0]);  
-    // }
-
     return {
         properties: p_properties,
         initialize: p_initialize,
@@ -3140,7 +3093,7 @@ CORE.createModule('widgets', function(c) {
 
 });
 
-CORE.createModule('fleets', function(c, config) {
+dmf.createModule('fleets', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -3220,11 +3173,7 @@ CORE.createModule('fleets', function(c, config) {
     function fleetUpdate_Response(data) {
         data.forEach(updateFleet);
 
-        c.notify({
-            type: 'fleet-data-updated',
-            data: true
-        });
-
+        c.notify('fleet-data-updated');
     }
 
     /************************************ FRAMEWORK LISTENERS ************************************/
@@ -3258,7 +3207,7 @@ CORE.createModule('fleets', function(c, config) {
 
 });
 
-CORE.createModule('game', function(c, config) {
+dmf.createModule('game', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -3284,12 +3233,10 @@ CORE.createModule('game', function(c, config) {
 
         startUpdater();
 
-        c.extend(c.data, {
-            map: {
-                scale: config.defaultData.scale,
-                id: config.defaultData.id,
-            }
-        });
+        c.data.map = {
+            scale: config.defaultData.scale,
+            id: config.defaultData.id,
+        };
 
         getMapData();
 
@@ -3432,10 +3379,7 @@ CORE.createModule('game', function(c, config) {
             });
         }
 
-        c.notify({
-            type: 'data-updated',
-            data: true
-        });
+        c.notify('data-updated');
 
     }
 

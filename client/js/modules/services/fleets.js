@@ -1,4 +1,4 @@
-CORE.createModule('fleets', function(c, config) {
+dmf.createModule('fleets', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -78,11 +78,7 @@ CORE.createModule('fleets', function(c, config) {
     function fleetUpdate_Response(data) {
         data.forEach(updateFleet);
 
-        c.notify({
-            type: 'fleet-data-updated',
-            data: true
-        });
-
+        c.notify('fleet-data-updated');
     }
 
     /************************************ FRAMEWORK LISTENERS ************************************/

@@ -1,4 +1,4 @@
-CORE.extendConfig({
+dmf.extendConfig({
 	'system-server': {
 		endpoint: '../../server/main.php'	
 	}

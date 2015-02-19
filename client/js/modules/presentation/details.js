@@ -1,4 +1,4 @@
-CORE.createModule('details', function(c) {
+dmf.createModule('details', function(c) {
     'use strict';
 
     var p_properties = {
@@ -134,7 +134,7 @@ CORE.createModule('details', function(c) {
 
     function clear() {
         currentData = null;
-        $(elements.contents).html('');
+        elements.contents.innerHTML = '';
         hide();
     }
 

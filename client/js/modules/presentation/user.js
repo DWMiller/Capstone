@@ -1,4 +1,4 @@
-CORE.createModule('user', function(c) {
+dmf.createModule('user', function(c) {
     'use strict';
 
     var p_properties = {
@@ -10,17 +10,11 @@ CORE.createModule('user', function(c) {
 
     };
 
-    var scope, elements;
+    var scope;
 
     /************************************ MODULE INITIALIZATION ************************************/
     function p_initialize(sb) {
         scope = sb;
-
-        elements = {
-            // header: scope.find('.module-header'),
-            // contents: scope.find('.module-contents'),
-
-        };
 
         bindEvents();
         scope.show();
@@ -34,7 +28,6 @@ CORE.createModule('user', function(c) {
         scope.hide();
         unbindEvents();
         scope = null;
-        elements = {};
     }
 
     function bindEvents() {
@@ -77,13 +70,6 @@ CORE.createModule('user', function(c) {
     function refresh() {
         $(scope.self()).html(c.templates.userDetails(c.data.user).html());
     }
-
-    // function openResearchMenu() {
-    //     c.notify({
-    //         type: 'show-widget-research',
-    //         data: true
-    //     });        
-    // }
 
     return {
         properties: p_properties,

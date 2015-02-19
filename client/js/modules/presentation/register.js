@@ -1,4 +1,4 @@
-CORE.createModule('register', function(c) {
+dmf.createModule('register', function(c) {
     'use strict';
 
     var p_properties = {
@@ -20,10 +20,10 @@ CORE.createModule('register', function(c) {
         scope = sb;
 
         elements = {
-            email: scope.find('#form-auth-email'),
-            password: scope.find('#form-auth-password'),
-            register: scope.find('#form-auth-register'),
-            msg: scope.find('#auth-msg')
+            email: document.getElementById('form-auth-email'),
+            password: document.getElementById('form-auth-password'),
+            register: document.getElementById('form-auth-register'),
+            msg: document.getElementById('auth-msg')
         };
 
         bindEvents();

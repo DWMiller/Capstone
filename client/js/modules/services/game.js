@@ -1,4 +1,4 @@
-CORE.createModule('game', function(c, config) {
+dmf.createModule('game', function(c, config) {
     'use strict';
 
     var p_properties = {
@@ -24,12 +24,10 @@ CORE.createModule('game', function(c, config) {
 
         startUpdater();
 
-        c.extend(c.data, {
-            map: {
-                scale: config.defaultData.scale,
-                id: config.defaultData.id,
-            }
-        });
+        c.data.map = {
+            scale: config.defaultData.scale,
+            id: config.defaultData.id,
+        };
 
         getMapData();
 
@@ -172,10 +170,7 @@ CORE.createModule('game', function(c, config) {
             });
         }
 
-        c.notify({
-            type: 'data-updated',
-            data: true
-        });
+        c.notify('data-updated');
 
     }
 

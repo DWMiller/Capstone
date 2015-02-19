@@ -1,4 +1,4 @@
-CORE.createModule('widgets', function(c) {
+dmf.createModule('widgets', function(c) {
     'use strict';
 
     var p_properties = {
@@ -88,10 +88,6 @@ CORE.createModule('widgets', function(c) {
     }
 
     /************************************ Research ************************************/
-
-    // function research() {
-    //   scope.show(elements.research[0]);  
-    // }
 
     return {
         properties: p_properties,

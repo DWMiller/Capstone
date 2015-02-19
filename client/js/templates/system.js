@@ -1,4 +1,4 @@
-CORE.templates.system = function(data) {
+dmf.templates.system = function(data) {
     var $container = $('<div>');
 
     var $row = $('<p>');
