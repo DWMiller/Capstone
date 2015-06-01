@@ -770,10 +770,12 @@ dmf.extendConfig({
 	}
 });
 dmf.extendConfig({
-	'system-server': {
-		endpoint: '../../server/main.php'	
-	}
+    'system-server': {
+        endpoint: '../server/main.php' // deployed
+            // endpoint: '../../server/main.php'	dev environment	
+    }
 });
+
 dmf.templates.location = function(data) {
     var structureCount = data.mines * 1 + data.shipyards * 1 + data.labs * 1;
 
