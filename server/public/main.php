@@ -1,4 +1,4 @@
-<?php	
+<?php
 
 /*=============================================================================
 
@@ -46,16 +46,18 @@ if(isset($requestStr['session'])) {
   $_REQUEST['session'] = $requestStr['session'];
 }
 
+header("Access-Control-Allow-Origin: *");
+
 foreach ($requestStr['api'] as $controller => $methods) {
 
-	$controllerName = ($controller == 'default' ? DEFAULT_CONTROLLER : $controller);	
+	$controllerName = ($controller == 'default' ? DEFAULT_CONTROLLER : $controller);
 
 	$controllerName = ucfirst($controllerName);
-	$controllerObj = new $controllerName; 
+	$controllerObj = new $controllerName;
 
 	foreach ($methods as $method => $args) {
 
-		$method = ($method == 'default' ? DEFAULT_METHOD : $method);	
+		$method = ($method == 'default' ? DEFAULT_METHOD : $method);
 
 		if (method_exists($controllerObj, $method)) {
 			 call_user_func(array($controllerObj,$method),$args);
@@ -64,5 +66,3 @@ foreach ($requestStr['api'] as $controller => $methods) {
 		}
 	}
 }
-
-

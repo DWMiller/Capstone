@@ -12,7 +12,7 @@ html, body, #main-container {
     height: 100%;
     background-image: $bg;
     line-height: $baseLineHeight;
-    
+
     height: 100%;
     color: white;
 }
@@ -20,6 +20,7 @@ html, body, #main-container {
     margin: 0 auto;
     max-width: $max-width;
     text-align: center;
+    overflow: auto;
 }
 input[type="text"], input[type="password"], input[type="email"], input[type="submit"], button {
     @extend .touchable;
@@ -36,7 +37,7 @@ input[type="text"], input[type="password"], input[type="email"] {
 label {
     font-size: larger;
 }
-label * {  
+label * {
     display: inline-block;
     vertical-align: bottom;
 }
@@ -71,7 +72,7 @@ label * {
         font-weight: bolder;
         margin-right: 0.5em;
         font-variant: small-caps;
-    }    
+    }
 }
 
 .blink_me {
@@ -91,21 +92,20 @@ label * {
     animation-iteration-count: infinite;
 }
 
-// @-moz-keyframes blinker {  
+// @-moz-keyframes blinker {
 //     0% { opacity: 1.0; }
 //     50% { opacity: 0.0; }
 //     100% { opacity: 1.0; }
 // }
 
-// @-webkit-keyframes blinker {  
+// @-webkit-keyframes blinker {
 //     0% { opacity: 1.0; }
 //     50% { opacity: 0.0; }
 //     100% { opacity: 1.0; }
 // }
 
-@keyframes blinker {  
+@keyframes blinker {
     0% { opacity: 1.0; }
     50% { opacity: 0.0; }
-    100% { opacity: 1.0; }    
+    100% { opacity: 1.0; }
 }
-
